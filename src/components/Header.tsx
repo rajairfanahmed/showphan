@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession, signIn, signOut } from "@/lib/auth-client";
 import { ThemeToggle } from "./ThemeToggle";
 import { GitHubStarWidget } from "./GitHubStarWidget";
+import { WordmarkLogo } from "./WordmarkLogo";
 
 export function Header() {
   const router = useRouter();
@@ -36,25 +37,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/85 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        {/* Left: Brand Logo & v1 Tag */}
-        <div className="flex items-center gap-2.5">
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 font-bold text-lg group-hover:scale-105 transition-transform">
-              S
-            </div>
-            <span className="font-bold text-lg sm:text-xl tracking-tight text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
-              Showphan
-            </span>
-          </Link>
-          <a
-            href="https://github.com/rajairfanahmed/showphan/releases"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-colors"
-          >
-            v1.0
-          </a>
-        </div>
+        {/* Left: Geometric Dev Wordmark */}
+        <WordmarkLogo size="md" showBetaBadge={true} />
 
         {/* Center Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">

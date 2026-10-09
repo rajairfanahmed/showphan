@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WordmarkLogo } from "./WordmarkLogo";
 
 export function Footer() {
   return (
@@ -6,9 +7,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="flex flex-col items-center md:items-start gap-1">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-base tracking-tight text-[var(--foreground)]">
-              Showphan
-            </span>
+            <WordmarkLogo size="sm" />
             <span className="text-xs text-[var(--muted-foreground)]">
               — Free & Open Source developer showcase
             </span>

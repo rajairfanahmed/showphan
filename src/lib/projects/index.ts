@@ -72,6 +72,18 @@ export async function createProjectDraft(userId: string, title: string) {
       status: ProjectStatus.DRAFT,
       position: count,
     },
+    select: {
+      id: true,
+      userId: true,
+      title: true,
+      slug: true,
+      summary: true,
+      description: true,
+      status: true,
+      position: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 
   return project;

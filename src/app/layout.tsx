@@ -16,37 +16,47 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Showphan — Single-Link Developer Portfolio & Proof-of-Work Platform",
+    default: "Showphan — Where developers discover and showcase what's next",
     template: "%s | Showphan",
   },
   description:
-    "Turn your repositories into verified proof-of-work. Showphan gives every developer a high-fidelity showcase link with 16:9 visual proof and a 5-rule quality gate.",
+    "Free, open-source developer showcase platform. Discover trending software projects, live interactive sandboxes, verified engineering proofs, and high-impact developer portfolios.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app"),
   authors: [{ name: "Raja Irfan Ahmed", url: "https://rajairfanahmed.vercel.app" }],
   creator: "Raja Irfan Ahmed",
   publisher: "Raja Irfan Ahmed",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/icon.svg",
+  },
   keywords: [
     "developer portfolio",
-    "software engineer showcase",
+    "developer showcase",
+    "daily dev alternative",
+    "open source projects",
+    "live sandbox",
+    "software engineer portfolio",
     "proof of work",
-    "github portfolio",
-    "single link portfolio",
+    "github showcase",
     "showphan",
     "Raja Irfan Ahmed",
   ],
   openGraph: {
-    title: "Showphan — Single-Link Developer Portfolio & Proof-of-Work Platform",
+    title: "Showphan — Where developers discover and showcase what's next",
     description:
-      "Turn your repositories into verified proof-of-work. High-fidelity developer showcases with 16:9 visual proof.",
+      "Free, open-source developer showcase platform. Discover trending software projects, live interactive sandboxes, and verified developer portfolios.",
     siteName: "Showphan",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Showphan — Developer Portfolio Platform",
+    title: "Showphan — Where developers discover and showcase what's next",
     description:
-      "Turn your repositories into verified proof-of-work. Created by Raja Irfan Ahmed.",
+      "Discover trending software projects, live sandboxes, and verified developer portfolios. Crafted by Raja Irfan Ahmed.",
   },
 };
 
@@ -57,15 +67,45 @@ const structuredData = {
       "@type": "WebSite",
       "@id": "https://showphan.vercel.app/#website",
       "name": "Showphan",
-      "alternateName": ["Show Phan", "showfan"],
+      "alternateName": ["Showphan Dev", "Show Phan"],
       "url": "https://showphan.vercel.app",
-      "description": "The Single-Link Showcase for Developers to Turn Repositories into Proof-of-Work.",
+      "description":
+        "Free, open-source developer showcase platform. Discover trending software projects, live interactive sandboxes, verified engineering proofs, and high-impact developer portfolios.",
       "inLanguage": "en-US",
       "publisher": {
         "@type": "Person",
         "name": "Raja Irfan Ahmed",
         "url": "https://rajairfanahmed.vercel.app",
       },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://showphan.vercel.app/explore?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Explore",
+      "description": "Discover high-velocity developer tools, trending open-source projects, and new releases.",
+      "url": "https://showphan.vercel.app/explore",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Live Sandboxes",
+      "description": "Test interactive in-browser live applications across desktop, tablet, and mobile viewports.",
+      "url": "https://showphan.vercel.app/explore",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Inspiration Vault",
+      "description": "Bookmark, curate, and organize outstanding projects from the developer community.",
+      "url": "https://showphan.vercel.app/dashboard/bookmarks",
+    },
+    {
+      "@type": "SiteNavigationElement",
+      "name": "Command Studio",
+      "description": "Import repositories from GitHub, evaluate real-time Quality Gate HUDs, and publish.",
+      "url": "https://showphan.vercel.app/dashboard/new",
     },
     {
       "@type": "WebApplication",
