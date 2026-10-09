@@ -14,8 +14,8 @@ export function Footer() {
             </span>
           </div>
           <p className="text-xs text-[var(--muted-foreground)]">
-            Released under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-500">MIT License</a>. Built by{" "}
-            <a href="https://github.com/rajairfanahmed" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-500">
+            Released under the <a href="https://opensource.org/licenses/MIT" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-500">MIT License</a>. Architected & Crafted by{" "}
+            <a href="https://rajairfanahmed.vercel.app" target="_blank" rel="noopener noreferrer" className="underline font-medium text-amber-500 hover:text-amber-400">
               Raja Irfan Ahmed
             </a>.
           </p>

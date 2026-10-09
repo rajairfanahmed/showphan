@@ -82,3 +82,63 @@ _Avoid_: Secret masking, Scrubber.
 The Next.js 16 file convention (`src/proxy.ts`) replacing deprecated `middleware.ts` for incoming request interception, header propagation, and tracing.
 _Avoid_: Next Middleware, Edge handler.
 
+**Showcase Directory**:
+The public discovery portal (`/explore`) allowing Visitors and search engines to filter by Technology, search keywords, and explore published Developer profiles.
+_Avoid_: Feed, Marketplace, Project list, Search catalog.
+
+**Badge Card**:
+An embeddable dynamic SVG/WebP banner rendered via `/api/badge/[slug]` for Developers to embed in GitHub READMEs, generating proof-of-work visibility and repo stars.
+_Avoid_: Shield, Widget, Embed button.
+
+**Live Sandbox**:
+An isolated in-browser preview environment (Sandpack / responsive iframe container) embedded directly on project pages, allowing Visitors to test live applications without leaving Showphan.
+_Avoid_: Code runner, Web emulator, External demo.
+
+**Creator Attribution**:
+The permanent branding and metadata linking the platform and open-source codebase to Raja Irfan Ahmed (https://rajairfanahmed.vercel.app).
+_Avoid_: Author tag, Credits blurb.
+
+**Command Studio**:
+The real-time project creation and editing workspace featuring 1-click GitHub metadata synchronization, live dual-column preview, and the interactive 5-Rule Quality Gate HUD.
+_Avoid_: Form editor, Project creator, Settings form.
+
+**Viewport Switcher**:
+The responsive multi-device preview control (Desktop, Tablet, Mobile) embedded in the Live Sandbox viewer.
+_Avoid_: Screen resizer, Device toggler.
+
+**Kudos**:
+The single, GitHub-authenticated upvote awarded to a Project by a Developer, feeding the time-decay trending algorithm.
+_Avoid_: Upvote, Like, Star, Point.
+
+**Project of the Day**:
+The 24-hour spotlight banner awarded automatically at midnight UTC to the Project with the highest Kudos velocity.
+_Avoid_: Daily winner, Featured project, Top post.
+
+**Peer Reactions**:
+Standardized emoji badges (🚀 Mindblown, 💎 Clean Code, 🎨 Great UI, ⚡ Blazing Fast) clickable by Visitors on project pages.
+_Avoid_: Emojis, Stickers, Comment badges.
+
+**Inspiration Vault**:
+A Developer's private collection of bookmarked projects saved while browsing the Showcase Directory, located at `/dashboard/bookmarks`.
+_Avoid_: Bookmarks, Favorites list, Saved items.
+
+**Showcase Simulator**:
+The interactive hero component on the homepage allowing prospective developers and visitors to test showcase features (16:9 lightbox, viewport switching, and tech tags) live without an account.
+_Avoid_: Hero mockup, Fake demo, Static screenshot.
+
+**Dynamic OG Card**:
+A high-resolution 1200×630 social preview image dynamically generated via Next.js ImageResponse for developer profiles and projects when shared on Twitter/X, LinkedIn, or Discord.
+_Avoid_: Social banner, Twitter preview, Fallback image.
+
+**Sandbox Isolation**:
+The restrictive HTML5 iframe sandboxing policy (`allow-scripts allow-same-origin allow-forms`) enforced on live project demo previews to prevent clickjacking and unprompted top-level navigation.
+_Avoid_: Frame wrapper, Embed lock, Security border.
+
+**Star Widget**:
+The interactive header and hero navigation control displaying real-time GitHub repository star counts, direct repo links, and creator portfolio attribution to Raja Irfan Ahmed.
+_Avoid_: Star button, GitHub badge, Like widget.
+
+
+
+
+

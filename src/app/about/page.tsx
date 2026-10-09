@@ -16,7 +16,16 @@ export default function AboutPage() {
         </p>
 
         <p>
-          Sometimes written as <em>Show Phan</em> or searched phonetically as <em>showfan</em>, the platform was created by <strong>Raja Irfan Ahmed</strong> with a singular focus: giving software developers one unified, professional link that highlights what they&apos;ve built without demanding weeks spent configuring personal websites.
+          Sometimes written as <em>Show Phan</em> or searched phonetically as <em>showfan</em>, the platform was created by{" "}
+          <a
+            href="https://rajairfanahmed.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold text-amber-500 hover:text-amber-400 underline underline-offset-4"
+          >
+            Raja Irfan Ahmed
+          </a>{" "}
+          with a singular focus: giving software developers one unified, professional link that highlights what they&apos;ve built without demanding weeks spent configuring personal websites.
         </p>
 
         <h2 className="text-xl font-bold text-[var(--foreground)] pt-4">What Problem Does It Solve?</h2>

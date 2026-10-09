@@ -32,6 +32,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
   projects      Project[]
+  kudos         Kudos[]
+  bookmarks     Bookmark[]
 
   @@index([slug])
   @@index([githubId])
@@ -113,17 +115,56 @@ model Project {
   status        ProjectStatus @default(DRAFT)
   isFeatured    Boolean       @default(false)
   position      Int           @default(0)
+
+  // V2 Interaction & Sandbox Extensions
+  kudosCount     Int           @default(0)
+  viewsCount     Int           @default(0)
+  trendingScore  Float         @default(0)
+  sandboxUrl     String?
+  sandboxEnabled Boolean       @default(false)
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   // Relations
   user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   technologies  ProjectTechnology[]
+  kudos         Kudos[]
+  bookmarks     Bookmark[]
 
   @@unique([userId, slug])
   @@index([userId, status, position])
   @@index([userId, isFeatured])
+  @@index([status, trendingScore])
   @@map("projects")
+}
+
+model Kudos {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([projectId])
+  @@map("kudos")
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([userId])
+  @@map("bookmarks")
 }
 
 model Technology {

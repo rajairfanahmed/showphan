@@ -18,6 +18,38 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID ?? "",
       clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+      mapProfileToUser: (profile) => {
+        const cleanSlug = (profile.login || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9_-]/g, "");
+        return {
+          slug: cleanSlug || `user-${Date.now().toString(36)}`,
+          githubId: String(profile.id),
+          displayName: profile.name || profile.login,
+          bio: profile.bio ? profile.bio.slice(0, 160) : undefined,
+          avatarUrl: profile.avatar_url,
+        };
+      },
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const existingSlug = (user as { slug?: string }).slug;
+          const fallbackSlug = (user.name || "dev")
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]/g, "-")
+            .replace(/-+/g, "-")
+            .replace(/^-|-$/g, "");
+          return {
+            data: {
+              ...user,
+              slug: existingSlug || fallbackSlug || `dev-${Date.now().toString(36)}`,
+            },
+          };
+        },
+      },
     },
   },
   user: {

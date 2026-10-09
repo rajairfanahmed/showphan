@@ -5,12 +5,13 @@
 [![Production Deployment](https://img.shields.io/badge/Production-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://showphan.vercel.app)
 [![Version](https://img.shields.io/badge/Version-1.0.0-amber?style=for-the-badge)](https://github.com/rajairfanahmed/showphan/releases/tag/v1.0.0)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Creator](https://img.shields.io/badge/Architect-Raja%20Irfan%20Ahmed-black?style=for-the-badge&logo=vercel)](https://rajairfanahmed.vercel.app)
 
 ---
 
 ## 📖 Overview
 
-**Showphan** is a free, open-source single-link developer portfolio platform created by **Raja Irfan Ahmed**. It bridges the communication gap between software developers and busy, non-technical stakeholders (recruiters, clients, hiring managers).
+**Showphan** is a free, open-source single-link developer portfolio platform created by [**Raja Irfan Ahmed**](https://rajairfanahmed.vercel.app). It bridges the communication gap between software developers and busy, non-technical stakeholders (recruiters, clients, hiring managers).
 
 Rather than forcing visitors to wade through raw code repositories or flat bullet points on a resume, Showphan gives every developer a high-fidelity showcase link (`showphan.com/<username>`) with verified proof-of-work:
 - 🖼️ **16:9 Visual Proof:** High-resolution cover images with an interactive lightbox viewer.
@@ -230,8 +231,19 @@ Showphan v1.0.0 has completed all 16 phases of modern software engineering:
 
 ---
 
-## 📄 License
+## 📄 License & Governance
+ 
+- 📜 **License**: This project is licensed under the [MIT License](LICENSE).
+- 🤝 **Contributing**: Read our [Contributing Guide](CONTRIBUTING.md) to get involved.
+- 🛡️ **Code of Conduct**: Review our community [Code of Conduct](CODE_OF_CONDUCT.md).
+- 🔒 **Security**: See our [Security Policy](SECURITY.md) for vulnerability reporting.
 
-This project is licensed under the **MIT License**.
+---
 
-Created with passion by **Raja Irfan Ahmed**.
+## 👨‍💻 Author & Architecture
+
+Showphan is architected with passion by [**Raja Irfan Ahmed**](https://rajairfanahmed.vercel.app).
+
+- 🌐 **Portfolio**: [rajairfanahmed.vercel.app](https://rajairfanahmed.vercel.app)
+- 🐙 **GitHub**: [@rajairfanahmed](https://github.com/rajairfanahmed)
+- 🌟 **Support the Project**: If you find Showphan valuable, please consider giving it a ⭐ on [GitHub](https://github.com/rajairfanahmed/showphan)!
