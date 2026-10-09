@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -69,7 +71,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ repositories });
   } catch (error: unknown) {
-    console.error("GET /api/github/repos error:", error);
+    logger.error("GET /api/github/repos failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to fetch repositories.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },

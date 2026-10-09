@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { deleteCoverImageFromR2 } from "@/lib/storage";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -35,7 +37,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ user });
   } catch (error: unknown) {
-    console.error("GET /api/me error:", error);
+    logger.error("GET /api/me failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to load profile.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
@@ -45,6 +47,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -77,7 +80,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ user: updated });
   } catch (error: unknown) {
-    console.error("PATCH /api/me error:", error);
+    logger.error("PATCH /api/me failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to update profile.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
@@ -87,6 +90,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -118,7 +122,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true, message: "Account deleted." });
   } catch (error: unknown) {
-    console.error("DELETE /api/me error:", error);
+    logger.error("DELETE /api/me failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to delete account.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },

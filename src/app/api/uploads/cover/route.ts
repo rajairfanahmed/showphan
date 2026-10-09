@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { createPresignedCoverUpload } from "@/lib/storage";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.error("POST /api/uploads/cover error:", error);
+    logger.error("POST /api/uploads/cover failed", { requestId, error });
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
       { status: 500 }

@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { evaluateQualityGate } from "@/lib/projects/quality-gate";
 import { ProjectStatus } from "@/generated/prisma/enums";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +11,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -69,7 +71,7 @@ export async function POST(
       publicUrl,
     });
   } catch (error: unknown) {
-    console.error("POST /api/projects/:id/publish error:", error);
+    logger.error("POST /api/projects/:id/publish failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to publish project.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },

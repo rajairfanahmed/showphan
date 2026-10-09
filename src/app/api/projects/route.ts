@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { createProjectDraft, getUserProjects } from "@/lib/projects";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -20,7 +22,7 @@ export async function GET(req: NextRequest) {
     const projects = await getUserProjects(session.user.id);
     return NextResponse.json({ projects });
   } catch (error: unknown) {
-    console.error("GET /api/projects error:", error);
+    logger.error("GET /api/projects failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to load projects.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
@@ -30,6 +32,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -55,7 +58,7 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
     }
-    console.error("POST /api/projects error:", error);
+    logger.error("POST /api/projects failed", { requestId, error });
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
       { status: 500 }

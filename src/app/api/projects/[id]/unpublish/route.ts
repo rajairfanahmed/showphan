@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ProjectStatus } from "@/generated/prisma/enums";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -42,7 +44,7 @@ export async function POST(
 
     return NextResponse.json({ project: updated });
   } catch (error: unknown) {
-    console.error("POST /api/projects/:id/unpublish error:", error);
+    logger.error("POST /api/projects/:id/unpublish failed", { requestId, error });
     const message = error instanceof Error ? error.message : "Failed to unpublish project.";
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },

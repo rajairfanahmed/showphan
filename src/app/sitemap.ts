@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { ProjectStatus } from "@/generated/prisma/enums";
+import { logger } from "@/lib/logger";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app";
@@ -57,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return [...staticRoutes, ...dynamicRoutes];
   } catch (err) {
-    console.error("Sitemap generation error:", err);
+    logger.error("Sitemap generation error", { error: err });
     return staticRoutes;
   }
 }

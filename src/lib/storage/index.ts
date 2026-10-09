@@ -1,6 +1,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { publicR2Url, getCoverImageUrl } from "./urls";
+import { logger } from "@/lib/logger";
 
 export { publicR2Url, getCoverImageUrl };
 
@@ -66,6 +67,6 @@ export async function deleteCoverImageFromR2(key: string) {
     });
     await s3Client.send(command);
   } catch (error) {
-    console.error(`Failed to delete R2 object with key ${key}:`, error);
+    logger.warn(`Failed to delete R2 object with key ${key}`, { error, metadata: { key } });
   }
 }

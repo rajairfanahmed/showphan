@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getTechnologies } from "@/lib/catalog";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ export async function GET() {
     const technologies = await getTechnologies();
     return NextResponse.json({ technologies });
   } catch (error) {
-    console.error("Failed to fetch technologies:", error);
+    logger.error("Failed to fetch technologies", { error });
     return NextResponse.json(
       {
         error: {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { updateProject, deleteProject } from "@/lib/projects";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -39,7 +41,7 @@ export async function PATCH(
         { status: 409 }
       );
     }
-    console.error("PATCH /api/projects/:id error:", error);
+    logger.error("PATCH /api/projects/:id failed", { requestId, error });
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
       { status: 500 }
@@ -51,6 +53,7 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
     const session = await auth.api.getSession({
       headers: req.headers,
@@ -75,7 +78,7 @@ export async function DELETE(
         { status: 404 }
       );
     }
-    console.error("DELETE /api/projects/:id error:", error);
+    logger.error("DELETE /api/projects/:id failed", { requestId, error });
     return NextResponse.json(
       { error: { code: "INTERNAL_ERROR", message } },
       { status: 500 }
