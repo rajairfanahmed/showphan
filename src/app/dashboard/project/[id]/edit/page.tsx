@@ -24,6 +24,8 @@ interface ProjectLoadedItem {
   coverImageKey?: string | null;
   liveUrl?: string | null;
   repoUrl?: string | null;
+  sandboxUrl?: string | null;
+  sandboxEnabled?: boolean;
   description?: string;
   role?: string;
   learnings?: string;
@@ -58,6 +60,8 @@ export default function EditProjectPage({
   const [coverImageKey, setCoverImageKey] = useState<string | null>(null);
   const [liveUrl, setLiveUrl] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
+  const [sandboxUrl, setSandboxUrl] = useState("");
+  const [sandboxEnabled, setSandboxEnabled] = useState(false);
   const [isPrivateCode, setIsPrivateCode] = useState(false);
   const [description, setDescription] = useState("");
   const [role, setRole] = useState("");
@@ -110,6 +114,8 @@ export default function EditProjectPage({
             setCoverImageKey(p.coverImageKey || null);
             setLiveUrl(p.liveUrl || "");
             setRepoUrl(p.repoUrl || "");
+            setSandboxUrl(p.sandboxUrl || "");
+            setSandboxEnabled(Boolean(p.sandboxEnabled));
             setIsPrivateCode(!p.repoUrl && Boolean(p.liveUrl));
             setDescription(p.description || "");
             setRole(p.role || "");
@@ -142,6 +148,8 @@ export default function EditProjectPage({
           coverImageKey,
           liveUrl,
           repoUrl,
+          sandboxUrl: sandboxUrl.trim() || null,
+          sandboxEnabled,
           description,
           role,
           learnings,
@@ -179,6 +187,8 @@ export default function EditProjectPage({
     coverImageKey,
     liveUrl,
     repoUrl,
+    sandboxUrl,
+    sandboxEnabled,
     description,
     role,
     learnings,
@@ -632,6 +642,45 @@ export default function EditProjectPage({
             </div>
           </div>
 
+          {/* Live Sandbox Settings */}
+          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="pr-3">
+                <span className="text-sm font-bold text-[var(--foreground)] flex items-center gap-1.5">
+                  <span className="text-emerald-400">⚡</span>
+                  <span>In-Browser Live Sandbox</span>
+                </span>
+                <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                  Allow visitors to test your interactive application directly in a multi-device viewport (Desktop, Tablet, Mobile).
+                </p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                <input
+                  type="checkbox"
+                  checked={sandboxEnabled}
+                  onChange={(e) => setSandboxEnabled(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-10 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+              </label>
+            </div>
+
+            {sandboxEnabled && (
+              <div className="space-y-1 pt-2 border-t border-[var(--border)]">
+                <span className="text-xs text-[var(--muted-foreground)] block">
+                  Custom Sandbox URL (optional, defaults to Live Site URL)
+                </span>
+                <input
+                  type="url"
+                  value={sandboxUrl}
+                  onChange={(e) => setSandboxUrl(e.target.value)}
+                  placeholder={liveUrl || "https://codesandbox.io/p/sandbox/... or your app URL"}
+                  className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs text-[var(--foreground)] outline-none focus:ring-2 focus:ring-emerald-500/50"
+                />
+              </div>
+            )}
+          </div>
+
           {/* 5. Tech Stack */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -894,6 +943,12 @@ export default function EditProjectPage({
                   <img src={coverUrl} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-xs text-zinc-500 font-mono">16:9 Cover Image Placeholder</span>
+                )}
+                {sandboxEnabled && (
+                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold flex items-center gap-1 backdrop-blur-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Live Sandbox</span>
+                  </span>
                 )}
               </div>
               <div className="p-5 space-y-3">

@@ -6,6 +6,7 @@ export * from "./kudos";
 export * from "./explore";
 export * from "./badge";
 export * from "./bookmark";
+export * from "./reactions";
 
 export interface ProjectDraftInput {
   title: string;
@@ -18,6 +19,8 @@ export interface ProjectUpdateInput {
   coverImageKey?: string | null;
   liveUrl?: string | null;
   repoUrl?: string | null;
+  sandboxUrl?: string | null;
+  sandboxEnabled?: boolean;
   role?: string | null;
   learnings?: string | null;
   tags?: string[];
@@ -124,6 +127,8 @@ export async function updateProject(
     ...(data.coverImageKey !== undefined && { coverImageKey: data.coverImageKey }),
     ...(data.liveUrl !== undefined && { liveUrl: data.liveUrl }),
     ...(data.repoUrl !== undefined && { repoUrl: data.repoUrl }),
+    ...(data.sandboxUrl !== undefined && { sandboxUrl: data.sandboxUrl }),
+    ...(data.sandboxEnabled !== undefined && { sandboxEnabled: data.sandboxEnabled }),
     ...(data.role !== undefined && { role: data.role }),
     ...(data.learnings !== undefined && { learnings: data.learnings }),
     ...(data.tags !== undefined && { tags: data.tags.slice(0, 5) }),

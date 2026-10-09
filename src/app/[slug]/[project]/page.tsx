@@ -3,6 +3,10 @@ import { notFound } from "next/navigation";
 import { getPublicProject } from "@/lib/projects";
 import { getCoverImageUrl } from "@/lib/storage/urls";
 import { TechBadge } from "@/components/TechBadge";
+import { LiveSandboxViewer } from "@/components/LiveSandboxViewer";
+import { PeerReactions } from "@/components/PeerReactions";
+import { KudosButton } from "@/components/KudosButton";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
@@ -77,16 +81,14 @@ export default async function StandaloneProjectPage({
       </div>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10 flex-1 w-full">
-        {/* Cover Image */}
-        {coverUrl && (
-          <div className="aspect-video w-full rounded-2xl overflow-hidden border border-[var(--border)] bg-zinc-900 shadow-xl relative">
-            <img
-              src={coverUrl}
-              alt={project.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
+        {/* Live Sandbox & Visual Proof Viewer */}
+        <LiveSandboxViewer
+          projectTitle={project.title}
+          coverUrl={coverUrl}
+          sandboxUrl={project.sandboxUrl}
+          liveUrl={project.liveUrl}
+          sandboxEnabled={project.sandboxEnabled}
+        />
 
         {/* Title & Actions Header */}
         <div className="space-y-6 pb-8 border-b border-[var(--border)]">
@@ -112,37 +114,55 @@ export default async function StandaloneProjectPage({
             </p>
           </div>
 
-          {/* Action Links */}
-          <div className="flex flex-wrap items-center gap-3">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="ugc nofollow noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-sm shadow-md transition-all min-touch"
-              >
-                <span>Live Site</span>
-                <span>↗</span>
-              </a>
-            )}
+          {/* Action Links & Interaction Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-3">
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="ugc nofollow noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-sm shadow-md transition-all min-touch"
+                >
+                  <span>Live Site</span>
+                  <span>↗</span>
+                </a>
+              )}
 
-            {project.repoUrl ? (
-              <a
-                href={project.repoUrl}
-                target="_blank"
-                rel="ugc nofollow noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] font-semibold text-sm transition-colors min-touch"
-              >
-                <span>Source Code</span>
-                <span>↗</span>
-              </a>
-            ) : (
-              <span className="inline-flex items-center px-4 py-2 rounded-lg bg-zinc-900 border border-[var(--border)] text-zinc-400 text-xs font-mono">
-                Source code is private
-              </span>
-            )}
+              {project.repoUrl ? (
+                <a
+                  href={project.repoUrl}
+                  target="_blank"
+                  rel="ugc nofollow noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--muted)] text-[var(--foreground)] font-semibold text-sm transition-colors min-touch"
+                >
+                  <span>Source Code</span>
+                  <span>↗</span>
+                </a>
+              ) : (
+                <span className="inline-flex items-center px-4 py-2 rounded-lg bg-zinc-900 border border-[var(--border)] text-zinc-400 text-xs font-mono">
+                  Source code is private
+                </span>
+              )}
+            </div>
+
+            {/* Kudos & Bookmark Actions */}
+            <div className="flex items-center gap-2">
+              <BookmarkButton projectId={project.id} size="md" />
+              <KudosButton
+                projectId={project.id}
+                initialKudosCount={project.kudosCount}
+                size="md"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Peer Reactions Bar */}
+        <PeerReactions
+          projectId={project.id}
+          repoUrl={project.repoUrl}
+        />
 
         {/* Tech Stack */}
         {project.technologies.length > 0 && (
