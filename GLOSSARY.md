@@ -61,3 +61,24 @@ _Avoid_: Validation rules, Publish check.
 **Reserved System Slugs**:
 Protected URL paths (e.g., `admin`, `api`, `login`, `dashboard`, `settings`, `about`, `terms`, `privacy`) blocked from being claimed as developer slugs.
 _Avoid_: Blacklist, Blocked usernames.
+
+**Liveness Probe**:
+The health check endpoint (`/health` or `/api/health`) that verifies if the application process is running and reports uptime and database latency.
+_Avoid_: Ping URL, Heartbeat script.
+
+**Readiness Probe**:
+The traffic readiness endpoint (`/ready` or `/api/ready`) that checks if the system can immediately service user traffic by validating live database connectivity.
+_Avoid_: Warmup check, Smoke endpoint.
+
+**Structured Logging**:
+Emitting machine-readable JSON log objects with consistent keys (`timestamp`, `level`, `message`, `requestId`, `userId`, `durationMs`) rather than unstructured strings.
+_Avoid_: Console dump, Plaintext log.
+
+**PII Redaction**:
+The automated sanitization process that replaces sensitive information (passwords, tokens, cookies, auth secrets, API keys) with `<REDACTED>` before emission to stdout or log aggregators.
+_Avoid_: Secret masking, Scrubber.
+
+**Proxy Convention**:
+The Next.js 16 file convention (`src/proxy.ts`) replacing deprecated `middleware.ts` for incoming request interception, header propagation, and tracing.
+_Avoid_: Next Middleware, Edge handler.
+

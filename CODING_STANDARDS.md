@@ -23,7 +23,7 @@ These standards are enforced on every code review. Violations must be fixed befo
 
 8. **Format consistency.** One casing convention for all properties (camelCase). One date format (ISO 8601). One pagination pattern. Across every endpoint.
 
-## 7 Backend Principles
+## 10 Backend & Engineering Principles
 
 1. **Guard clauses first.** Check conditions upfront. Return early. Never nest logic deeper than two levels.
 
@@ -38,3 +38,9 @@ These standards are enforced on every code review. Violations must be fixed befo
 6. **Useful errors.** Predictable error codes for machines. Human-readable messages for developers. Both, always.
 
 7. **Focused changes.** One concern per commit. One feature per PR. Small diffs review fast and debug faster.
+
+8. **Structured Telemetry & PII Redaction.** Never use raw `console.log` or `console.error` in backend endpoints. Use `logger` (`src/lib/logger.ts`) with correlation request IDs (`x-request-id`) and automatic `<REDACTED>` sanitization for tokens, passwords, cookies, and keys.
+
+9. **Next.js 16 Proxy Convention.** In Next.js 16, server-wide request preprocessing must use `src/proxy.ts` (`export function proxy(request)`), never deprecated `middleware.ts`.
+
+10. **Error Boundary Hygiene.** Every user-facing route tree must be protected by an `error.tsx` displaying safe error digests and recovery actions without exposing internal stack traces in production.

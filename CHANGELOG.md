@@ -62,8 +62,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `tests/backend-suite.test.ts`: DB seed verification, quality gate logic, slug generation, storage validation.
   - `tests/e2e-integration.test.ts`: 17-point integration verification covering URL resolution and schema consistency.
   - `tests/requirements-verification.test.ts`: 16-point compliance test across all user stories (US-1 to US-12) and business rules (BR-1 to BR-9).
+  - `tests/monitoring-observability.test.ts`: 16-point observability test covering structured JSON output, sensitive key redaction, and error serialization.
+- **Monitoring & Observability:**
+  - Dual health endpoints: `GET /health` (liveness, uptime, DB latency, R2 credentials) and `GET /ready` (readiness traffic probe).
+  - Root rewrites in `next.config.ts` mapping `/health` and `/ready` to `/api/health` and `/api/ready`.
+  - Next.js 16 Proxy convention (`src/proxy.ts`) propagating `x-request-id` headers across all incoming requests.
+  - Structured logger (`src/lib/logger.ts`) emitting ISO timestamps, severity levels, duration, metadata, and automated `<REDACTED>` sanitization.
+  - Global error boundaries (`src/app/error.tsx` and `src/app/global-error.tsx`) trapping unhandled exceptions with Next.js error digests.
+  - Comprehensive monitoring specification (`docs/monitoring-plan.md`) defining performance baselines and alerting rules.
+- **Maintenance & Architecture:**
+  - Post-release retrospective (`docs/retrospective-v1.0.0.md`) analyzing navigation, automated checks, tool economy, and standards.
+  - Codebase health report (`docs/codebase-health-report.md`) auditing module depth, seams, dead code, and dependency vulnerabilities.
+  - Documented out-of-scope architecture decisions (`.out-of-scope/`): native video hosting and social feeds/comments.
+  - Initialized technical debt backlog (`.scratch/tech-debt/issues/`) for continuous code evolution.
 
 ### Fixed
 - Resolved client/server bundle boundary conflict by separating `@aws-sdk/client-s3` logic from client URL helpers (`src/lib/storage/urls.ts`).
 - Resolved Next.js 16 dynamic prerender warnings by configuring explicit `export const dynamic = "force-dynamic"` across dynamic routes.
 - Eliminated all ESLint TypeScript `any` warnings and unused import variables across route handlers and client components.
+- Migrated deprecated `src/middleware.ts` to official Next.js 16 `src/proxy.ts` convention.
+- Fixed TypeScript spread type analysis TS2698 in structured logger utility.
+- Resolved CI runner engine mismatch by upgrading GitHub Actions environment to Node 22 LTS.
