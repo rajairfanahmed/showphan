@@ -55,6 +55,23 @@ export function Header() {
           </a>
         </div>
 
+        {/* Center Desktop Navigation */}
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <Link
+            href="/explore"
+            className="flex items-center gap-1.5 text-[var(--foreground)] hover:text-amber-500 transition-colors"
+          >
+            <span className="text-amber-400">★</span>
+            <span>Explore</span>
+          </Link>
+          <Link
+            href="/how-it-works"
+            className="text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
+          >
+            How it works
+          </Link>
+        </nav>
+
         {/* Right Desktop Actions */}
         <div className="hidden md:flex items-center gap-3">
           {/* Star on GitHub */}
@@ -204,6 +221,22 @@ export function Header() {
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-[var(--border)] bg-[var(--card)] px-4 py-3 space-y-2">
+          <Link
+            href="/explore"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 py-2 text-sm font-semibold text-amber-500"
+          >
+            <span>★</span>
+            <span>Explore Projects</span>
+          </Link>
+          <Link
+            href="/how-it-works"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block py-2 text-sm font-medium text-[var(--foreground)]"
+          >
+            How it works
+          </Link>
+          <div className="border-t border-[var(--border)] pt-1" />
           {session?.user && (
             <>
               <Link href={`/${userSlug}`} className="block py-2 text-sm font-medium text-[var(--foreground)]">

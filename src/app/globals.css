@@ -54,3 +54,20 @@ body {
   min-height: 44px;
   min-width: 44px;
 }
+
+/* Zero-JS Kudos particle burst animation */
+@keyframes kudos-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 0px), var(--ty, -15px)) scale(0);
+  }
+}
+
+.kudos-particle {
+  animation: kudos-burst 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
