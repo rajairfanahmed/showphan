@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { ReadmeBadgeCard } from "@/components/ReadmeBadgeCard";
 
 export default function SettingsPage() {
   const { data: session, isPending } = useSession();
@@ -200,6 +201,9 @@ export default function SettingsPage() {
           <ThemeToggle />
         </div>
       </section>
+
+      {/* GitHub Profile README Badge Card */}
+      {slug && <ReadmeBadgeCard slug={slug} />}
 
       {/* Danger Zone: Account Deletion */}
       <section className="p-6 rounded-xl border border-red-900/40 bg-red-950/10 space-y-4">

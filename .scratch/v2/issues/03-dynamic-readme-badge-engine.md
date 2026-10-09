@@ -4,11 +4,12 @@
 
 **Blocked by:** 01: Schema & Trending Algorithm Core.
 
-**Status:** ready-for-agent
+**Status:** closed-completed
 
-- [ ] Implement `GET /api/badge/[slug]` returning `image/svg+xml` with edge caching (`s-maxage=3600, stale-while-revalidate=86400`).
-- [ ] Render developer avatar, display name, verified GitHub username, published project count, total kudos count, and top 3 tech badges.
-- [ ] Embed a high-contrast footer inside the SVG: `"Showphan Proof-of-Work • ⭐ Star on GitHub"`.
-- [ ] Add an embed snippet card on `/dashboard` and `/settings` with 1-click "Copy Markdown" button:
+- [x] Implement `GET /api/badge/[slug]` returning `image/svg+xml` with edge caching (`s-maxage=3600, stale-while-revalidate=86400`).
+- [x] Render developer avatar, display name, verified GitHub username, published project count, total kudos count, and top 3 tech badges.
+- [x] Embed a high-contrast footer inside the SVG: `"Showphan Proof-of-Work • ⭐ Star on GitHub"`.
+- [x] Add an embed snippet card on `/dashboard` and `/settings` with 1-click "Copy Markdown" button:
   `[![Showphan Showcase](https://showphan.vercel.app/api/badge/[slug])](https://showphan.vercel.app/[slug])`.
-- [ ] Add integration test in `tests/badge-endpoint.test.ts` asserting valid SVG markup, HTTP 200, correct Content-Type, and 404 on nonexistent slugs.
+- [x] Add integration test in `tests/badge-endpoint.test.ts` asserting valid SVG markup, HTTP 200, correct Content-Type, and 404 on nonexistent slugs.
+

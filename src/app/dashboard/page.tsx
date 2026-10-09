@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { getCoverImageUrl } from "@/lib/storage/urls";
+import { ReadmeBadgeCard } from "@/components/ReadmeBadgeCard";
 
 interface ProjectItem {
   id: string;
@@ -386,6 +387,13 @@ export default function DashboardPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* GitHub Profile README Badge Card */}
+      {session?.user && userSlug && (
+        <div className="pt-4">
+          <ReadmeBadgeCard slug={userSlug} />
         </div>
       )}
 

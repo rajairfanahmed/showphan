@@ -4,6 +4,7 @@ import { ProjectStatus } from "@/generated/prisma/enums";
 export * from "./trending";
 export * from "./kudos";
 export * from "./explore";
+export * from "./badge";
 
 export interface ProjectDraftInput {
   title: string;
