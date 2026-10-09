@@ -1,4 +1,4 @@
-import { calculateTrendingScore } from "../src/lib/projects/trending";
+import { calculateTrendingScore } from "../src/lib/projects";
 
 function runTrendingAlgorithmTests() {
   console.log("🧪 Running Trending Algorithm TDD Suite...\n");

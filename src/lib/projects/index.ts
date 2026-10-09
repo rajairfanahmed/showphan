@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { ProjectStatus } from "@/generated/prisma/enums";
 
+export * from "./trending";
+
 export interface ProjectDraftInput {
   title: string;
 }
