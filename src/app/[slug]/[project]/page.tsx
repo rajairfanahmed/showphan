@@ -30,6 +30,9 @@ export async function generateMetadata({
   const title = `${project.title} by ${author.displayName || author.name} - Showphan`;
   const description = project.summary;
   const coverUrl = getCoverImageUrl(project.coverImageKey);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app";
+  const dynamicOgUrl = `${baseUrl}/api/og/project?slug=${slug}&project=${projectSlug}`;
+  const effectiveOgImage = coverUrl || dynamicOgUrl;
 
   return {
     title,
@@ -37,13 +40,13 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      images: coverUrl ? [coverUrl] : [],
+      images: [effectiveOgImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: coverUrl ? [coverUrl] : [],
+      images: [effectiveOgImage],
     },
   };
 }

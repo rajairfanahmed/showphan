@@ -2,7 +2,6 @@ import "dotenv/config";
 import { NextRequest } from "next/server";
 import {
   VIEWPORT_OPTIONS,
-  ViewportMode,
 } from "../src/components/ViewportSwitcher";
 import {
   REACTION_DEFINITIONS,
@@ -10,7 +9,6 @@ import {
   getProjectReactions,
   toggleProjectReaction,
   resetReactionStore,
-  ReactionType,
 } from "../src/lib/projects/reactions";
 import {
   GET as getReactionsHandler,

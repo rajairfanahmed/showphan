@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { signIn, useSession } from "@/lib/auth-client";
-import { TechBadge } from "@/components/TechBadge";
+import { GitHubStarWidget } from "@/components/GitHubStarWidget";
+import { ShowcaseSimulator } from "@/components/ShowcaseSimulator";
 
 export default function HomePage() {
   const { data: session } = useSession();
@@ -65,10 +66,15 @@ export default function HomePage() {
               <span className="text-amber-500">→</span>
             </Link>
           </div>
+
+          {/* Live GitHub Star & Creator Portfolio Attribution Widget */}
+          <div className="pt-2">
+            <GitHubStarWidget variant="hero" showCreator={true} />
+          </div>
         </div>
       </section>
 
-      {/* Live Profile Example Showcase */}
+      {/* Live Profile Example Showcase with Interactive Simulator */}
       <section className="py-20 border-b border-[var(--border)] bg-[var(--card)]/40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="text-center space-y-3">
@@ -76,83 +82,12 @@ export default function HomePage() {
               Show the projects that move your career forward.
             </h2>
             <p className="text-[var(--muted-foreground)] max-w-xl mx-auto text-sm sm:text-base">
-              Every project comes alive with crisp 16:9 previews, verified tech stacks with icons, live links, and what you learned.
+              Every project comes alive with crisp 16:9 previews, multi-device live sandbox previews, and verified tech stacks.
             </p>
           </div>
 
-          {/* Example Card Simulation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Project Card 1 */}
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-200 group flex flex-col">
-              <div className="aspect-video w-full bg-gradient-to-tr from-amber-500/20 via-zinc-900 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                <span className="text-amber-400 font-mono text-sm font-semibold tracking-wider uppercase">
-                  16:9 Cover Image
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-lg text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
-                    Distributed Cache Engine
-                  </h3>
-                  <p className="text-sm text-[var(--muted-foreground)] line-clamp-2">
-                    High-throughput, in-memory caching daemon written in Rust with custom Raft consensus.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  <TechBadge name="Rust" iconName="logos:rust" size="sm" />
-                  <TechBadge name="Docker" iconName="logos:docker-icon" size="sm" />
-                  <TechBadge name="Redis" iconName="logos:redis" size="sm" />
-                </div>
-              </div>
-            </div>
-
-            {/* Project Card 2 */}
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-200 group flex flex-col">
-              <div className="aspect-video w-full bg-gradient-to-tr from-blue-500/20 via-zinc-900 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                <span className="text-blue-400 font-mono text-sm font-semibold tracking-wider uppercase">
-                  16:9 Cover Image
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-lg text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
-                    Autonomous Agent Studio
-                  </h3>
-                  <p className="text-sm text-[var(--muted-foreground)] line-clamp-2">
-                    Visual workflow builder for orchestrating multi-agent systems with live streaming debuggers.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  <TechBadge name="Next.js" iconName="logos:nextjs-icon" size="sm" />
-                  <TechBadge name="TypeScript" iconName="logos:typescript-icon" size="sm" />
-                  <TechBadge name="Tailwind CSS" iconName="logos:tailwindcss-icon" size="sm" />
-                </div>
-              </div>
-            </div>
-
-            {/* Project Card 3 */}
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden hover:border-amber-500/50 hover:-translate-y-1 transition-all duration-200 group flex flex-col md:col-span-2 lg:col-span-1">
-              <div className="aspect-video w-full bg-gradient-to-tr from-emerald-500/20 via-zinc-900 to-zinc-800 flex items-center justify-center relative overflow-hidden">
-                <span className="text-emerald-400 font-mono text-sm font-semibold tracking-wider uppercase">
-                  16:9 Cover Image
-                </span>
-              </div>
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-lg text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
-                    PostgreSQL Observability Exporter
-                  </h3>
-                  <p className="text-sm text-[var(--muted-foreground)] line-clamp-2">
-                    Lightweight exporter tracking lock contention and buffer cache hit rates in real-time.
-                  </p>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  <TechBadge name="Go" iconName="logos:go" size="sm" />
-                  <TechBadge name="PostgreSQL" iconName="logos:postgresql" size="sm" />
-                </div>
-              </div>
-            </div>
-          </div>
+          {/* Interactive Showcase Simulator */}
+          <ShowcaseSimulator />
         </div>
       </section>
 

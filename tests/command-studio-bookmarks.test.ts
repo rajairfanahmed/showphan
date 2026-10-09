@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { NextRequest } from "next/server";
-import { prisma } from "../src/lib/prisma";
 import { evaluateQualityGate } from "../src/lib/projects/quality-gate";
 import { GET as getBookmark, POST as postBookmark, DELETE as deleteBookmark } from "../src/app/api/projects/[id]/bookmark/route";
 import { POST as createTech } from "../src/app/api/technologies/route";

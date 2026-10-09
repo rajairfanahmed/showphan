@@ -25,27 +25,24 @@ export function PeerReactions({
     blazingFast: initialCounts?.blazingFast ?? 4,
   });
 
-  const [activeReactions, setActiveReactions] = useState<Set<ReactionType>>(
-    new Set()
-  );
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  // Load visitor state from localStorage on mount
-  useEffect(() => {
+  const [activeReactions, setActiveReactions] = useState<Set<ReactionType>>(() => {
+    if (typeof window === "undefined") return new Set();
     try {
       const storageKey = `showphan_peer_reactions_${projectId}`;
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          setActiveReactions(new Set(parsed as ReactionType[]));
+          return new Set(parsed as ReactionType[]);
         }
       }
-    } catch {
-      // Storage unavailable or disabled
-    }
+    } catch {}
+    return new Set();
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // Fetch freshest counts from API
+  // Synchronize remote counts on mount
+  useEffect(() => {
     fetch(`/api/projects/${projectId}/reactions`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {

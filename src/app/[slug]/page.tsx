@@ -25,7 +25,8 @@ export async function generateMetadata({
     user.bio ||
     `${user.displayName || user.name}'s developer portfolio with ${publishedCount} published project${publishedCount === 1 ? "" : "s"}.`;
 
-  const fallbackImage = `${process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app"}/vercel.svg`;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app";
+  const ogImageUrl = `${baseUrl}/api/og/profile?slug=${slug}`;
 
   return {
     title,
@@ -37,12 +38,13 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      images: [fallbackImage],
+      images: [ogImageUrl],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImageUrl],
     },
   };
 }
