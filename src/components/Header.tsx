@@ -153,6 +153,13 @@ export function Header() {
                     Dashboard
                   </Link>
                   <Link
+                    href="/dashboard/bookmarks"
+                    onClick={() => setDropdownOpen(false)}
+                    className="block px-4 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
+                  >
+                    Inspiration Vault 🔖
+                  </Link>
+                  <Link
                     href="/settings"
                     onClick={() => setDropdownOpen(false)}
                     className="block px-4 py-2 text-sm text-[var(--foreground)] hover:bg-[var(--muted)] transition-colors"
@@ -244,6 +251,9 @@ export function Header() {
               </Link>
               <Link href="/dashboard" className="block py-2 text-sm font-medium text-[var(--foreground)]">
                 Dashboard
+              </Link>
+              <Link href="/dashboard/bookmarks" className="block py-2 text-sm font-medium text-[var(--foreground)]">
+                Inspiration Vault 🔖
               </Link>
               <Link href="/settings" className="block py-2 text-sm font-medium text-[var(--foreground)]">
                 Settings

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCoverImageUrl } from "@/lib/storage/urls";
 import { TechBadge } from "./TechBadge";
 import { KudosButton } from "./KudosButton";
+import { BookmarkButton } from "./BookmarkButton";
 
 export interface ProjectCardProps {
   project: {
@@ -34,9 +35,14 @@ export interface ProjectCardProps {
     }>;
   };
   hasGivenKudos?: boolean;
+  hasBookmarked?: boolean;
 }
 
-export function ProjectCard({ project, hasGivenKudos = false }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  hasGivenKudos = false,
+  hasBookmarked = false,
+}: ProjectCardProps) {
   const coverUrl = getCoverImageUrl(project.coverImageKey ?? undefined);
   const user = project.user;
   const projectHref = `/${user.slug}/${project.slug}`;
@@ -155,8 +161,13 @@ export function ProjectCard({ project, hasGivenKudos = false }: ProjectCardProps
             size="sm"
           />
 
-          {/* External Links */}
+          {/* External Links & Bookmark */}
           <div className="flex items-center gap-1.5">
+            <BookmarkButton
+              projectId={project.id}
+              initialBookmarked={hasBookmarked}
+              size="sm"
+            />
             {project.liveUrl && (
               <a
                 href={project.liveUrl}

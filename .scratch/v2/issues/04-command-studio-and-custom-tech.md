@@ -4,10 +4,11 @@
 
 **Blocked by:** 02: Explore Showcase Hub & Kudos Action Flow.
 
-**Status:** ready-for-agent
+**Status:** closed-completed
 
-- [ ] Add 1-Click GitHub Repository Sync button in the studio that queries `/api/github/repos` and auto-populates title, summary, language, and repository links.
-- [ ] Support custom technology entry in `TechBadge` component and database schema: if a tool is outside the 51 seeds, render a styled badge with custom text and distinct color pill.
-- [ ] Add real-time 5-Rule Quality HUD indicators with smooth CSS checkmark completion transitions.
-- [ ] Implement Bookmark toggle (`/api/projects/[id]/bookmark`) and build `/dashboard/bookmarks` Inspiration Vault page.
-- [ ] Verify debounced autosave continues to preserve form state with zero data loss.
+- [x] Add 1-Click GitHub Repository Sync button in the studio that queries `/api/github/repos` and auto-populates title, summary, language, and repository links.
+- [x] Support custom technology entry in `TechBadge` component and database schema: if a tool is outside the 51 seeds, render a styled badge with custom text and distinct color pill.
+- [x] Add real-time 5-Rule Quality HUD indicators with smooth CSS checkmark completion transitions.
+- [x] Implement Bookmark toggle (`/api/projects/[id]/bookmark`) and build `/dashboard/bookmarks` Inspiration Vault page.
+- [x] Verify debounced autosave continues to preserve form state with zero data loss.
+

@@ -34,6 +34,16 @@ interface ProjectLoadedItem {
   updatedAt?: string;
 }
 
+interface GithubRepositoryItem {
+  id: number | string;
+  name: string;
+  description?: string | null;
+  htmlUrl?: string;
+  homepage?: string | null;
+  primaryLanguage?: string | null;
+  topics?: string[];
+}
+
 export default function EditProjectPage({
   params,
 }: {
@@ -287,7 +297,35 @@ export default function EditProjectPage({
     }
   };
 
+  // Custom Technology Creator
+  const handleCreateCustomTech = async () => {
+    const name = techSearch.trim();
+    if (!name) return;
+    try {
+      const res = await fetch("/api/technologies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const newTech: Technology = data.technology;
+        if (!technologies.some((t) => t.id === newTech.id)) {
+          setTechnologies((prev) => [...prev, newTech]);
+        }
+        if (!selectedTechIds.includes(newTech.id) && selectedTechIds.length < 15) {
+          setSelectedTechIds((prev) => [...prev, newTech.id]);
+        }
+        setTechSearch("");
+      }
+    } catch (err) {
+      console.error("Failed to create custom technology", err);
+    }
+  };
+
   // 6. GitHub Import
+  const [syncToast, setSyncToast] = useState<string | null>(null);
+
   const openGithubModal = async () => {
     setGithubModalOpen(true);
     setLoadingRepos(true);
@@ -303,16 +341,6 @@ export default function EditProjectPage({
       setLoadingRepos(false);
     }
   };
-
-interface GithubRepositoryItem {
-  id: number | string;
-  name: string;
-  description?: string | null;
-  htmlUrl?: string;
-  homepage?: string | null;
-  primaryLanguage?: string | null;
-  topics?: string[];
-}
 
   const applyGithubRepo = (repo: GithubRepositoryItem) => {
     setTitle(repo.name);
@@ -337,6 +365,8 @@ interface GithubRepositoryItem {
     }
 
     setGithubModalOpen(false);
+    setSyncToast(`Synchronized with ${repo.name}!`);
+    setTimeout(() => setSyncToast(null), 3000);
   };
 
   // 7. Quality Gate Checklist
@@ -397,9 +427,27 @@ interface GithubRepositoryItem {
           <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)]">
             {status}
           </span>
+          {/* Quality HUD Mini-Pill */}
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-xs">
+            <span
+              className={`w-2 h-2 rounded-full transition-colors ${
+                qualityGate.canPublish
+                  ? "bg-emerald-400 shadow-sm shadow-emerald-400 animate-pulse"
+                  : "bg-amber-400"
+              }`}
+            />
+            <span className="font-mono text-[11px] font-semibold text-[var(--foreground)]">
+              {qualityGate.satisfiedCount}/5 Quality Standards
+            </span>
+          </div>
           <span className="text-xs text-[var(--muted-foreground)] hidden sm:inline">
             {saving ? "Saving..." : lastSaved ? `Saved at ${lastSaved}` : "Auto-saved"}
           </span>
+          {syncToast && (
+            <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md animate-fade-in">
+              ✓ {syncToast}
+            </span>
+          )}
         </div>
 
         {/* Mobile View Toggle */}
@@ -425,9 +473,9 @@ interface GithubRepositoryItem {
         <div className="flex items-center gap-2">
           <button
             onClick={openGithubModal}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[var(--border)] text-xs font-semibold hover:bg-[var(--muted)] text-[var(--foreground)]"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 text-xs font-semibold hover:bg-amber-500/20 text-amber-400 transition-colors"
           >
-            <span>Import from GitHub</span>
+            <span>⚡ Sync from GitHub</span>
           </button>
           <button
             onClick={handlePublish}
@@ -530,9 +578,18 @@ interface GithubRepositoryItem {
 
           {/* 4. Links */}
           <div className="space-y-4">
-            <label className="block text-sm font-bold text-[var(--foreground)]">
-              Live & Repository Links <span className="text-amber-500">* (at least one)</span>
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-bold text-[var(--foreground)]">
+                Live & Repository Links <span className="text-amber-500">* (at least one)</span>
+              </label>
+              <button
+                type="button"
+                onClick={openGithubModal}
+                className="text-xs text-amber-400 hover:text-amber-300 font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors"
+              >
+                <span>⚡ Auto-fill from GitHub</span>
+              </button>
+            </div>
             <div className="space-y-3">
               <div>
                 <span className="text-xs text-[var(--muted-foreground)] block mb-1">Live Site URL</span>
@@ -611,11 +668,23 @@ interface GithubRepositoryItem {
               type="text"
               value={techSearch}
               onChange={(e) => setTechSearch(e.target.value)}
-              placeholder="Search technologies (e.g. React, Rust, PostgreSQL)..."
+              placeholder="Search technologies or type custom (e.g. Bun, LangChain)..."
               className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] outline-none focus:ring-2 focus:ring-amber-500/50"
             />
 
             <div className="max-h-36 overflow-y-auto p-2 rounded-lg border border-[var(--border)] bg-[var(--card)]/50 flex flex-wrap gap-1.5">
+              {techSearch.trim() &&
+                !technologies.some(
+                  (t) => t.name.toLowerCase() === techSearch.trim().toLowerCase()
+                ) && (
+                  <button
+                    type="button"
+                    onClick={handleCreateCustomTech}
+                    className="text-xs px-2.5 py-1 rounded border border-dashed border-amber-500/60 bg-amber-500/10 text-amber-400 font-semibold hover:bg-amber-500/20 flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <span>+ Add &quot;{techSearch.trim()}&quot; (Custom)</span>
+                  </button>
+                )}
               {technologies
                 .filter((t) => t.name.toLowerCase().includes(techSearch.toLowerCase()))
                 .map((t) => {
@@ -741,44 +810,69 @@ interface GithubRepositoryItem {
             </div>
           </div>
 
-          {/* Quality Gate Checklist Panel */}
-          <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-4">
+          {/* Real-Time 5-Rule Quality HUD Panel */}
+          <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <h4 className="text-sm font-bold text-[var(--foreground)]">Quality Gate Checklist</h4>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-500">
-                {qualityGate.satisfiedCount} of 5 Complete
+              <div className="flex items-center gap-2">
+                <span className="text-amber-500 text-sm">🎯</span>
+                <h4 className="text-sm font-bold text-[var(--foreground)]">Quality Gate HUD</h4>
+              </div>
+              <span
+                className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-colors ${
+                  qualityGate.canPublish
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold"
+                    : "border-amber-500/30 bg-amber-500/10 text-amber-500"
+                }`}
+              >
+                {qualityGate.satisfiedCount} of 5 Passed
               </span>
             </div>
 
-            <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
               <div
-                className="h-full bg-amber-500 transition-all duration-300"
+                className={`h-full transition-all duration-500 ease-out ${
+                  qualityGate.canPublish
+                    ? "bg-emerald-400 shadow-sm shadow-emerald-400"
+                    : "bg-amber-500"
+                }`}
                 style={{ width: `${(qualityGate.satisfiedCount / 5) * 100}%` }}
               />
             </div>
 
-            <ul className="text-xs space-y-2">
-              <li className={`flex items-center gap-2 ${qualityGate.rules.title ? "text-emerald-400" : "text-zinc-500"}`}>
-                <span>{qualityGate.rules.title ? "✓" : "○"}</span>
-                <span>Title specified</span>
-              </li>
-              <li className={`flex items-center gap-2 ${qualityGate.rules.summary ? "text-emerald-400" : "text-zinc-500"}`}>
-                <span>{qualityGate.rules.summary ? "✓" : "○"}</span>
-                <span>Summary under 140 characters</span>
-              </li>
-              <li className={`flex items-center gap-2 ${qualityGate.rules.coverImage ? "text-emerald-400" : "text-zinc-500"}`}>
-                <span>{qualityGate.rules.coverImage ? "✓" : "○"}</span>
-                <span>16:9 Cover Image stored in R2</span>
-              </li>
-              <li className={`flex items-center gap-2 ${qualityGate.rules.technologies ? "text-emerald-400" : "text-zinc-500"}`}>
-                <span>{qualityGate.rules.technologies ? "✓" : "○"}</span>
-                <span>At least one technology tagged</span>
-              </li>
-              <li className={`flex items-center gap-2 ${qualityGate.rules.links ? "text-emerald-400" : "text-zinc-500"}`}>
-                <span>{qualityGate.rules.links ? "✓" : "○"}</span>
-                <span>At least one Live URL or Repository URL</span>
-              </li>
+            <ul className="text-xs space-y-2.5">
+              {[
+                { rule: qualityGate.rules.title, label: "Project Title specified" },
+                { rule: qualityGate.rules.summary, label: "Summary under 140 characters" },
+                { rule: qualityGate.rules.coverImage, label: "16:9 Cover Image stored in R2" },
+                { rule: qualityGate.rules.technologies, label: "At least one technology tagged" },
+                { rule: qualityGate.rules.links, label: "Live Site URL or Repository URL specified" },
+              ].map((item, idx) => (
+                <li
+                  key={idx}
+                  className={`flex items-center gap-2.5 transition-colors duration-200 ${
+                    item.rule ? "text-emerald-400 font-medium" : "text-zinc-500"
+                  }`}
+                >
+                  <span
+                    className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
+                      item.rule
+                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 scale-105 shadow-sm shadow-emerald-500/20"
+                        : "bg-zinc-800 text-zinc-600 border border-zinc-700 scale-95"
+                    }`}
+                  >
+                    ✓
+                  </span>
+                  <span>{item.label}</span>
+                </li>
+              ))}
             </ul>
+
+            {qualityGate.canPublish && (
+              <div className="p-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 flex items-center gap-2 text-xs text-emerald-400 font-semibold">
+                <span>🚀</span>
+                <span>All 5 standards met! Ready to publish to live profile.</span>
+              </div>
+            )}
           </div>
         </div>
 
