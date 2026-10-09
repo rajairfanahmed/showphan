@@ -1,0 +1,49 @@
+name: Showphan CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    name: Lint, Typecheck, Test & Build
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://dummy:dummy@localhost:5432/neondb' }}
+      BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET || 'ci-placeholder-secret-32-chars-long-min' }}
+      BETTER_AUTH_URL: 'https://showphan.vercel.app'
+      GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID || 'ci-dummy-client-id' }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET || 'ci-dummy-client-secret' }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID || 'dummy-r2-account-id' }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID || 'dummy-r2-access-key' }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY || 'dummy-r2-secret-key' }}
+      R2_BUCKET_NAME: 'showphan'
+      R2_PUBLIC_BASE_URL: 'https://pub-7951652fb9484b909e8f3989e79f7111.r2.dev'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20 LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run TypeScript Typecheck
+        run: npm run typecheck
+
+      - name: Run Production Build
+        run: npm run build

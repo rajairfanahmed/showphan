@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "test": "tsx --env-file=.env tests/backend-suite.test.ts && tsx --env-file=.env tests/e2e-integration.test.ts && tsx --env-file=.env tests/requirements-verification.test.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx -r dotenv/config tests/backend-suite.test.ts && tsx -r dotenv/config tests/e2e-integration.test.ts && tsx -r dotenv/config tests/requirements-verification.test.ts",
     "lint": "eslint",
     "postinstall": "prisma generate"
   },
