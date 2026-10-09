@@ -1,11 +1,11 @@
 {
   "name": "showphan",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "test": "tsx --env-file=.env tests/backend-suite.test.ts && tsx --env-file=.env tests/e2e-integration.test.ts && tsx --env-file=.env tests/requirements-verification.test.ts",
     "lint": "eslint",
     "postinstall": "prisma generate"
   },

@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +5,148 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ----------------------------------------------------
+// Better Auth Core Tables
+// ----------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Showphan Profile Extensions
+  githubId      String?   @unique
+  slug          String    @unique
+  displayName   String?
+  bio           String?   @db.VarChar(160)
+  avatarUrl     String?
+  searchVisible Boolean   @default(true)
+
+  // Relations
+  sessions      Session[]
+  accounts      Account[]
+  projects      Project[]
+
+  @@index([slug])
+  @@index([githubId])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+// ----------------------------------------------------
+// Showphan Core Portfolio Entities
+// ----------------------------------------------------
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Project {
+  id            String        @id @default(cuid())
+  userId        String
+  slug          String
+  title         String
+  summary       String        @default("") @db.VarChar(140)
+  description   String        @default("") @db.Text
+  coverImageKey String?
+  liveUrl       String?
+  repoUrl       String?
+  role          String?
+  learnings     String?
+  tags          String[]      @default([])
+  status        ProjectStatus @default(DRAFT)
+  isFeatured    Boolean       @default(false)
+  position      Int           @default(0)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  technologies  ProjectTechnology[]
+
+  @@unique([userId, slug])
+  @@index([userId, status, position])
+  @@index([userId, isFeatured])
+  @@map("projects")
+}
+
+model Technology {
+  id         String              @id @default(cuid())
+  name       String              @unique
+  slug       String              @unique
+  iconColor  String
+  iconMono   String
+
+  projects   ProjectTechnology[]
+
+  @@index([slug])
+  @@map("technologies")
+}
+
+model ProjectTechnology {
+  projectId    String
+  technologyId String
+
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, technologyId])
+  @@index([technologyId])
+  @@map("project_technologies")
 }
