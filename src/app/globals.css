@@ -56,6 +56,28 @@ html {
   color-scheme: light;
 }
 
+/* High-Contrast Razor-Sharp Text Selection */
+::selection {
+  background-color: #0052ff !important;
+  color: #ffffff !important;
+}
+
+::-moz-selection {
+  background-color: #0052ff !important;
+  color: #ffffff !important;
+}
+
+/* Prevent nested scroll hijacking on scrollable cards, drawers, and editors */
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-auto,
+[data-lenis-prevent],
+pre,
+textarea,
+select {
+  overscroll-behavior: contain;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);

@@ -17,6 +17,19 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
       smoothWheel: true,
       wheelMultiplier: 1.15,
       touchMultiplier: 1.5,
+      allowNestedScroll: true,
+      prevent: (node: HTMLElement) => {
+        if (!node || typeof node.closest !== "function") return false;
+        return (
+          node.hasAttribute("data-lenis-prevent") ||
+          Boolean(node.closest("[data-lenis-prevent]")) ||
+          Boolean(node.closest(".overflow-y-auto")) ||
+          Boolean(node.closest(".overflow-x-auto")) ||
+          Boolean(node.closest(".overflow-auto")) ||
+          node.tagName === "TEXTAREA" ||
+          node.tagName === "SELECT"
+        );
+      },
     });
 
     let animationFrameId: number;

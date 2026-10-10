@@ -11,6 +11,8 @@ import { TechStackPicker, TechnologyItem } from "@/components/studio/TechStackPi
 import { TagTokenizer } from "@/components/studio/TagTokenizer";
 import { StickyActionDock } from "@/components/studio/StickyActionDock";
 import { LiveCardPreviewDrawer } from "@/components/studio/LiveCardPreviewDrawer";
+import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
+import { getCoverImageUrl } from "@/lib/storage/urls";
 
 interface GithubRepositoryItem {
   id: number | string;
@@ -274,10 +276,39 @@ export default function EditProjectPage({
   // Selected technologies mapped for preview
   const selectedTechObjects = useMemo(() => {
     return selectedTechIds
-      .map((tId) => technologiesCatalog.find((t) => t.id === tId))
+      .map((tId) => technologiesCatalog.find((t) => t.id === tId || t.slug === tId))
       .filter((t): t is TechnologyItem => Boolean(t))
       .map((t) => ({ name: t.name, slug: t.slug, iconColor: t.iconColor }));
   }, [selectedTechIds, technologiesCatalog]);
+
+  // Live real-time card preview data
+  const previewCardData: ProjectCardData = useMemo(() => ({
+    id: id,
+    slug: "preview",
+    title: title.trim() || "Untitled Project",
+    summary: summary.trim() || "Add a punchy summary to see your card preview update in real-time.",
+    coverImageUrl: coverImageKey ? getCoverImageUrl(coverImageKey) : null,
+    publishedAt: "Just now",
+    liveUrl: liveUrl || null,
+    repoUrl: repoUrl || null,
+    upvotesCount: 0,
+    commentsCount: 0,
+    bookmarksCount: 0,
+    viewsCount: 0,
+    reactionsCounts: {},
+    statusBadge: { text: status === "PUBLISHED" ? "Live" : "Draft", variant: "blue" },
+    user: {
+      name: authorUser.displayName || authorUser.name || "Developer",
+      displayName: authorUser.displayName || authorUser.name || "Developer",
+      slug: authorUser.slug || "dev",
+      avatarUrl: authorUser.avatarUrl || null,
+      badge: "Maker",
+    },
+    technologies:
+      selectedTechObjects.length > 0
+        ? selectedTechObjects
+        : [{ name: "Next.js", slug: "nextjs", iconColor: "logos:nextjs-icon" }],
+  }), [id, title, summary, coverImageKey, liveUrl, repoUrl, status, authorUser, selectedTechObjects]);
 
   if (loading) {
     return (
@@ -319,10 +350,10 @@ export default function EditProjectPage({
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-blue-500/25 selection:text-blue-900 dark:selection:text-blue-200">
+    <div className="min-h-screen flex flex-col justify-between">
       {/* Top Breadcrumb & GitHub Sync Bar */}
       <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-xl px-4 sm:px-6 py-3.5">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+        <div className="max-w-[1550px] mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 text-xs text-[var(--foreground-muted)] truncate min-w-0">
             <Link
               href="/dashboard"
@@ -361,10 +392,12 @@ export default function EditProjectPage({
         </div>
       )}
 
-      {/* Main Single-Column Studio Canvas */}
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-8 pb-32">
-        {/* Section 1: Cancelable 16:9 Cover Image Pipeline */}
-        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-3">
+      {/* Main Studio Canvas with Desktop Split Live Card Preview */}
+      <div className="max-w-[1550px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col xl:flex-row gap-8 items-start justify-center flex-1">
+        {/* Left Column: Form Fields Canvas */}
+        <main className="flex-1 max-w-3xl w-full space-y-8 pb-32">
+          {/* Section 1: Cancelable 16:9 Cover Image Pipeline */}
+          <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-3">
           <CoverImageUploader
             coverImageKey={coverImageKey}
             onUploadSuccess={(key) => setCoverImageKey(key)}
@@ -521,6 +554,37 @@ export default function EditProjectPage({
           )}
         </section>
       </main>
+
+      {/* Right Sticky Preview Column (Live Desktop Preview >= 1280px) */}
+      <aside className="hidden xl:block w-[420px] 2xl:w-[460px] sticky top-20 shrink-0 space-y-4">
+        <div className="p-4 sm:p-5 rounded-3xl border border-[var(--border)] bg-[var(--card)] shadow-xl space-y-3">
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#0052ff] animate-pulse" />
+              <h3 className="font-extrabold text-xs uppercase tracking-wider text-[var(--foreground)]">
+                Live Feed Card Preview
+              </h3>
+            </div>
+            <span className="text-[10px] font-mono font-bold text-[#0052ff] px-2 py-0.5 rounded-full bg-blue-500/10">
+              16:9 Aspect Ratio
+            </span>
+          </div>
+
+          <p className="text-[11px] text-[var(--foreground-muted)] leading-relaxed">
+            Updates in real-time as you type. This is exactly how your showcase will render on the discovery feed:
+          </p>
+
+          <div className="py-1">
+            <ProjectCard project={previewCardData} />
+          </div>
+
+          <div className="pt-2 border-t border-[var(--border)] flex items-center justify-between text-[11px] text-[var(--foreground-muted)] font-mono">
+            <span>Verified Brand Icons</span>
+            <span className="text-emerald-600 font-semibold">✓ Instant Sync</span>
+          </div>
+        </div>
+      </aside>
+    </div>
 
       {/* Sticky Floating Action Dock */}
       <StickyActionDock
