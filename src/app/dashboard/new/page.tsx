@@ -1,24 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "@/lib/auth-client";
 
 export default function NewProjectPage() {
-  const router = useRouter();
   const { data: session, isPending } = useSession();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
+  const [isSlow, setIsSlow] = useState(false);
+  const hasTriggeredRef = useRef(false);
 
   useEffect(() => {
     // Only attempt creation once session is resolved and user exists
-    if (isPending || !session?.user || isCreating) return;
+    if (isPending || !session?.user || hasTriggeredRef.current) return;
 
-    let isMounted = true;
+    hasTriggeredRef.current = true;
+    setIsCreating(true);
+    setErrorMsg(null);
+
+    const slowTimer = setTimeout(() => {
+      setIsSlow(true);
+    }, 3500);
+
     async function createDraft() {
-      setIsCreating(true);
-      setErrorMsg(null);
       try {
         const res = await fetch("/api/projects", {
           method: "POST",
@@ -26,35 +32,43 @@ export default function NewProjectPage() {
           body: JSON.stringify({ title: "Untitled Project" }),
         });
 
+        clearTimeout(slowTimer);
+
         if (res.ok) {
           const data = await res.json();
-          if (isMounted) {
-            router.replace(`/dashboard/project/${data.project.id}/edit`);
+          const projId = data.project?.id;
+          if (projId) {
+            setCreatedProjectId(projId);
+            // Use window.location.replace for guaranteed browser navigation
+            window.location.replace(`/dashboard/project/${projId}/edit`);
+          } else {
+            setErrorMsg("Project draft created, but no ID was returned.");
+            setIsCreating(false);
+            hasTriggeredRef.current = false;
           }
         } else {
           const errData = await res.json().catch(() => ({}));
-          if (isMounted) {
-            setErrorMsg(
-              errData.error?.message ||
-                "Failed to initialize a new project draft. Please try again."
-            );
-            setIsCreating(false);
-          }
-        }
-      } catch (err) {
-        if (isMounted) {
-          setErrorMsg("Network error initializing project. Please check your connection.");
+          setErrorMsg(
+            errData.error?.message ||
+              "Failed to initialize a new project draft. Please try again."
+          );
           setIsCreating(false);
+          hasTriggeredRef.current = false;
         }
+      } catch {
+        clearTimeout(slowTimer);
+        setErrorMsg("Network error initializing project. Please check your connection.");
+        setIsCreating(false);
+        hasTriggeredRef.current = false;
       }
     }
 
     createDraft();
 
     return () => {
-      isMounted = false;
+      clearTimeout(slowTimer);
     };
-  }, [session, isPending, router, isCreating]);
+  }, [session, isPending]);
 
   const handleSignIn = async () => {
     try {
@@ -70,6 +84,8 @@ export default function NewProjectPage() {
   const handleRetry = () => {
     setErrorMsg(null);
     setIsCreating(false);
+    hasTriggeredRef.current = false;
+    setIsSlow(false);
   };
 
   // State 1: Session loading
@@ -157,12 +173,42 @@ export default function NewProjectPage() {
     );
   }
 
-  // State 4: Initializing Draft
+  // State 4: Draft Created, Navigating
+  if (createdProjectId) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-28 px-4">
+        <div className="flex flex-col items-center gap-4 text-center max-w-sm">
+          <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-lg font-bold">
+            ✓
+          </div>
+          <div className="space-y-1">
+            <p className="text-base font-bold text-[var(--foreground)]">Draft Created!</p>
+            <p className="text-xs text-[var(--foreground-muted)]">
+              Opening Project Studio... If not redirected automatically:
+            </p>
+          </div>
+          <a
+            href={`/dashboard/project/${createdProjectId}/edit`}
+            className="px-5 py-2.5 rounded-xl bg-[#0052ff] text-white text-xs font-bold hover:bg-blue-600 shadow-md transition-all"
+          >
+            Open Project Studio →
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // State 5: Initializing Draft
   return (
     <div className="flex-1 flex items-center justify-center py-28 px-4">
-      <div className="flex flex-col items-center gap-3 text-center">
+      <div className="flex flex-col items-center gap-3 text-center max-w-sm">
         <div className="w-9 h-9 border-2 border-[#0052ff] border-t-transparent rounded-full animate-spin" />
-        <p className="text-sm font-mono text-[var(--foreground-muted)]">Creating project draft...</p>
+        <p className="text-sm font-mono text-[var(--foreground)]">Creating project draft...</p>
+        {isSlow && (
+          <p className="text-xs text-[var(--foreground-muted)] animate-fade-in">
+            Connecting to cloud database... Almost ready.
+          </p>
+        )}
       </div>
     </div>
   );
