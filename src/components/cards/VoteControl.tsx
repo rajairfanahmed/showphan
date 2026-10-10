@@ -55,7 +55,7 @@ export function VoteControl({
         onClick={handleUpvote}
         whileTap={{ scale: 0.92 }}
         title="Upvote"
-        className={`flex items-center gap-1 px-2 py-1 rounded-md transition-colors cursor-pointer ${
+        className={`flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md transition-colors cursor-pointer ${
           voteState === "up"
             ? "bg-amber-500/20 text-amber-500 dark:text-amber-400 font-bold"
             : "hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)]"
@@ -81,7 +81,7 @@ export function VoteControl({
         onClick={handleDownvote}
         whileTap={{ scale: 0.92 }}
         title="Downvote"
-        className={`px-1.5 py-1 rounded-md transition-colors cursor-pointer ${
+        className={`px-1 py-0.5 sm:px-1.5 sm:py-1 rounded-md transition-colors cursor-pointer ${
           voteState === "down"
             ? "bg-rose-500/20 text-rose-500 dark:text-rose-400 font-bold"
             : "hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)]"

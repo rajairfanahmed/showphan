@@ -140,3 +140,15 @@ html.lenis, html.lenis body {
   min-height: 44px;
   min-width: 44px;
 }
+
+/* Card Container Queries and Responsive Metrics */
+.card-container {
+  container-type: inline-size;
+}
+
+@container (max-width: 370px) {
+  .card-views-metric {
+    display: none !important;
+  }
+}
+

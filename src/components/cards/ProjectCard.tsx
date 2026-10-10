@@ -69,6 +69,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
     } catch {}
   };
 
+  const formatMetric = (val?: number | null) => {
+    if (!val && val !== 0) return "0";
+    if (val >= 1000000) return `${(val / 1000000).toFixed(1)}m`;
+    if (val >= 1000) return `${(val / 1000).toFixed(1)}k`;
+    return String(val);
+  };
+
   // Badge styles with high contrast for Day and Night modes
   const getBadgeStyle = (variant = "amber") => {
     switch (variant) {
@@ -89,7 +96,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--border-hover)] transition-all duration-200 shadow-sm hover:shadow-xl overflow-hidden w-full">
+    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--border-hover)] transition-all duration-200 shadow-sm hover:shadow-xl overflow-hidden w-full @container card-container">
       {/* 
         1. 16:9 Cover Image / Code Preview Area:
         Clean and unobstructed. No tags or overlays blocking the image preview.
@@ -120,17 +127,34 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
       {/* 
         2. Card Content & Meta Header:
-        Mobile-first padding starting from 320px (p-3.5 sm:p-5 md:p-6).
+        Mobile-first padding starting from 320px (p-3.5 sm:p-4.5 xl:p-5).
         Launch bar placed below image per award-winning UX patterns.
       */}
-      <div className="p-3.5 sm:p-5 md:p-6 flex-1 flex flex-col justify-between gap-4 sm:gap-5">
+      <div className="p-3.5 sm:p-4.5 xl:p-5 flex-1 flex flex-col justify-between gap-4 sm:gap-5">
         <div className="space-y-3 sm:space-y-4">
-          {/* Metadata Launch Row: Status Badge on Left + Visit App Button on Right */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 flex-wrap min-w-0">
+          {/* Metadata Launch Row: Attribution on Left + Status Badge & Visit App on Right */}
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            {/* Creator Attribution & Published Date */}
+            <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-[var(--foreground-muted)] truncate min-w-0">
+              <span className="shrink-0">by</span>
+              <Link
+                href={`/${user.slug}`}
+                className="font-medium text-[var(--foreground)] hover:text-amber-500 transition-colors truncate underline decoration-transparent hover:decoration-current"
+              >
+                @{user.slug}
+              </Link>
+              {project.publishedAt && (
+                <span className="text-[var(--foreground-muted)] opacity-75 shrink-0 whitespace-nowrap">
+                  • {project.publishedAt}
+                </span>
+              )}
+            </div>
+
+            {/* Status Badge + Visit App Button cleanly pinned together on the right */}
+            <div className="inline-flex items-center gap-1.5 shrink-0">
               {project.statusBadge && (
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold border shrink-0 ${getBadgeStyle(
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-semibold border ${getBadgeStyle(
                     project.statusBadge.variant
                   )}`}
                 >
@@ -138,39 +162,22 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 </span>
               )}
 
-              {/* Creator Attribution & Published Date */}
-              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-[var(--foreground-muted)] truncate">
-                <span>by</span>
-                <Link
-                  href={`/${user.slug}`}
-                  className="font-medium text-[var(--foreground)] hover:text-amber-500 transition-colors underline decoration-transparent hover:decoration-current"
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold text-[var(--foreground)] hover:text-amber-500 dark:hover:text-amber-400 bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 border border-[var(--border)] hover:border-amber-500/40 transition-colors cursor-pointer whitespace-nowrap"
+                  title="Visit live application"
                 >
-                  @{user.slug}
-                </Link>
-                {project.publishedAt && (
-                  <span className="text-[var(--foreground-muted)] opacity-75 whitespace-nowrap">
-                    • {project.publishedAt}
-                  </span>
-                )}
-              </div>
+                  <span>Visit App</span>
+                  <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
             </div>
-
-            {/* Visit App ↗ Button cleanly pinned on the right */}
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold text-[var(--foreground)] hover:text-amber-500 dark:hover:text-amber-400 bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 border border-[var(--border)] hover:border-amber-500/40 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
-                title="Visit live application"
-              >
-                <span>Visit App</span>
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            )}
           </div>
 
           {/* Project Title (Generous 2-line title support) */}
@@ -201,9 +208,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         {/* 3. Card Footer Action Bar */}
-        <div className="pt-3 sm:pt-4 border-t border-[var(--border)] flex items-center justify-between gap-1.5 sm:gap-2.5">
+        <div className="pt-3 sm:pt-4 border-t border-[var(--border)] flex items-center justify-between gap-1.5 sm:gap-2">
           {/* Left Actions: Upvote & Reactions */}
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             {/* Upvote / Downvote */}
             <VoteControl
               projectId={project.id}
@@ -218,24 +225,24 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </div>
 
           {/* Right Actions: Comments, Bookmark, Views, Share */}
-          <div className="flex items-center gap-1 sm:gap-2 text-[11px] sm:text-xs text-[var(--foreground-muted)] shrink-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-[var(--foreground-muted)] shrink-0">
             {/* Comment icon */}
             <Link
               href={projectHref}
-              className="inline-flex items-center gap-1 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-lg hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 px-1.5 py-1 sm:px-2 sm:py-1 rounded-lg hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
               title="View comments"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <span className="font-mono">{project.commentsCount || 28}</span>
+              <span className="font-mono">{formatMetric(project.commentsCount || 28)}</span>
             </Link>
 
             {/* Bookmark icon */}
             <button
               type="button"
               onClick={handleBookmarkToggle}
-              className={`inline-flex items-center gap-1 px-1.5 py-1 sm:px-2 sm:py-1.5 rounded-lg transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1 px-1.5 py-1 sm:px-2 sm:py-1 rounded-lg transition-colors cursor-pointer ${
                 bookmarked
                   ? "text-amber-500 bg-amber-500/10 font-bold"
                   : "hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)]"
@@ -251,23 +258,23 @@ export function ProjectCard({ project }: ProjectCardProps) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
-              <span className="font-mono">{bookmarkCount}</span>
+              <span className="font-mono">{formatMetric(bookmarkCount)}</span>
             </button>
 
-            {/* View count (hidden on super narrow 320px screens if needed) */}
-            <div className="hidden min-[380px]:inline-flex items-center gap-1 px-1 py-1" title="Views">
+            {/* View count (cleanly hides in compact cards <= 370px, visible on wide cards) */}
+            <div className="card-views-metric hidden @[370px]:inline-flex items-center gap-1 px-1 py-1" title="Views">
               <svg className="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              <span className="font-mono">{project.viewsCount ? `${(project.viewsCount / 1000).toFixed(1)}k` : "4.2k"}</span>
+              <span className="font-mono">{project.viewsCount ? formatMetric(project.viewsCount) : "4.2k"}</span>
             </div>
 
             {/* Share icon */}
             <button
               type="button"
               onClick={handleShare}
-              className="p-1 sm:p-1.5 rounded-lg hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)] transition-colors cursor-pointer relative"
+              className="p-1 sm:p-1.5 rounded-lg hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)] transition-colors cursor-pointer relative shrink-0"
               title="Share project"
               aria-label="Share project"
             >

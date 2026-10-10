@@ -165,7 +165,7 @@ export function ReactionPopover({
             handleSelectReaction(DEVELOPER_REACTIONS[0]);
           }
         }}
-        className={`group inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
+        className={`group inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
           activeReaction
             ? "border-amber-500/50 bg-amber-500/15 text-amber-500 dark:text-amber-400 shadow-sm"
             : "border-[var(--border)] bg-[var(--surface-glass)] hover:border-[var(--border-hover)] text-[var(--foreground-muted)] hover:text-[var(--foreground)]"

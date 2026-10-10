@@ -293,12 +293,11 @@ function HomepageFeedContent({
 
       {/* 
         Dynamic Fluid Card Grid:
-        - Mobile/Tablet: 1 col (320px - 767px).
-        - Desktop with Sidebar: 2 generous columns (~480px-550px each), providing complete breathing room
-          so title, launch bar, and bottom action bar fit with zero wrapping or clipping!
-        - Ultra-wide or with collapsed sidebar (≥1600px): 3 columns.
+        - Mobile: 1 col (320px - 767px).
+        - Tablet/Compact: 2 cols (768px - 1279px).
+        - Desktop (>=1280px): 3 columns in a row (daily.dev style, responsive on sidebar collapse/expand).
       */}
-      <div className="grid grid-cols-1 md:grid-cols-2 min-[1600px]:grid-cols-3 gap-5 xl:gap-7 transition-[grid-template-columns] duration-300">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 xl:gap-6 transition-[grid-template-columns] duration-300">
         {sortedProjects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}

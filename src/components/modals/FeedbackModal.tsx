@@ -29,7 +29,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -45,13 +45,13 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98, y: 10 }}
           transition={{ duration: 0.15 }}
-          className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-2xl space-y-5"
+          className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-6 shadow-2xl space-y-4 sm:space-y-5 mx-auto"
         >
           {/* Header */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="text-xl">💬</span>
-              <h3 className="font-bold text-lg text-[var(--foreground)]">Developer Feedback</h3>
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <span className="text-lg sm:text-xl">💬</span>
+              <h3 className="font-bold text-base sm:text-lg text-[var(--foreground)]">Developer Feedback</h3>
             </div>
             <button
               onClick={onClose}
@@ -68,9 +68,9 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
               <p className="text-xs text-[var(--foreground-muted)]">Your feedback helps make this platform better for all developers.</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
               {/* Type Switcher */}
-              <div className="grid grid-cols-3 gap-2 p-1 rounded-xl bg-[var(--surface-glass)] border border-[var(--border)]">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 p-1 rounded-xl bg-[var(--surface-glass)] border border-[var(--border)]">
                 {(
                   [
                     { id: "idea", label: "💡 Feature" },
@@ -82,7 +82,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     key={t.id}
                     type="button"
                     onClick={() => setFeedbackType(t.id)}
-                    className={`py-2 px-3 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                    className={`py-1.5 sm:py-2 px-1 sm:px-3 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer truncate ${
                       feedbackType === t.id
                         ? "bg-amber-500 text-black shadow-sm font-bold"
                         : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
@@ -104,22 +104,22 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Tell us what you'd love to see or what we can improve..."
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] p-3 text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] p-3 text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:outline-none focus:border-amber-500 transition-colors resize-none"
                 />
               </div>
 
               {/* Submit Button */}
-              <div className="flex items-center justify-end gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-1 sm:pt-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                  className="px-4.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
                 >
                   Send Feedback
                 </button>
