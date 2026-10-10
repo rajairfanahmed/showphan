@@ -214,7 +214,7 @@ export default function DashboardPage() {
           <button
             onClick={handleCreateNew}
             disabled={projects.length >= 30}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black font-bold text-sm shadow-md transition-all min-touch"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0052ff] hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all min-touch cursor-pointer"
           >
             <span>+ Add project</span>
           </button>
@@ -225,9 +225,9 @@ export default function DashboardPage() {
       <div className="flex items-center gap-2 border-b border-[var(--border)] pb-2 text-sm">
         <button
           onClick={() => setActiveTab("ALL")}
-          className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
             activeTab === "ALL"
-              ? "bg-amber-500/10 text-amber-500 border border-amber-500/30"
+              ? "bg-blue-500/10 text-[#0052ff] border border-blue-500/30"
               : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           }`}
         >
@@ -235,9 +235,9 @@ export default function DashboardPage() {
         </button>
         <button
           onClick={() => setActiveTab("PUBLISHED")}
-          className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
             activeTab === "PUBLISHED"
-              ? "bg-amber-500/10 text-amber-500 border border-amber-500/30"
+              ? "bg-blue-500/10 text-[#0052ff] border border-blue-500/30"
               : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           }`}
         >
@@ -245,9 +245,9 @@ export default function DashboardPage() {
         </button>
         <button
           onClick={() => setActiveTab("DRAFT")}
-          className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
             activeTab === "DRAFT"
-              ? "bg-amber-500/10 text-amber-500 border border-amber-500/30"
+              ? "bg-blue-500/10 text-[#0052ff] border border-blue-500/30"
               : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
           }`}
         >
@@ -257,8 +257,8 @@ export default function DashboardPage() {
 
       {/* Projects List or Empty State */}
       {filteredProjects.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-xl bg-[var(--card)]/50 space-y-4">
-          <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-xl font-bold">
+        <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-2xl bg-white/50 space-y-4">
+          <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-[#0052ff] flex items-center justify-center mx-auto text-xl font-bold shadow-inner">
             💡
           </div>
           <h3 className="font-bold text-lg text-[var(--foreground)]">No projects here yet</h3>
@@ -270,7 +270,7 @@ export default function DashboardPage() {
           {activeTab === "ALL" && (
             <button
               onClick={handleCreateNew}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-sm shadow-md transition-all"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 transition-all cursor-pointer"
             >
               + Create your first project
             </button>
@@ -283,7 +283,7 @@ export default function DashboardPage() {
             return (
               <div
                 key={project.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:border-zinc-700 transition-colors gap-4"
+                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border border-[var(--border)] bg-white hover:border-blue-500/30 transition-colors gap-4 shadow-sm"
               >
                 {/* Left: Thumbnail & Info */}
                 <div className="flex items-center gap-4 min-w-0">
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                     <button
                       onClick={() => handleMove(idx, "up")}
                       disabled={idx === 0}
-                      className="hover:text-amber-500 disabled:opacity-20"
+                      className="hover:text-[#0052ff] disabled:opacity-20 cursor-pointer"
                       title="Move up"
                     >
                       ▲
@@ -300,7 +300,7 @@ export default function DashboardPage() {
                     <button
                       onClick={() => handleMove(idx, "down")}
                       disabled={idx === filteredProjects.length - 1}
-                      className="hover:text-amber-500 disabled:opacity-20"
+                      className="hover:text-[#0052ff] disabled:opacity-20 cursor-pointer"
                       title="Move down"
                     >
                       ▼
@@ -308,11 +308,11 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Thumbnail */}
-                  <div className="w-24 h-14 rounded-lg bg-zinc-900 border border-[var(--border)] shrink-0 overflow-hidden flex items-center justify-center relative">
+                  <div className="w-24 h-14 rounded-lg bg-slate-100 border border-[var(--border)] shrink-0 overflow-hidden flex items-center justify-center relative">
                     {coverUrl ? (
                       <img src={coverUrl} alt={project.title} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-[10px] text-zinc-500 uppercase font-mono">No Cover</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-mono">No Cover</span>
                     )}
                   </div>
 
@@ -323,11 +323,11 @@ export default function DashboardPage() {
                         {project.title}
                       </h3>
                       {project.status === "PUBLISHED" ? (
-                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600">
                           Published
                         </span>
                       ) : (
-                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-400">
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-600">
                           Draft
                         </span>
                       )}
@@ -343,9 +343,9 @@ export default function DashboardPage() {
                   {/* Featured Toggle */}
                   <button
                     onClick={() => handleToggleFeatured(project)}
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-semibold border transition-colors ${
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                       project.isFeatured
-                        ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+                        ? "border-blue-500/40 bg-blue-500/10 text-[#0052ff]"
                         : "border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
                     }`}
                     title={
@@ -360,7 +360,7 @@ export default function DashboardPage() {
                   {/* Publish/Unpublish Toggle */}
                   <button
                     onClick={() => handleTogglePublish(project)}
-                    className="px-2.5 py-1.5 rounded-md text-xs font-semibold border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors"
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold border border-[var(--border)] hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors cursor-pointer"
                   >
                     {project.status === "PUBLISHED" ? "Unpublish" : "Publish"}
                   </button>
@@ -368,7 +368,7 @@ export default function DashboardPage() {
                   {/* Edit */}
                   <Link
                     href={`/dashboard/project/${project.id}/edit`}
-                    className="px-3 py-1.5 rounded-md text-xs font-bold bg-amber-500/10 border border-amber-500/30 text-amber-500 hover:bg-amber-500/20 transition-colors"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-500/10 border border-blue-500/30 text-[#0052ff] hover:bg-blue-500/20 transition-colors"
                   >
                     Edit
                   </Link>

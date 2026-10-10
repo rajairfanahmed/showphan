@@ -147,7 +147,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem("showphan-theme")||"dark";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();`,
+            __html: `(function(){try{document.documentElement.setAttribute("data-theme","light");localStorage.setItem("showphan-theme","light");}catch(e){}})();`,
           }}
         />
         <script

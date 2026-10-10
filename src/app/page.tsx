@@ -1,7 +1,7 @@
 import { HomepageShell } from "@/components/feed/HomepageShell";
-import { INITIAL_SHOWCASE_PROJECTS } from "@/components/feed/HomepageFeed";
 import { getExploreProjects } from "@/lib/projects/explore";
 import { getCoverImageUrl } from "@/lib/storage/urls";
+import type { ProjectCardData } from "@/components/cards/ProjectCard";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -13,10 +13,12 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  let projects = INITIAL_SHOWCASE_PROJECTS;
+  let projects: ProjectCardData[] = [];
 
-  // Attempt to load real projects whenever database is reachable, with zero-delay fallback
-  const isDbConfigured = Boolean(process.env.DATABASE_URL) && !process.env.DATABASE_URL?.includes("placeholder");
+  // Attempt to load real projects whenever database is reachable
+  const isDbConfigured =
+    Boolean(process.env.DATABASE_URL) &&
+    !process.env.DATABASE_URL?.includes("placeholder");
 
   if (isDbConfigured) {
     try {
@@ -26,31 +28,33 @@ export default async function HomePage() {
       });
 
       if (dbProjects && dbProjects.length > 0) {
-        const mapped = dbProjects.map((p, index) => {
+        projects = dbProjects.map((p) => {
           const coverUrl = getCoverImageUrl(p.coverImageKey ?? undefined);
-          const fallbackProject = INITIAL_SHOWCASE_PROJECTS[index % INITIAL_SHOWCASE_PROJECTS.length];
 
           return {
             id: p.id,
             slug: p.slug,
             title: p.title,
-            summary: p.summary || fallbackProject.summary,
-            coverImageUrl: coverUrl || fallbackProject.coverImageUrl,
-            codeSnippet: fallbackProject.codeSnippet,
+            summary: p.summary || "Developer showcase project.",
+            coverImageUrl: coverUrl,
             statusBadge: { text: "Verified", variant: "blue" as const },
-            liveUrl: p.liveUrl || fallbackProject.liveUrl,
-            repoUrl: p.repoUrl || fallbackProject.repoUrl,
+            liveUrl: p.liveUrl || null,
+            repoUrl: p.repoUrl || null,
+            sandboxUrl: (p as { sandboxUrl?: string | null }).sandboxUrl || null,
+            sandboxEnabled: Boolean(p.sandboxEnabled),
             upvotesCount: p.kudosCount || 0,
-            commentsCount: fallbackProject.commentsCount,
-            bookmarksCount: fallbackProject.bookmarksCount,
             viewsCount: p.viewsCount || 0,
-            reactionsCounts: fallbackProject.reactionsCounts,
+            commentsCount: 0,
+            bookmarksCount: 0,
+            publishedAt: new Date(p.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            }),
             user: {
-              name: p.user.name || fallbackProject.user.name,
-              displayName: p.user.displayName || fallbackProject.user.displayName,
-              slug: p.user.slug || fallbackProject.user.slug,
-              avatarUrl: p.user.avatarUrl || fallbackProject.user.avatarUrl,
-              badge: fallbackProject.user.badge,
+              name: p.user.displayName || p.user.name || "Developer",
+              displayName: p.user.displayName || p.user.name || "Developer",
+              slug: p.user.slug || "dev",
+              avatarUrl: p.user.avatarUrl || null,
             },
             technologies:
               p.technologies && p.technologies.length > 0
@@ -59,17 +63,12 @@ export default async function HomePage() {
                     slug: t.technology.slug,
                     iconColor: t.technology.iconColor,
                   }))
-                : fallbackProject.technologies,
+                : [],
           };
         });
-
-        // Prepend real projects to community feed
-        const realIds = new Set(mapped.map((m) => m.id));
-        const remainingFallbacks = INITIAL_SHOWCASE_PROJECTS.filter((ip) => !realIds.has(ip.id));
-        projects = [...mapped, ...remainingFallbacks];
       }
-    } catch {
-      // Graceful fallback to initial projects
+    } catch (err) {
+      console.error("Failed to load real explore projects:", err);
     }
   }
 

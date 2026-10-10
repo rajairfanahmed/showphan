@@ -73,6 +73,7 @@ export default function EditProjectPage({
   const [clientUpdatedAt, setClientUpdatedAt] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [technologiesCatalog, setTechnologiesCatalog] = useState<TechnologyItem[]>([]);
   const [authorUser, setAuthorUser] = useState<{
     slug: string;
@@ -98,6 +99,7 @@ export default function EditProjectPage({
     async function loadData() {
       try {
         setLoading(true);
+        setFetchError(null);
         // Load Technologies Catalog
         const techRes = await fetch("/api/technologies");
         if (techRes.ok) {
@@ -105,11 +107,11 @@ export default function EditProjectPage({
           setTechnologiesCatalog(tData.technologies || []);
         }
 
-        // Load Project Details
-        const projRes = await fetch("/api/projects");
+        // Load Project Details directly by ID
+        const projRes = await fetch(`/api/projects/${id}`);
         if (projRes.ok) {
           const pData = await projRes.json();
-          const p = (pData.projects || []).find((item: ProjectLoadedItem) => item.id === id);
+          const p = pData.project;
           if (p) {
             setTitle(p.title || "");
             setSummary(p.summary || "");
@@ -132,10 +134,19 @@ export default function EditProjectPage({
                 avatarUrl: p.user.avatarUrl,
               });
             }
+          } else {
+            setFetchError("Project data could not be parsed.");
           }
+        } else if (projRes.status === 401) {
+          setFetchError("Please sign in to edit this project showcase.");
+        } else if (projRes.status === 404) {
+          setFetchError("Project not found or you don't have permission to edit it.");
+        } else {
+          setFetchError("Failed to load project details.");
         }
       } catch (err) {
         console.error("Failed to load project editor data", err);
+        setFetchError("Network error loading project details.");
       } finally {
         setLoading(false);
       }
@@ -299,6 +310,36 @@ export default function EditProjectPage({
       <div className="flex-1 flex flex-col items-center justify-center py-24 space-y-3">
         <div className="w-8 h-8 border-2 border-[#0052ff] border-t-transparent rounded-full animate-spin" />
         <p className="text-xs font-mono text-[var(--foreground-muted)]">Loading Showcase Studio...</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center py-24 px-4 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-500 border border-red-100 flex items-center justify-center text-xl font-bold">
+          ⚠️
+        </div>
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold text-[var(--foreground)]">{fetchError}</h2>
+          <p className="text-xs text-[var(--foreground-muted)] max-w-sm mx-auto">
+            Please make sure you are signed in and have permissions to access this project.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 pt-2">
+          <Link
+            href="/dashboard"
+            className="px-4 py-2 rounded-xl bg-[#0052ff] text-white text-xs font-bold hover:bg-blue-600 shadow-sm transition-colors"
+          >
+            Go to Dashboard
+          </Link>
+          <Link
+            href="/"
+            className="px-4 py-2 rounded-xl border border-[var(--border)] text-xs font-semibold text-[var(--foreground)] hover:bg-[var(--surface-glass)] transition-colors"
+          >
+            Return Home
+          </Link>
+        </div>
       </div>
     );
   }

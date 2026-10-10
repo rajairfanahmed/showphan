@@ -29,11 +29,11 @@ export function ReadmeBadgeCard({ slug }: ReadmeBadgeCardProps) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-amber-500 font-bold text-lg">★</span>
+            <span className="text-[#0052ff] font-bold text-lg">★</span>
             <h3 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--foreground)]">
               GitHub Profile README Badge
             </h3>
-            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-[#0052ff]">
               Proof of Work
             </span>
           </div>
@@ -47,8 +47,8 @@ export function ReadmeBadgeCard({ slug }: ReadmeBadgeCardProps) {
           type="button"
           className={`self-start sm:self-center inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 select-none cursor-pointer ${
             copied
-              ? "bg-emerald-500 text-black shadow-md shadow-emerald-500/20"
-              : "bg-amber-500 hover:bg-amber-400 text-black shadow-sm shadow-amber-500/20 active:scale-95"
+              ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/20"
+              : "bg-[#0052ff] hover:bg-blue-600 text-white shadow-sm shadow-blue-500/20 active:scale-95"
           }`}
         >
           {copied ? (
@@ -74,7 +74,7 @@ export function ReadmeBadgeCard({ slug }: ReadmeBadgeCardProps) {
         <span className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
           Live Card Preview
         </span>
-        <div className="p-4 sm:p-6 rounded-xl border border-[var(--border)] bg-zinc-950 flex items-center justify-center overflow-x-auto">
+        <div className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-slate-900 flex items-center justify-center overflow-x-auto shadow-inner">
           <a
             href={profileUrl}
             target="_blank"
@@ -87,7 +87,7 @@ export function ReadmeBadgeCard({ slug }: ReadmeBadgeCardProps) {
               alt={`${slug}'s Showphan Showcase Badge`}
               width={480}
               height={160}
-              className="w-full max-w-[480px] rounded-xl border border-zinc-800 shadow-xl group-hover:border-amber-500/40 transition-colors"
+              className="w-full max-w-[480px] rounded-xl border border-slate-800 shadow-xl group-hover:border-blue-500/40 transition-colors"
             />
           </a>
         </div>
@@ -98,7 +98,7 @@ export function ReadmeBadgeCard({ slug }: ReadmeBadgeCardProps) {
         <span className="text-xs font-semibold text-[var(--muted-foreground)] uppercase tracking-wider">
           Markdown Snippet
         </span>
-        <div className="relative rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 font-mono text-xs text-amber-400 break-all overflow-x-auto selection:bg-amber-500/30">
+        <div className="relative rounded-xl border border-[var(--border)] bg-white p-3.5 font-mono text-xs text-[#0052ff] break-all overflow-x-auto selection:bg-blue-500/20">
           <code>{markdownSnippet}</code>
         </div>
       </div>

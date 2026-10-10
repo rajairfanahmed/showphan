@@ -53,7 +53,7 @@ export function LiveSandboxViewer({
               }`}
             >
               <svg
-                className="w-4 h-4 text-amber-400"
+                className="w-4 h-4 text-[#0052ff]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -110,7 +110,7 @@ export function LiveSandboxViewer({
               href={effectiveSandboxUrl}
               target="_blank"
               rel="ugc nofollow noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-sm shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#0052ff] hover:bg-blue-600 text-white text-xs font-bold transition-all shadow-sm shrink-0"
             >
               <span>Open in New Tab</span>
               <span>↗</span>
@@ -203,7 +203,7 @@ export function LiveSandboxViewer({
                       href={effectiveSandboxUrl}
                       target="_blank"
                       rel="ugc nofollow noopener noreferrer"
-                      className="text-amber-400 underline hover:text-amber-300 font-medium"
+                      className="text-[#0052ff] underline hover:underline font-medium"
                     >
                       Open in New Tab ↗
                     </a>

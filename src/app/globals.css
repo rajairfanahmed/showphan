@@ -26,31 +26,6 @@
     --tag-border: #e0e7ff;
   }
 
-  [data-theme="dark"] {
-    --background: #08090d;
-    --background-subtle: #0f1118;
-    --foreground: #f8fafc;
-    --foreground-muted: #94a3b8;
-    --card: #11131c;
-    --card-hover: #161926;
-    --card-foreground: #f8fafc;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.18);
-    --border-accent: rgba(0, 82, 255, 0.4);
-    --muted: #171a26;
-    --muted-foreground: #9ca3af;
-    --accent: #0052ff;
-    --accent-hover: #3b82f6;
-    --accent-glow: rgba(0, 82, 255, 0.25);
-    --accent-foreground: #ffffff;
-    --glass-bg: rgba(17, 19, 28, 0.88);
-    --glass-border: rgba(255, 255, 255, 0.09);
-    --surface-glass: rgba(255, 255, 255, 0.05);
-    --tag-bg: rgba(0, 82, 255, 0.08);
-    --tag-text: #93c5fd;
-    --tag-border: rgba(0, 82, 255, 0.2);
-  }
-
   [data-theme="light"] {
     --background: #f5f6fa;
     --background-subtle: #edf0f7;
@@ -79,10 +54,6 @@
 
 html {
   color-scheme: light;
-}
-
-[data-theme="dark"] html {
-  color-scheme: dark;
 }
 
 body {
@@ -201,14 +172,6 @@ html.lenis, html.lenis body {
 .awwwards-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 32px -4px rgba(0, 20, 60, 0.08), 0 2px 6px rgba(0, 20, 60, 0.03);
-}
-
-[data-theme="dark"] .awwwards-card {
-  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.3);
-}
-
-[data-theme="dark"] .awwwards-card:hover {
-  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.5);
 }
 
 

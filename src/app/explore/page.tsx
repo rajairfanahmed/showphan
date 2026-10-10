@@ -77,9 +77,9 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   return (
     <div className="flex-1 flex flex-col bg-[var(--background)]">
       {/* Hero Header */}
-      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[var(--card)]/50 via-[var(--background)] to-[var(--background)] py-12 sm:py-16">
+      <section className="border-b border-[var(--border)] bg-gradient-to-b from-white via-[var(--background)] to-[var(--background)] py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-semibold tracking-wide uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/10 text-[#0052ff] text-xs font-semibold tracking-wide uppercase">
             <span>★</span>
             <span>Community Showcase Directory</span>
           </div>
@@ -103,7 +103,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                   name="q"
                   defaultValue={query || ""}
                   placeholder="Search by title, description, or creator..."
-                  className="w-full pl-11 pr-24 py-3 rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 shadow-sm text-sm"
+                  className="w-full pl-11 pr-24 py-3 rounded-xl border border-[var(--border)] bg-white text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[#0052ff] focus:ring-1 focus:ring-[#0052ff] shadow-sm text-sm"
                 />
                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)] pointer-events-none">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -112,7 +112,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 </div>
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-colors cursor-pointer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-3.5 py-1.5 rounded-lg bg-[#0052ff] hover:bg-blue-600 text-white font-semibold text-xs transition-colors cursor-pointer shadow-sm"
                 >
                   Search
                 </button>
@@ -126,10 +126,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 w-full space-y-10">
         {/* Project of the Day Spotlight */}
         {projectOfTheDay && !techSlug && !query && (
-          <section className="relative rounded-2xl border-2 border-amber-500/40 bg-gradient-to-r from-amber-500/10 via-[var(--card)] to-[var(--card)] p-6 sm:p-8 overflow-hidden shadow-xl shadow-amber-500/5">
+          <section className="relative rounded-3xl border border-blue-500/20 bg-gradient-to-r from-blue-50/50 via-white to-white p-6 sm:p-8 overflow-hidden shadow-xl shadow-blue-500/5">
             <div className="flex flex-col lg:flex-row items-center gap-8">
               {/* Cover Preview */}
-              <div className="w-full lg:w-1/2 aspect-video rounded-xl overflow-hidden bg-zinc-950 border border-amber-500/30 relative">
+              <div className="w-full lg:w-1/2 aspect-video rounded-2xl overflow-hidden bg-slate-900 border border-[var(--border)] relative shadow-md">
                 {projectOfTheDay.coverImageKey ? (
                   <img
                     src={getCoverImageUrl(projectOfTheDay.coverImageKey) || undefined}
@@ -137,15 +137,15 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-900 text-amber-500">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-[#0052ff]">
                     <span className="text-4xl">★</span>
                     <span className="text-xs font-mono mt-2 uppercase tracking-widest font-bold">
                       Spotlight Preview
                     </span>
                   </div>
                 )}
-                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/50 text-amber-400 text-xs font-bold shadow-lg">
-                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-blue-500/30 text-[#0052ff] text-xs font-bold shadow-md">
+                  <span className="w-2 h-2 rounded-full bg-[#0052ff]" />
                   <span>PROJECT OF THE DAY</span>
                 </div>
               </div>
@@ -157,7 +157,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                     href={`/${projectOfTheDay.user.slug}`}
                     className="flex items-center gap-2 group"
                   >
-                    <div className="w-7 h-7 rounded-full overflow-hidden bg-zinc-800 border border-amber-500/40">
+                    <div className="w-7 h-7 rounded-full overflow-hidden bg-slate-100 border border-[var(--border)]">
                       {projectOfTheDay.user.avatarUrl ? (
                         <img
                           src={projectOfTheDay.user.avatarUrl}
@@ -165,12 +165,12 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-amber-500 text-black font-bold text-xs flex items-center justify-center">
+                        <div className="w-full h-full bg-[#0052ff] text-white font-bold text-xs flex items-center justify-center">
                           {(projectOfTheDay.user.displayName || projectOfTheDay.user.name || "U")[0]?.toUpperCase()}
                         </div>
                       )}
                     </div>
-                    <span className="text-sm font-semibold text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
+                    <span className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[#0052ff] transition-colors">
                       {projectOfTheDay.user.displayName || projectOfTheDay.user.name}
                     </span>
                   </Link>
@@ -180,7 +180,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-[var(--foreground)] tracking-tight">
                   <Link
                     href={`/${projectOfTheDay.user.slug}/${projectOfTheDay.slug}`}
-                    className="hover:text-amber-500 transition-colors"
+                    className="hover:text-[#0052ff] transition-colors"
                   >
                     {projectOfTheDay.title}
                   </Link>
@@ -213,7 +213,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                   />
                   <Link
                     href={`/${projectOfTheDay.user.slug}/${projectOfTheDay.slug}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold text-sm transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0052ff] hover:bg-blue-600 text-white font-semibold text-sm transition-colors shadow-sm"
                   >
                     <span>View Full Showcase</span>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -233,10 +233,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <div className="flex items-center gap-2">
               <Link
                 href={getTabUrl("trending")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-colors ${
                   tab === "trending"
-                    ? "bg-amber-500 text-black shadow-sm"
-                    : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                    ? "bg-[#0052ff] text-white shadow-sm"
+                    : "bg-white border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/40"
                 }`}
               >
                 <span>🔥</span>
@@ -244,10 +244,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               </Link>
               <Link
                 href={getTabUrl("newest")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-colors ${
                   tab === "newest"
-                    ? "bg-amber-500 text-black shadow-sm"
-                    : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                    ? "bg-[#0052ff] text-white shadow-sm"
+                    : "bg-white border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/40"
                 }`}
               >
                 <span>⚡</span>
@@ -255,10 +255,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               </Link>
               <Link
                 href={getTabUrl("kudos")}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm transition-colors ${
                   tab === "kudos"
-                    ? "bg-amber-500 text-black shadow-sm"
-                    : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                    ? "bg-[#0052ff] text-white shadow-sm"
+                    : "bg-white border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/40"
                 }`}
               >
                 <span>★</span>
@@ -272,7 +272,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               {(techSlug || query) && (
                 <Link
                   href="/explore"
-                  className="text-amber-500 hover:underline font-semibold"
+                  className="text-[#0052ff] hover:underline font-semibold"
                 >
                   Clear filters
                 </Link>
@@ -287,8 +287,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                 href={getTechUrl(undefined)}
                 className={`px-3 py-1.5 rounded-full border whitespace-nowrap font-medium transition-colors ${
                   !techSlug
-                    ? "border-amber-500/60 bg-amber-500/15 text-amber-400 font-semibold"
-                    : "border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                    ? "border-blue-500/40 bg-blue-500/10 text-[#0052ff] font-semibold"
+                    : "border-[var(--border)] bg-white text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/30"
                 }`}
               >
                 All Technologies
@@ -301,8 +301,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
                     href={getTechUrl(t.slug)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border whitespace-nowrap font-medium transition-colors ${
                       isActive
-                        ? "border-amber-500/60 bg-amber-500/15 text-amber-400 font-semibold"
-                        : "border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                        ? "border-blue-500/40 bg-blue-500/10 text-[#0052ff] font-semibold"
+                        : "border-[var(--border)] bg-white text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/30"
                     }`}
                   >
                     <span>{t.name}</span>
@@ -316,8 +316,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
         {/* Project Grid */}
         {projects.length === 0 ? (
-          <div className="text-center py-24 border border-dashed border-[var(--border)] rounded-2xl p-8 space-y-4">
-            <div className="w-16 h-16 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-2xl">
+          <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-3xl p-8 space-y-4 bg-white/50">
+            <div className="w-16 h-16 rounded-2xl bg-blue-50 text-[#0052ff] border border-blue-100 flex items-center justify-center mx-auto text-2xl shadow-inner">
               🔍
             </div>
             <h3 className="font-bold text-xl text-[var(--foreground)]">No showcases found</h3>
@@ -330,16 +330,16 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
               {(techSlug || query) && (
                 <Link
                   href="/explore"
-                  className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-sm font-semibold text-[var(--foreground)] hover:border-amber-500/40 transition-colors"
+                  className="px-4 py-2 rounded-xl border border-[var(--border)] bg-white text-sm font-semibold text-[var(--foreground)] hover:border-blue-500/40 transition-colors"
                 >
                   Reset Filters
                 </Link>
               )}
               <Link
-                href="/dashboard"
-                className="px-4 py-2 rounded-lg bg-amber-500 text-black text-sm font-semibold hover:bg-amber-400 transition-colors"
+                href="/dashboard/new"
+                className="px-5 py-2.5 rounded-xl bg-[#0052ff] text-white text-sm font-semibold hover:bg-blue-600 transition-colors shadow-sm"
               >
-                Publish Project
+                + Submit Project
               </Link>
             </div>
           </div>

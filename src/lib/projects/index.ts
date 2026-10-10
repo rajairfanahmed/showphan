@@ -182,6 +182,26 @@ export async function getUserProjects(userId: string) {
   });
 }
 
+export async function getProjectById(userId: string, projectId: string) {
+  return prisma.project.findFirst({
+    where: { id: projectId, userId },
+    include: {
+      technologies: {
+        include: { technology: true },
+      },
+      user: {
+        select: {
+          id: true,
+          slug: true,
+          name: true,
+          displayName: true,
+          avatarUrl: true,
+        },
+      },
+    },
+  });
+}
+
 export async function deleteProject(userId: string, projectId: string) {
   const existing = await prisma.project.findFirst({
     where: { id: projectId, userId },

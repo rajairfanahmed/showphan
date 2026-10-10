@@ -1,192 +1,21 @@
 "use client";
 
 import React, { useState, useMemo, Suspense } from "react";
+import Link from "next/link";
 import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
 import { useCategoryFilter } from "@/components/providers/CategoryFilterProvider";
-
-export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
-  {
-    id: "proj-1",
-    slug: "showphan-platform",
-    title: "Showphan: A platform for you",
-    summary:
-      "It is the best platform to showcase developer projects, discover real high-velocity engineering, and connect with peer builders.",
-    statusBadge: { text: "Live Demo", variant: "blue" },
-    publishedAt: "2h ago",
-    liveUrl: "https://showphan.vercel.app",
-    repoUrl: "https://github.com/rajairfanahmed/showphan",
-    codeSnippet: `<Showphan showcase={maker}>\n  <Platform stack={['Next15',\n  'Tailwind']}/>`,
-    upvotesCount: 342,
-    commentsCount: 28,
-    bookmarksCount: 1800,
-    viewsCount: 4200,
-    reactionsCounts: { mindblown: 14, cleancode: 9, greatui: 24, blazingfast: 8, loved: 19, hot: 32 },
-    user: {
-      name: "Irfan Maulana",
-      displayName: "Irfan Maulana",
-      slug: "irfan",
-      badge: "Pro Maker",
-    },
-    technologies: [
-      { name: "Next.js", slug: "nextjs" },
-      { name: "React", slug: "react" },
-      { name: "Tailwind", slug: "tailwind" },
-      { name: "TypeScript", slug: "typescript" },
-    ],
-  },
-  {
-    id: "proj-2",
-    slug: "promptforge-ai-workflow-builder",
-    title: "PromptForge: AI Workflow Builder",
-    summary:
-      "Visual node based canvas to compose multi agent LLM pipelines, test prompts with automated eval metrics, and deploy instantly.",
-    statusBadge: { text: "v2.4 Released", variant: "emerald" },
-    publishedAt: "4h ago",
-    liveUrl: "https://promptforge.dev",
-    repoUrl: "https://github.com/promptforge/builder",
-    codeSnippet: `const pipeline = new AIWorkflow({\n  model: 'gpt-4o'\n})`,
-    upvotesCount: 198,
-    commentsCount: 14,
-    bookmarksCount: 950,
-    viewsCount: 2100,
-    reactionsCounts: { mindblown: 22, cleancode: 7, greatui: 11, blazingfast: 5, loved: 8, hot: 18 },
-    user: {
-      name: "Sarah Chen",
-      displayName: "Sarah Chen",
-      slug: "schen",
-      badge: "AI Engineer",
-    },
-    technologies: [
-      { name: "TypeScript", slug: "typescript" },
-      { name: "Python", slug: "python" },
-      { name: "Docker", slug: "docker" },
-    ],
-  },
-  {
-    id: "proj-3",
-    slug: "devlens-code-snippet-visualizer",
-    title: "DevLens: Code Snippet Visualizer",
-    summary:
-      "Turn messy code snippets into aesthetic, exportable 4K images with customizable syntax themes, gradients, and custom watermarks.",
-    statusBadge: { text: "Trending #1", variant: "blue" },
-    publishedAt: "yesterday",
-    liveUrl: "https://devlens.app",
-    repoUrl: "https://github.com/devlens/app",
-    codeSnippet: `git clone devlens-visualizer.git`,
-    upvotesCount: 512,
-    commentsCount: 42,
-    bookmarksCount: 2400,
-    viewsCount: 5800,
-    reactionsCounts: { mindblown: 31, cleancode: 16, greatui: 45, blazingfast: 12, loved: 29, hot: 41 },
-    user: {
-      name: "Alex Rivera",
-      displayName: "Alex Rivera",
-      slug: "alexr",
-      badge: "Designer",
-    },
-    technologies: [
-      { name: "React", slug: "react" },
-      { name: "Supabase", slug: "supabase" },
-      { name: "Tailwind", slug: "tailwind" },
-    ],
-  },
-  {
-    id: "proj-4",
-    slug: "postgressync-zero-etl-engine",
-    title: "PostgresSync: Zero ETL Engine",
-    summary:
-      "Sync real time tables between PostgreSQL and client states with end to end type safety, optimistic offline cache, and zero latency.",
-    statusBadge: { text: "Open Beta", variant: "rose" },
-    publishedAt: "2d ago",
-    liveUrl: "https://postgressync.io",
-    repoUrl: "https://github.com/postgressync/core",
-    codeSnippet: `SELECT * FROM schema_realtime;`,
-    upvotesCount: 284,
-    commentsCount: 19,
-    bookmarksCount: 1200,
-    viewsCount: 3600,
-    reactionsCounts: { mindblown: 19, cleancode: 28, greatui: 6, blazingfast: 34, loved: 12, hot: 15 },
-    user: {
-      name: "Marcus Brody",
-      displayName: "Marcus Brody",
-      slug: "marcusb",
-      badge: "Core Contributor",
-    },
-    technologies: [
-      { name: "Rust", slug: "rust" },
-      { name: "PostgreSQL", slug: "postgresql" },
-      { name: "Docker", slug: "docker" },
-    ],
-  },
-  {
-    id: "proj-5",
-    slug: "hyperui-framer-motion-kit",
-    title: "HyperUI: Framer Motion Kit",
-    summary:
-      "A collection of 60+ micro interactions and animated component primitives tailored specifically for developer facing landing pages.",
-    statusBadge: { text: "Components", variant: "cyan" },
-    publishedAt: "3d ago",
-    liveUrl: "https://hyperui.design",
-    repoUrl: "https://github.com/hyperui/kit",
-    codeSnippet: `npx shadcn-ui@latest add dock-bar`,
-    upvotesCount: 630,
-    commentsCount: 35,
-    bookmarksCount: 3100,
-    viewsCount: 7400,
-    reactionsCounts: { mindblown: 40, cleancode: 18, greatui: 62, blazingfast: 15, loved: 38, hot: 55 },
-    user: {
-      name: "Elena Rostova",
-      displayName: "Elena Rostova",
-      slug: "elena",
-      badge: "Design Technologist",
-    },
-    technologies: [
-      { name: "Framer", slug: "framer" },
-      { name: "Tailwind", slug: "tailwind" },
-      { name: "React 19", slug: "react" },
-    ],
-  },
-  {
-    id: "proj-6",
-    slug: "bunflare-edge-microservices",
-    title: "Bunflare: Edge Microservices",
-    summary:
-      "Lightweight starter toolkit for zero cold start edge functions powered by Bun, Cloudflare Workers, and Hono with full OpenAPI typing.",
-    statusBadge: { text: "Open Source", variant: "purple" },
-    publishedAt: "Oct 08",
-    liveUrl: "https://bunflare.dev",
-    repoUrl: "https://github.com/bunflare/starter",
-    codeSnippet: `> bun test --coverage --bail`,
-    upvotesCount: 441,
-    commentsCount: 31,
-    bookmarksCount: 2000,
-    viewsCount: 4900,
-    reactionsCounts: { mindblown: 27, cleancode: 21, greatui: 9, blazingfast: 42, loved: 17, hot: 26 },
-    user: {
-      name: "Kenji Sato",
-      displayName: "Kenji Sato",
-      slug: "kenji",
-      badge: "Infrastructure",
-    },
-    technologies: [
-      { name: "Bun", slug: "bun" },
-      { name: "Cloudflare", slug: "cloudflare" },
-      { name: "Hono", slug: "hono" },
-    ],
-  },
-];
 
 interface HomepageFeedProps {
   initialProjects?: ProjectCardData[];
 }
 
 function HomepageFeedContent({
-  initialProjects = INITIAL_SHOWCASE_PROJECTS,
+  initialProjects = [],
 }: HomepageFeedProps) {
-  // Real projects state with seamless initial fallback
+  // Real projects state initialized with real server projects (or empty array)
   const [feedProjects, setFeedProjects] = useState<ProjectCardData[]>(initialProjects);
 
-  // Client-side dynamic hydration from real database explore API
+  // Client-side dynamic refresh from real database explore API
   React.useEffect(() => {
     let isMounted = true;
     async function fetchLatestProjects() {
@@ -194,7 +23,7 @@ function HomepageFeedContent({
         const res = await fetch("/api/explore?tab=trending");
         if (!res.ok) return;
         const data = await res.json();
-        if (data.projects && Array.isArray(data.projects) && data.projects.length > 0 && isMounted) {
+        if (data.projects && Array.isArray(data.projects) && isMounted) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mapped: ProjectCardData[] = data.projects.map((p: any) => {
             const coverUrl = p.coverImageKey
@@ -233,21 +62,19 @@ function HomepageFeedContent({
             };
           });
 
-          const realIds = new Set(mapped.map((m) => m.id));
-          const remaining = initialProjects.filter((ip) => !realIds.has(ip.id));
-          setFeedProjects([...mapped, ...remaining]);
+          setFeedProjects(mapped);
         }
       } catch {
-        // Keep initial fallback feed
+        // Keep existing loaded feed
       }
     }
     fetchLatestProjects();
     return () => {
       isMounted = false;
     };
-  }, [initialProjects]);
+  }, []);
 
-  // Instant reactive category state from CategoryFilterProvider (daily.dev style smooth responses)
+  // Instant reactive category state from CategoryFilterProvider
   const { selectedCategory } = useCategoryFilter();
 
   // Sort State
@@ -258,7 +85,7 @@ function HomepageFeedContent({
   const sortedProjects = useMemo(() => {
     let list = [...feedProjects];
 
-    // Category filter matching IDs smoothly
+    // Category filter matching
     if (selectedCategory && selectedCategory !== "all") {
       list = list.filter((p) => {
         if (selectedCategory === "nextjs") {
@@ -304,7 +131,7 @@ function HomepageFeedContent({
 
   return (
     <section className="space-y-5 sm:space-y-6 w-full">
-      {/* Feed Controls Header: Sort dropdown + Status count without animated dots */}
+      {/* Feed Controls Header: Sort dropdown + Status count */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
         <div className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)] font-mono">
           <span>Showing {sortedProjects.length} showcases</span>
@@ -342,12 +169,12 @@ function HomepageFeedContent({
                   }}
                   className={`w-full text-left px-3.5 py-2 text-xs font-medium transition-colors cursor-pointer flex items-center justify-between ${
                     sortOption === key
-                      ? "text-[#0052ff] dark:text-blue-400 font-bold bg-[var(--surface-glass)]"
+                      ? "text-[#0052ff] font-bold bg-[var(--surface-glass)]"
                       : "text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                   }`}
                 >
                   <span>{sortLabels[key]}</span>
-                  {sortOption === key && <span className="text-[#0052ff] dark:text-blue-400">✓</span>}
+                  {sortOption === key && <span className="text-[#0052ff]">✓</span>}
                 </button>
               ))}
             </div>
@@ -356,16 +183,39 @@ function HomepageFeedContent({
       </div>
 
       {/* 
-        Awwwards Intrinsic Fluid Card Grid:
+        Awwwards Intrinsic Fluid Card Grid / Empty State:
         - Mobile: 1 fluid column (320px - 639px).
         - Tablet/Desktop: Container-aware repeat(auto-fill, minmax(360px, 1fr)).
-        - Cards guaranteed >=360px width with zero HUD clipping!
       */}
-      <div className="awwwards-fluid-grid transition-all duration-300">
-        {sortedProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+      {sortedProjects.length === 0 ? (
+        <div className="rounded-3xl border border-[var(--border)] bg-white/70 backdrop-blur-md p-10 sm:p-14 text-center shadow-sm max-w-xl mx-auto my-8 space-y-5">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 text-[#0052ff] flex items-center justify-center mx-auto text-2xl shadow-inner border border-blue-100">
+            🚀
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl sm:text-2xl font-black text-[#0c0d12] tracking-tight">
+              Be the first to showcase your project
+            </h3>
+            <p className="text-sm text-[#555a6d] leading-relaxed max-w-md mx-auto">
+              Showphan is live! Share your work with fellow engineers, gather kudos, and discover high-impact engineering builds.
+            </p>
+          </div>
+          <div className="pt-2">
+            <Link
+              href="/dashboard/new"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0052ff] hover:bg-blue-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 active:scale-98 transition-all cursor-pointer"
+            >
+              <span>+ Submit First Project</span>
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="awwwards-fluid-grid transition-all duration-300">
+          {sortedProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

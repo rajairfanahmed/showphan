@@ -130,10 +130,10 @@ export function PeerReactions({
               type="button"
               onClick={() => handleToggle(key)}
               title={item.description}
-              className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all duration-200 select-none cursor-pointer ${
+              className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all duration-200 select-none cursor-pointer ${
                 isSelected
-                  ? "bg-amber-500/15 border-amber-500/60 text-amber-400 font-bold shadow-sm shadow-amber-500/10 scale-105"
-                  : "bg-zinc-900/80 border-zinc-800 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-800/80 hover:text-white"
+                  ? "bg-blue-500/10 border-blue-500/40 text-[#0052ff] font-bold shadow-sm shadow-blue-500/10 scale-105"
+                  : "bg-white border-[var(--border)] text-[var(--foreground)] hover:border-blue-500/30 hover:bg-slate-50"
               }`}
             >
               <span className="text-sm transition-transform duration-200 group-hover:scale-125">
@@ -143,8 +143,8 @@ export function PeerReactions({
               <span
                 className={`text-[11px] px-1.5 py-0.2 rounded-full font-mono ${
                   isSelected
-                    ? "bg-amber-500/25 text-amber-300"
-                    : "bg-zinc-800 text-zinc-400 group-hover:text-zinc-200"
+                    ? "bg-blue-500/20 text-[#0052ff]"
+                    : "bg-slate-100 text-[var(--foreground-muted)] group-hover:text-[var(--foreground)]"
                 }`}
               >
                 {count}

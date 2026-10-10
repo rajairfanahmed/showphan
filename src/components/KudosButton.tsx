@@ -91,26 +91,26 @@ export function KudosButton({
       onClick={handleClick}
       type="button"
       title={session?.user ? (hasGiven ? "Remove Kudos" : "Award Kudos") : "Sign in to give Kudos"}
-      className={`relative inline-flex items-center justify-center rounded-lg border font-semibold transition-all duration-200 select-none cursor-pointer ${sizeClasses} ${
+      className={`relative inline-flex items-center justify-center rounded-xl border font-semibold transition-all duration-200 select-none cursor-pointer ${sizeClasses} ${
         hasGiven
-          ? "border-amber-500/50 bg-amber-500/15 text-amber-400 shadow-sm shadow-amber-500/20"
-          : "border-[var(--border)] bg-[var(--card)] hover:border-amber-500/40 hover:bg-amber-500/5 text-[var(--foreground)]"
+          ? "border-blue-500/50 bg-blue-500/10 text-[#0052ff] shadow-sm shadow-blue-500/20"
+          : "border-[var(--border)] bg-white hover:border-blue-500/40 hover:bg-blue-50/50 text-[var(--foreground)]"
       } ${bursting ? "scale-105" : "scale-100"}`}
     >
-      {/* Amber Particle Burst Micro-Interaction */}
+      {/* Blue Particle Burst Micro-Interaction */}
       {bursting && (
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <span className="kudos-particle absolute w-1.5 h-1.5 rounded-full bg-amber-400" style={{ "--tx": "-16px", "--ty": "-18px" } as React.CSSProperties} />
-          <span className="kudos-particle absolute w-1 h-1 rounded-full bg-amber-300" style={{ "--tx": "18px", "--ty": "-16px" } as React.CSSProperties} />
-          <span className="kudos-particle absolute w-1.5 h-1.5 rounded-full bg-amber-500" style={{ "--tx": "0px", "--ty": "-24px" } as React.CSSProperties} />
-          <span className="kudos-particle absolute w-1 h-1 rounded-full bg-yellow-400" style={{ "--tx": "-20px", "--ty": "4px" } as React.CSSProperties} />
-          <span className="kudos-particle absolute w-1.5 h-1.5 rounded-full bg-amber-400" style={{ "--tx": "20px", "--ty": "4px" } as React.CSSProperties} />
+          <span className="kudos-particle absolute w-1.5 h-1.5 rounded-full bg-blue-500" style={{ "--tx": "-16px", "--ty": "-18px" } as React.CSSProperties} />
+          <span className="kudos-particle absolute w-1 h-1 rounded-full bg-blue-400" style={{ "--tx": "18px", "--ty": "-16px" } as React.CSSProperties} />
+          <span className="kudos-particle absolute w-1.5 h-1.5 rounded-full bg-[#0052ff]" style={{ "--tx": "0px", "--ty": "-24px" } as React.CSSProperties} />
+          <span className="kudos-particle absolute w-1 h-1 rounded-full bg-indigo-400" style={{ "--tx": "-20px", "--ty": "4px" } as React.CSSProperties} />
+          <span className="kudos-particle absolute w-1.5 h-1.5 rounded-full bg-blue-500" style={{ "--tx": "20px", "--ty": "4px" } as React.CSSProperties} />
         </span>
       )}
 
       <span
         className={`transition-transform duration-200 ${
-          hasGiven ? "text-amber-400 scale-110" : "text-[var(--muted-foreground)] group-hover:text-amber-400"
+          hasGiven ? "text-[#0052ff] scale-110" : "text-[var(--muted-foreground)] group-hover:text-[#0052ff]"
         }`}
       >
         ★

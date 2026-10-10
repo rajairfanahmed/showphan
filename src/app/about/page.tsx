@@ -21,7 +21,7 @@ export default function AboutPage() {
             href="https://rajairfanahmed.vercel.app"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-bold text-amber-500 hover:text-amber-400 underline underline-offset-4"
+            className="font-bold text-[#0052ff] hover:underline underline-offset-4"
           >
             Raja Irfan Ahmed
           </a>{" "}
@@ -38,7 +38,7 @@ export default function AboutPage() {
 
         <h2 className="text-xl font-bold text-[var(--foreground)] pt-4">Free and Open Source</h2>
         <p>
-          Showphan is completely open source under the MIT License. It runs sustainably on generous cloud free tiers (Vercel, Neon PostgreSQL, and Cloudflare R2), requiring zero subscription fees or premium paywalls from developers.
+          Showphan is completely open source under the MIT License. It runs sustainably on generous cloud infrastructure (Vercel, Neon PostgreSQL, and Cloudflare R2), requiring zero subscription fees or premium paywalls from developers.
         </p>
       </div>
     </div>

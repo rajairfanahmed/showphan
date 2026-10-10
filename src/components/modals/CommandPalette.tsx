@@ -116,7 +116,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                       <span className="text-base">{item.icon}</span>
                       <span>{item.title}</span>
                     </div>
-                    <span className="text-xs text-[var(--foreground-muted)] group-hover:text-amber-500 transition-colors">
+                    <span className="text-xs text-[var(--foreground-muted)] group-hover:text-[#0052ff] transition-colors">
                       Jump →
                     </span>
                   </button>
@@ -137,7 +137,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                       onClick={() => handleSelect(`/?tech=${item.slug}`)}
                       className="flex items-center gap-2 px-3 py-2 rounded-xl text-left text-xs font-medium text-[var(--foreground)] hover:bg-[var(--surface-glass)] transition-colors cursor-pointer"
                     >
-                      <span className="w-5 h-5 rounded-md bg-[var(--surface-glass)] flex items-center justify-center text-[10px] text-amber-500 font-bold border border-[var(--border)]">
+                      <span className="w-5 h-5 rounded-md bg-blue-50 flex items-center justify-center text-[10px] text-[#0052ff] font-bold border border-blue-100">
                         {item.icon}
                       </span>
                       <span>{item.name}</span>

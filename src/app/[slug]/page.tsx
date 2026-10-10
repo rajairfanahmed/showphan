@@ -69,7 +69,7 @@ export default async function PublicProfilePage({
       <section className="border-b border-[var(--border)] bg-[var(--card)]/40 py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 text-center sm:text-left">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full border-2 border-amber-500/40 p-1 shrink-0 overflow-hidden bg-zinc-900">
+          <div className="w-24 h-24 rounded-full border-2 border-blue-500/30 p-1 shrink-0 overflow-hidden bg-slate-100">
             {user.avatarUrl ? (
               <img
                 src={user.avatarUrl}
@@ -77,7 +77,7 @@ export default async function PublicProfilePage({
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              <div className="w-full h-full rounded-full bg-amber-500 text-black font-extrabold text-3xl flex items-center justify-center">
+              <div className="w-full h-full rounded-full bg-[#0052ff] text-white font-extrabold text-3xl flex items-center justify-center">
                 {(user.displayName || user.name)?.[0]?.toUpperCase()}
               </div>
             )}
@@ -89,7 +89,7 @@ export default async function PublicProfilePage({
               <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--foreground)] tracking-tight">
                 {user.displayName || user.name}
               </h1>
-              <span className="text-sm font-mono text-amber-500">@{user.slug}</span>
+              <span className="text-sm font-mono text-[#0052ff]">@{user.slug}</span>
             </div>
 
             <p className="text-sm sm:text-base text-[var(--muted-foreground)] leading-relaxed">
@@ -97,7 +97,7 @@ export default async function PublicProfilePage({
             </p>
 
             <div className="pt-2 flex items-center justify-center sm:justify-start gap-3">
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)]">
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full border border-[var(--border)] bg-white text-[var(--muted-foreground)]">
                 {publishedCount} {publishedCount === 1 ? "Project" : "Projects"}
               </span>
             </div>
@@ -108,8 +108,8 @@ export default async function PublicProfilePage({
       {/* Main Content Area */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-1 space-y-16 w-full">
         {publishedCount === 0 ? (
-          <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-2xl p-8 space-y-3">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-xl">
+          <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-3xl p-8 space-y-3 bg-white/50">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-[#0052ff] flex items-center justify-center mx-auto text-xl shadow-inner">
               🚀
             </div>
             <h3 className="font-bold text-lg text-[var(--foreground)]">No published projects yet</h3>
@@ -123,7 +123,7 @@ export default async function PublicProfilePage({
             {featuredProjects.length > 0 && (
               <section className="space-y-6">
                 <div className="flex items-center gap-2">
-                  <span className="text-amber-500 font-bold text-lg">★</span>
+                  <span className="text-[#0052ff] font-bold text-lg">★</span>
                   <h2 className="text-xl font-bold tracking-tight text-[var(--foreground)]">
                     Featured Work
                   </h2>
@@ -136,9 +136,9 @@ export default async function PublicProfilePage({
                       <Link
                         key={project.id}
                         href={`/${user.slug}/${project.slug}`}
-                        className="group flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden hover:border-amber-500/60 hover:-translate-y-1 transition-all duration-200 shadow-md"
+                        className="group flex flex-col rounded-2xl border border-[var(--border)] bg-white overflow-hidden hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
-                        <div className="aspect-video w-full bg-zinc-900 border-b border-[var(--border)] relative overflow-hidden flex items-center justify-center">
+                        <div className="aspect-video w-full bg-slate-900 border-b border-[var(--border)] relative overflow-hidden flex items-center justify-center">
                           {coverUrl ? (
                             <img
                               src={coverUrl}
@@ -146,13 +146,13 @@ export default async function PublicProfilePage({
                               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
                             />
                           ) : (
-                            <span className="text-xs text-zinc-500 font-mono">No Cover</span>
+                            <span className="text-xs text-slate-400 font-mono">No Cover</span>
                           )}
                         </div>
 
                         <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-2">
-                            <h3 className="font-bold text-xl text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
+                            <h3 className="font-bold text-xl text-[var(--foreground)] group-hover:text-[#0052ff] transition-colors">
                               {project.title}
                             </h3>
                             <p className="text-sm text-[var(--muted-foreground)] line-clamp-2">
@@ -199,9 +199,9 @@ export default async function PublicProfilePage({
                       <Link
                         key={project.id}
                         href={`/${user.slug}/${project.slug}`}
-                        className="group flex flex-col rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden hover:border-amber-500/60 hover:-translate-y-1 transition-all duration-200 shadow-sm"
+                        className="group flex flex-col rounded-2xl border border-[var(--border)] bg-white overflow-hidden hover:border-blue-500/40 hover:-translate-y-1 transition-all duration-200 shadow-sm hover:shadow-md"
                       >
-                        <div className="aspect-video w-full bg-zinc-900 border-b border-[var(--border)] relative overflow-hidden flex items-center justify-center">
+                        <div className="aspect-video w-full bg-slate-900 border-b border-[var(--border)] relative overflow-hidden flex items-center justify-center">
                           {coverUrl ? (
                             <img
                               src={coverUrl}
@@ -209,13 +209,13 @@ export default async function PublicProfilePage({
                               className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
                             />
                           ) : (
-                            <span className="text-xs text-zinc-500 font-mono">No Cover</span>
+                            <span className="text-xs text-slate-400 font-mono">No Cover</span>
                           )}
                         </div>
 
                         <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                           <div className="space-y-1.5">
-                            <h3 className="font-bold text-base text-[var(--foreground)] group-hover:text-amber-500 transition-colors">
+                            <h3 className="font-bold text-base text-[var(--foreground)] group-hover:text-[#0052ff] transition-colors">
                               {project.title}
                             </h3>
                             <p className="text-xs text-[var(--muted-foreground)] line-clamp-2">
@@ -233,7 +233,7 @@ export default async function PublicProfilePage({
                               />
                             ))}
                             {project.technologies.length > 3 && (
-                              <span className="text-xs font-medium px-2 py-0.5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)]">
+                              <span className="text-xs font-medium px-2 py-0.5 rounded border border-[var(--border)] bg-white text-[var(--muted-foreground)]">
                                 +{project.technologies.length - 3}
                               </span>
                             )}
@@ -253,7 +253,7 @@ export default async function PublicProfilePage({
       <section className="border-t border-[var(--border)] py-8 text-center text-xs text-[var(--muted-foreground)]">
         <p>
           Like this portfolio?{" "}
-          <Link href="/" className="text-amber-500 font-semibold hover:underline">
+          <Link href="/dashboard/new" className="text-[#0052ff] font-semibold hover:underline">
             Create your own developer showcase for free on Showphan
           </Link>
         </p>

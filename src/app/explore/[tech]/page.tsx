@@ -122,7 +122,7 @@ export default async function ExploreTechPage({
               Explore
             </Link>
             <span>/</span>
-            <span className="text-amber-500 font-semibold">{technology.name}</span>
+            <span className="text-[#0052ff] font-semibold">{technology.name}</span>
           </nav>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pt-2">
@@ -133,7 +133,7 @@ export default async function ExploreTechPage({
                   iconName={technology.iconColor ?? undefined}
                   size="md"
                 />
-                <span className="text-xs px-2.5 py-0.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)] font-mono">
+                <span className="text-xs px-2.5 py-0.5 rounded-full border border-[var(--border)] bg-white text-[var(--muted-foreground)] font-mono">
                   {totalCount} {totalCount === 1 ? "showcase" : "showcases"}
                 </span>
               </div>
@@ -149,7 +149,7 @@ export default async function ExploreTechPage({
 
             <Link
               href="/explore"
-              className="self-start sm:self-center inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] hover:border-amber-500/40 text-xs font-semibold text-[var(--foreground)] transition-colors"
+              className="self-start sm:self-center inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[var(--border)] bg-white hover:border-blue-500/40 text-xs font-semibold text-[var(--foreground)] transition-colors shadow-sm"
             >
               <span>← All Technologies</span>
             </Link>
@@ -164,10 +164,10 @@ export default async function ExploreTechPage({
           <div className="flex items-center gap-2">
             <Link
               href={`/explore/${technology.slug}?tab=trending`}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-colors ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-colors ${
                 tab === "trending"
-                  ? "bg-amber-500 text-black shadow-sm"
-                  : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                  ? "bg-[#0052ff] text-white shadow-sm"
+                  : "bg-white border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/40"
               }`}
             >
               <span>🔥</span>
@@ -175,10 +175,10 @@ export default async function ExploreTechPage({
             </Link>
             <Link
               href={`/explore/${technology.slug}?tab=newest`}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-colors ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-colors ${
                 tab === "newest"
-                  ? "bg-amber-500 text-black shadow-sm"
-                  : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                  ? "bg-[#0052ff] text-white shadow-sm"
+                  : "bg-white border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/40"
               }`}
             >
               <span>⚡</span>
@@ -186,10 +186,10 @@ export default async function ExploreTechPage({
             </Link>
             <Link
               href={`/explore/${technology.slug}?tab=kudos`}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg font-semibold text-xs transition-colors ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-semibold text-xs transition-colors ${
                 tab === "kudos"
-                  ? "bg-amber-500 text-black shadow-sm"
-                  : "bg-[var(--card)] border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-amber-500/40"
+                  ? "bg-[#0052ff] text-white shadow-sm"
+                  : "bg-white border border-[var(--border)] text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:border-blue-500/40"
               }`}
             >
               <span>★</span>
@@ -204,8 +204,8 @@ export default async function ExploreTechPage({
 
         {/* Project Grid */}
         {projects.length === 0 ? (
-          <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-2xl p-8 space-y-4">
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-xl">
+          <div className="text-center py-20 border border-dashed border-[var(--border)] rounded-3xl p-8 space-y-4 bg-white/50">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 text-[#0052ff] flex items-center justify-center mx-auto text-xl shadow-inner">
               🛠️
             </div>
             <h3 className="font-bold text-lg text-[var(--foreground)]">
@@ -217,15 +217,15 @@ export default async function ExploreTechPage({
             <div className="pt-2 flex items-center justify-center gap-3">
               <Link
                 href="/explore"
-                className="px-4 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs font-semibold text-[var(--foreground)] hover:border-amber-500/40 transition-colors"
+                className="px-4 py-2 rounded-xl border border-[var(--border)] bg-white text-xs font-semibold text-[var(--foreground)] hover:border-blue-500/40 transition-colors"
               >
                 Browse All
               </Link>
               <Link
-                href="/dashboard"
-                className="px-4 py-2 rounded-lg bg-amber-500 text-black text-xs font-semibold hover:bg-amber-400 transition-colors"
+                href="/dashboard/new"
+                className="px-4 py-2 rounded-xl bg-[#0052ff] text-white text-xs font-semibold hover:bg-blue-600 transition-colors shadow-sm"
               >
-                Publish Project
+                + Submit Project
               </Link>
             </div>
           </div>

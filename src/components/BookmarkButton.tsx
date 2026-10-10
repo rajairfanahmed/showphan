@@ -73,13 +73,13 @@ export function BookmarkButton({
       }
       className={`inline-flex items-center justify-center border transition-all duration-200 select-none cursor-pointer ${sizeClasses} ${
         bookmarked
-          ? "border-amber-500/50 bg-amber-500/15 text-amber-400 shadow-sm shadow-amber-500/20"
-          : "border-[var(--border)] bg-[var(--card)] hover:border-amber-500/40 hover:bg-amber-500/5 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          ? "border-blue-500/50 bg-blue-500/10 text-[#0052ff] shadow-sm shadow-blue-500/20"
+          : "border-[var(--border)] bg-white hover:border-blue-500/40 hover:bg-blue-50/50 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
       }`}
     >
       <svg
         className={`${iconSize} transition-transform duration-200 ${
-          bookmarked ? "scale-110 fill-current text-amber-400" : "fill-none text-current"
+          bookmarked ? "scale-110 fill-current text-[#0052ff]" : "fill-none text-current"
         }`}
         viewBox="0 0 24 24"
         stroke="currentColor"

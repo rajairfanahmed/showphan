@@ -20,13 +20,10 @@ export async function getExploreProjects(options: ExploreFilterOptions = {}) {
     userId,
   } = options;
 
-  // Base where clause: only published projects with searchVisible users
+  // Base where clause: all published projects in community feed
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const where: any = {
     status: ProjectStatus.PUBLISHED,
-    user: {
-      searchVisible: true,
-    },
   };
 
   if (techSlug) {

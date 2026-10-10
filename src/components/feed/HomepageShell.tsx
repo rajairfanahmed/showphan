@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Sidebar } from "@/components/navigation/Sidebar";
-import { HomepageFeed, INITIAL_SHOWCASE_PROJECTS } from "@/components/feed/HomepageFeed";
+import { HomepageFeed } from "@/components/feed/HomepageFeed";
 import { FloatingActions } from "@/components/common/FloatingActions";
 import { MobileNavigationDock } from "@/components/navigation/MobileNavigationDock";
 import { ProjectCardData } from "@/components/cards/ProjectCard";
@@ -12,7 +12,7 @@ interface HomepageShellProps {
 }
 
 export function HomepageShell({
-  initialProjects = INITIAL_SHOWCASE_PROJECTS,
+  initialProjects = [],
 }: HomepageShellProps) {
   const [activeNav, setActiveNav] = useState("feed");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
