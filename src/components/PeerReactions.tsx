@@ -160,10 +160,10 @@ export function PeerReactions({
           href={githubDiscussionsUrl}
           target="_blank"
           rel="ugc nofollow noopener noreferrer"
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/90 hover:bg-zinc-800 hover:border-zinc-700 hover:text-white text-zinc-300 text-xs font-semibold transition-colors duration-200 shadow-sm shrink-0"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-white hover:bg-slate-50 text-[var(--foreground)] hover:text-[#0052ff] text-xs font-semibold transition-colors duration-200 shadow-sm shrink-0"
         >
           <svg
-            className="w-4 h-4 fill-current text-zinc-400 group-hover:text-white"
+            className="w-4 h-4 fill-current text-[var(--foreground-muted)] group-hover:text-[#0052ff]"
             viewBox="0 0 24 24"
           >
             <path
@@ -173,7 +173,7 @@ export function PeerReactions({
             />
           </svg>
           <span>Discuss on GitHub</span>
-          <span className="text-zinc-500">↗</span>
+          <span className="text-[var(--foreground-muted)] text-[10px]">↗</span>
         </a>
       )}
     </div>

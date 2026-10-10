@@ -90,9 +90,13 @@ _Avoid_: Feed, Marketplace, Project list, Search catalog.
 An embeddable dynamic SVG/WebP banner rendered via `/api/badge/[slug]` for Developers to embed in GitHub READMEs, generating proof-of-work visibility and repo stars.
 _Avoid_: Shield, Widget, Embed button.
 
-**Live Sandbox**:
-An isolated in-browser preview environment (Sandpack / responsive iframe container) embedded directly on project pages, allowing Visitors to test live applications without leaving Showphan.
-_Avoid_: Code runner, Web emulator, External demo.
+**Media Lightbox**:
+The high-resolution modal zoom overlay invoked by clicking a project's 16:9 Cover Image on the showcase page, allowing visitors to inspect fine UI details, typography, and screenshots without distraction.
+_Avoid_: Popup, Photo zoom, Image modal.
+
+**Live Site Link**:
+The primary outbound external link on a project showcase connecting visitors directly to the developer's live production application, opening in a secure new tab with proper rel security attributes.
+_Avoid_: External demo, Preview iframe, Sandbox container.
 
 **Creator Attribution**:
 The permanent branding and metadata linking the platform and open-source codebase to Raja Irfan Ahmed (https://rajairfanahmed.vercel.app).

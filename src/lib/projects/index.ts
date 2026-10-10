@@ -286,25 +286,36 @@ export async function getPublicProject(userSlug: string, projectSlug: string) {
 
   if (!project) return null;
 
-  // More projects by the same developer (up to 3)
-  const moreProjects = await prisma.project.findMany({
-    where: {
-      userId: user.id,
-      status: ProjectStatus.PUBLISHED,
-      NOT: { id: project.id },
-    },
-    take: 3,
-    orderBy: { createdAt: "desc" },
-    include: {
-      technologies: {
-        include: { technology: true },
+  // Query author's other published projects, total kudos, and published count
+  const [moreProjects, kudosAgg, publishedCount] = await Promise.all([
+    prisma.project.findMany({
+      where: {
+        userId: user.id,
+        status: ProjectStatus.PUBLISHED,
+        NOT: { id: project.id },
       },
-    },
-  });
+      take: 3,
+      orderBy: { createdAt: "desc" },
+      include: {
+        technologies: {
+          include: { technology: true },
+        },
+      },
+    }),
+    prisma.project.aggregate({
+      where: { userId: user.id, status: ProjectStatus.PUBLISHED },
+      _sum: { kudosCount: true },
+    }),
+    prisma.project.count({
+      where: { userId: user.id, status: ProjectStatus.PUBLISHED },
+    }),
+  ]);
 
   return {
     project,
     author: user,
     moreProjects,
+    authorTotalKudos: kudosAgg._sum.kudosCount || 0,
+    authorPublishedCount: publishedCount,
   };
 }
