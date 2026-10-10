@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
 import { getCoverImageUrl } from "@/lib/storage/urls";
 
@@ -32,6 +32,18 @@ export function LiveCardPreviewDrawer({
   repoUrl,
   user,
 }: LiveCardPreviewDrawerProps) {
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const coverUrl = coverImageKey ? getCoverImageUrl(coverImageKey) : null;
@@ -45,10 +57,11 @@ export function LiveCardPreviewDrawer({
     publishedAt: "Just now",
     liveUrl: liveUrl || null,
     repoUrl: repoUrl || null,
-    upvotesCount: 42,
-    commentsCount: 3,
-    bookmarksCount: 12,
-    viewsCount: 180,
+    upvotesCount: 0,
+    commentsCount: 0,
+    bookmarksCount: 0,
+    viewsCount: 0,
+    reactionsCounts: {},
     statusBadge: { text: "Preview", variant: "blue" },
     user: {
       name: user.displayName || user.name || "Developer",
@@ -57,12 +70,24 @@ export function LiveCardPreviewDrawer({
       avatarUrl: user.avatarUrl || null,
       badge: "Maker",
     },
-    technologies: technologies.length > 0 ? technologies : [{ name: "Next.js", slug: "nextjs" }],
+    technologies:
+      technologies.length > 0
+        ? technologies
+        : [{ name: "Next.js", slug: "nextjs", iconColor: "logos:nextjs-icon" }],
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-lg rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 sm:p-6 shadow-2xl space-y-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in cursor-pointer select-none"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Live Feed Card Preview"
+    >
+      <div
+        className="relative w-full max-w-lg rounded-3xl border border-[var(--border)] bg-[var(--background)] p-4 sm:p-6 shadow-2xl space-y-4 cursor-default select-text"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
@@ -84,7 +109,7 @@ export function LiveCardPreviewDrawer({
         </div>
 
         <p className="text-xs text-[var(--foreground-muted)]">
-          This is exactly how your showcase will render on the homepage discovery feed:
+          Click anywhere outside to dismiss. This is exactly how your showcase will render on the discovery feed:
         </p>
 
         {/* Live ProjectCard Render */}

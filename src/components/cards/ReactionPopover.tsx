@@ -26,7 +26,7 @@ interface ReactionPopoverProps {
 
 export function ReactionPopover({
   projectId,
-  initialCounts = { mindblown: 5, cleancode: 3, greatui: 8, blazingfast: 4, loved: 6, hot: 12 },
+  initialCounts = {},
   initialActiveReaction = null,
 }: ReactionPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);

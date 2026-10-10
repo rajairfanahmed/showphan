@@ -11,23 +11,34 @@ const emptySubscribe = () => () => {};
 
 interface HomepageShellProps {
   initialProjects?: ProjectCardData[];
+  initialCollapsed?: boolean;
 }
 
 export function HomepageShell({
   initialProjects = [],
+  initialCollapsed = false,
 }: HomepageShellProps) {
   const [activeNav, setActiveNav] = useState("feed");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("showphan-sidebar-collapsed") === "true";
+    if (typeof window === "undefined") return initialCollapsed;
+    try {
+      const stored = localStorage.getItem("showphan-sidebar-collapsed");
+      if (stored !== null) return stored === "true";
+    } catch {}
+    return initialCollapsed;
   });
 
   const handleToggleSidebar = () => {
     setIsSidebarCollapsed((prev) => {
       const next = !prev;
-      localStorage.setItem("showphan-sidebar-collapsed", String(next));
+      // Persist to cookie for flicker-free SSR refresh matching
+      document.cookie = `showphan-sidebar-collapsed=${next}; path=/; max-age=31536000; SameSite=Lax`;
+      try {
+        localStorage.setItem("showphan-sidebar-collapsed", String(next));
+      } catch {}
       return next;
     });
   };

@@ -3,10 +3,11 @@
 import { useEffect } from "react";
 import { Icon } from "@iconify/react/offline";
 import { initOfflineIcons } from "@/lib/catalog/icons";
+import { getTechIcon } from "@/lib/catalog/technologies";
 
 interface TechBadgeProps {
   name: string;
-  iconName?: string;
+  iconName?: string | null;
   size?: "sm" | "md";
 }
 
@@ -34,9 +35,13 @@ export function TechBadge({ name, iconName, size = "md" }: TechBadgeProps) {
 
   const sizeClasses = size === "sm" ? "text-xs px-2 py-0.5" : "text-sm px-2.5 py-1";
   const iconSize = size === "sm" ? 14 : 16;
-  const isCustom = !iconName || iconName === "custom" || iconName.trim() === "";
 
-  if (isCustom) {
+  // Auto-resolve brand icon if missing or plain name
+  const resolvedIcon =
+    (iconName && iconName !== "custom" && iconName.trim() !== "" ? iconName : null) ||
+    getTechIcon(name);
+
+  if (!resolvedIcon) {
     const palette = getPaletteForName(name);
     return (
       <span
@@ -50,9 +55,9 @@ export function TechBadge({ name, iconName, size = "md" }: TechBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] font-medium ${sizeClasses} shadow-sm select-none`}
+      className={`inline-flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] font-medium ${sizeClasses} shadow-sm select-none hover:border-blue-500/40 transition-colors`}
     >
-      <Icon icon={iconName} width={iconSize} height={iconSize} className="shrink-0" />
+      <Icon icon={resolvedIcon} width={iconSize} height={iconSize} className="shrink-0" />
       <span>{name}</span>
     </span>
   );

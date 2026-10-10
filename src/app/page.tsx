@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { HomepageShell } from "@/components/feed/HomepageShell";
 import { getExploreProjects } from "@/lib/projects/explore";
 import { getCoverImageUrl } from "@/lib/storage/urls";
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
+  const cookieStore = await cookies();
+  const initialCollapsed = cookieStore.get("showphan-sidebar-collapsed")?.value === "true";
+
   let projects: ProjectCardData[] = [];
 
   // Attempt to load real projects whenever database is reachable
@@ -72,5 +76,5 @@ export default async function HomePage() {
     }
   }
 
-  return <HomepageShell initialProjects={projects} />;
+  return <HomepageShell initialProjects={projects} initialCollapsed={initialCollapsed} />;
 }

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { VoteControl } from "./VoteControl";
 import { ReactionPopover } from "./ReactionPopover";
+import { TechBadge } from "@/components/TechBadge";
 
 export interface ProjectCardData {
   id: string;
@@ -45,7 +46,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const [bookmarked, setBookmarked] = useState(false);
-  const [bookmarkCount, setBookmarkCount] = useState(project.bookmarksCount || 18);
+  const [bookmarkCount, setBookmarkCount] = useState(project.bookmarksCount ?? 0);
   const [copied, setCopied] = useState(false);
 
   const user = project.user;
@@ -185,16 +186,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {project.summary}
           </p>
 
-          {/* Technology Badges without dot icons */}
+          {/* Technology Badges with official brand icons */}
           {project.technologies && project.technologies.length > 0 && (
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-0.5">
               {project.technologies.map((tech) => (
-                <span
+                <TechBadge
                   key={tech.slug}
-                  className="inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md text-[11px] sm:text-xs font-medium border border-[var(--tag-border)] bg-[var(--tag-bg)] text-[var(--tag-text)]"
-                >
-                  <span>{tech.name}</span>
-                </span>
+                  name={tech.name}
+                  iconName={tech.iconColor || undefined}
+                  size="sm"
+                />
               ))}
             </div>
           )}
@@ -207,13 +208,13 @@ export function ProjectCard({ project }: ProjectCardProps) {
             {/* Upvote / Downvote */}
             <VoteControl
               projectId={project.id}
-              initialVoteCount={project.upvotesCount || 342}
+              initialVoteCount={project.upvotesCount ?? 0}
             />
 
             {/* Reactions Popover */}
             <ReactionPopover
               projectId={project.id}
-              initialCounts={project.reactionsCounts}
+              initialCounts={project.reactionsCounts || {}}
             />
           </div>
 
@@ -228,7 +229,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <span className="font-mono">{formatMetric(project.commentsCount || 28)}</span>
+              <span className="font-mono">{formatMetric(project.commentsCount ?? 0)}</span>
             </Link>
 
             {/* Bookmark icon */}
@@ -260,7 +261,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              <span className="font-mono">{project.viewsCount ? formatMetric(project.viewsCount) : "4.2k"}</span>
+              <span className="font-mono">{formatMetric(project.viewsCount ?? 0)}</span>
             </div>
 
             {/* Share icon */}

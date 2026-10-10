@@ -11,7 +11,7 @@ interface VoteControlProps {
 
 export function VoteControl({
   projectId,
-  initialVoteCount = 342,
+  initialVoteCount = 0,
   initialVoteState = null,
 }: VoteControlProps) {
   const [voteCount, setVoteCount] = useState(initialVoteCount);

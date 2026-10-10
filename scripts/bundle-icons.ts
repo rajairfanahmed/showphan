@@ -4,7 +4,7 @@ import type { IconifyJSON } from "@iconify/types";
 import { getIcons, minifyIconSet } from "@iconify/utils";
 import logosJson from "@iconify-json/logos/icons.json";
 import simpleIconsJson from "@iconify-json/simple-icons/icons.json";
-import { STARTER_TECHNOLOGIES } from "../prisma/seed";
+import { CATALOG_TECHNOLOGIES } from "../src/lib/catalog/technologies";
 
 function bundleIcons() {
   console.log("📦 Extracting offline Iconify SVG bundle...");
@@ -12,11 +12,13 @@ function bundleIcons() {
   const logoNames = new Set<string>();
   const simpleIconNames = new Set<string>();
 
-  for (const tech of STARTER_TECHNOLOGIES) {
-    if (tech.iconColor.startsWith("logos:")) {
+  for (const tech of CATALOG_TECHNOLOGIES) {
+    if (tech.iconColor && tech.iconColor.startsWith("logos:")) {
       logoNames.add(tech.iconColor.replace("logos:", ""));
+    } else if (tech.iconColor && tech.iconColor.startsWith("simple-icons:")) {
+      simpleIconNames.add(tech.iconColor.replace("simple-icons:", ""));
     }
-    if (tech.iconMono.startsWith("simple-icons:")) {
+    if (tech.iconMono && tech.iconMono.startsWith("simple-icons:")) {
       simpleIconNames.add(tech.iconMono.replace("simple-icons:", ""));
     }
   }
