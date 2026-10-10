@@ -1,21 +1,16 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, use, useMemo } from "react";
+import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import { evaluateQualityGate, QualityGateEvaluation } from "@/lib/projects/quality-gate";
-import { getCoverImageUrl } from "@/lib/storage/urls";
-import { TechBadge } from "@/components/TechBadge";
-
-interface Technology {
-  id: string;
-  name: string;
-  slug: string;
-  iconColor: string;
-  iconMono: string;
-}
+import { CoverImageUploader } from "@/components/studio/CoverImageUploader";
+import { TechStackPicker, TechnologyItem } from "@/components/studio/TechStackPicker";
+import { TagTokenizer } from "@/components/studio/TagTokenizer";
+import { StickyActionDock } from "@/components/studio/StickyActionDock";
+import { LiveCardPreviewDrawer } from "@/components/studio/LiveCardPreviewDrawer";
 
 interface ProjectLoadedItem {
   id: string;
@@ -30,10 +25,17 @@ interface ProjectLoadedItem {
   role?: string;
   learnings?: string;
   tags?: string[];
-  technologies?: { technology: { id: string } }[];
+  technologies?: { technology: TechnologyItem }[];
   slug?: string;
   status?: "DRAFT" | "PUBLISHED";
   updatedAt?: string;
+  user?: {
+    id: string;
+    slug: string;
+    name?: string | null;
+    displayName?: string | null;
+    avatarUrl?: string | null;
+  };
 }
 
 interface GithubRepositoryItem {
@@ -52,7 +54,6 @@ export default function EditProjectPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const router = useRouter();
 
   // Form State
   const [title, setTitle] = useState("");
@@ -62,48 +63,49 @@ export default function EditProjectPage({
   const [repoUrl, setRepoUrl] = useState("");
   const [sandboxUrl, setSandboxUrl] = useState("");
   const [sandboxEnabled, setSandboxEnabled] = useState(false);
-  const [isPrivateCode, setIsPrivateCode] = useState(false);
   const [description, setDescription] = useState("");
-  const [role, setRole] = useState("");
-  const [learnings, setLearnings] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState("");
   const [selectedTechIds, setSelectedTechIds] = useState<string[]>([]);
+  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("DRAFT");
 
   // Metadata & System State
-  const [status, setStatus] = useState<"DRAFT" | "PUBLISHED">("DRAFT");
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [clientUpdatedAt, setClientUpdatedAt] = useState<string>("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [technologiesCatalog, setTechnologiesCatalog] = useState<TechnologyItem[]>([]);
+  const [authorUser, setAuthorUser] = useState<{
+    slug: string;
+    displayName?: string | null;
+    name?: string | null;
+    avatarUrl?: string | null;
+  }>({
+    slug: "creator",
+    displayName: "Maker",
+  });
 
-  // Available Technologies
-  const [technologies, setTechnologies] = useState<Technology[]>([]);
-  const [techSearch, setTechSearch] = useState("");
-
-  // UI Tabs & Modals
-  const [mobileTab, setMobileTab] = useState<"edit" | "preview">("edit");
+  // UI Modals & Drawers
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [descTab, setDescTab] = useState<"write" | "preview">("write");
-  const [imageWarning, setImageWarning] = useState<string | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [githubModalOpen, setGithubModalOpen] = useState(false);
   const [githubRepos, setGithubRepos] = useState<GithubRepositoryItem[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [publishSuccessUrl, setPublishSuccessUrl] = useState<string | null>(null);
+  const [syncToast, setSyncToast] = useState<string | null>(null);
 
   // 1. Initial Load
   useEffect(() => {
     async function loadData() {
       try {
         setLoading(true);
-        // Load Tech Catalog
+        // Load Technologies Catalog
         const techRes = await fetch("/api/technologies");
         if (techRes.ok) {
           const tData = await techRes.json();
-          setTechnologies(tData.technologies || []);
+          setTechnologiesCatalog(tData.technologies || []);
         }
 
-        // Load Projects to find this one
+        // Load Project Details
         const projRes = await fetch("/api/projects");
         if (projRes.ok) {
           const pData = await projRes.json();
@@ -116,14 +118,20 @@ export default function EditProjectPage({
             setRepoUrl(p.repoUrl || "");
             setSandboxUrl(p.sandboxUrl || "");
             setSandboxEnabled(Boolean(p.sandboxEnabled));
-            setIsPrivateCode(!p.repoUrl && Boolean(p.liveUrl));
             setDescription(p.description || "");
-            setRole(p.role || "");
-            setLearnings(p.learnings || "");
             setTags(p.tags || []);
-            setSelectedTechIds(p.technologies?.map((t: { technology: { id: string } }) => t.technology.id) || []);
+            setSelectedTechIds(p.technologies?.map((t: { technology: TechnologyItem }) => t.technology.id) || []);
             setStatus(p.status || "DRAFT");
             setClientUpdatedAt(p.updatedAt || new Date().toISOString());
+
+            if (p.user) {
+              setAuthorUser({
+                slug: p.user.slug,
+                displayName: p.user.displayName,
+                name: p.user.name,
+                avatarUrl: p.user.avatarUrl,
+              });
+            }
           }
         }
       } catch (err) {
@@ -151,8 +159,6 @@ export default function EditProjectPage({
           sandboxUrl: sandboxUrl.trim() || null,
           sandboxEnabled,
           description,
-          role,
-          learnings,
           tags,
           technologyIds: selectedTechIds,
           clientUpdatedAt,
@@ -162,7 +168,7 @@ export default function EditProjectPage({
       if (res.ok) {
         const data = await res.json();
         setClientUpdatedAt(data.project.updatedAt);
-        setLastSaved(new Date().toLocaleTimeString());
+        setLastSaved(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
       }
     } catch (err) {
       console.error("Autosave error", err);
@@ -190,206 +196,23 @@ export default function EditProjectPage({
     sandboxUrl,
     sandboxEnabled,
     description,
-    role,
-    learnings,
     tags,
     selectedTechIds,
   ]);
 
-  // 3. Image Upload & Canvas Resizing
-  const handleImageFile = async (file: File) => {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      alert("Only JPG, PNG, and WebP images are accepted.");
-      return;
-    }
-
-    setUploadingImage(true);
-    setImageWarning(null);
-
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      img.src = e.target?.result as string;
-    };
-
-    img.onload = async () => {
-      if (img.width < 1000) {
-        setImageWarning("Image is narrower than 1000px. Text in screenshots may look soft.");
-      }
-
-      // Resize & compress to WebP
-      const canvas = document.createElement("canvas");
-      const maxW = 1600;
-      const scale = img.width > maxW ? maxW / img.width : 1;
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
-      const ctx = canvas.getContext("2d");
-      ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob(
-        async (blob) => {
-          if (!blob) {
-            setUploadingImage(false);
-            return;
-          }
-
-          try {
-            // Get Presigned PUT URL
-            const presignRes = await fetch("/api/uploads/cover", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                mimeType: "image/webp",
-                fileSize: blob.size,
-              }),
-            });
-
-            if (!presignRes.ok) {
-              const err = await presignRes.json();
-              alert(err.error?.message || "Upload presign failed.");
-              setUploadingImage(false);
-              return;
-            }
-
-            const { uploadUrl, key } = await presignRes.json();
-
-            // Direct PUT to R2
-            const uploadRes = await fetch(uploadUrl, {
-              method: "PUT",
-              headers: { "Content-Type": "image/webp" },
-              body: blob,
-            });
-
-            if (uploadRes.ok) {
-              setCoverImageKey(key);
-            } else {
-              alert("Direct upload to storage failed. Please retry.");
-            }
-          } catch {
-            alert("Upload error.");
-          } finally {
-            setUploadingImage(false);
-          }
-        },
-        "image/webp",
-        0.85
-      );
-    };
-
-    reader.readAsDataURL(file);
-  };
-
-  // 4. Tags handler
-  const addTag = () => {
-    const trimmed = tagInput.trim().toLowerCase();
-    if (trimmed && !tags.includes(trimmed) && tags.length < 5) {
-      setTags([...tags, trimmed]);
-      setTagInput("");
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((t) => t !== tagToRemove));
-  };
-
-  // 5. Tech stack handler
-  const toggleTech = (techId: string) => {
-    if (selectedTechIds.includes(techId)) {
-      setSelectedTechIds(selectedTechIds.filter((t) => t !== techId));
-    } else {
-      if (selectedTechIds.length >= 15) {
-        alert("Maximum limit of 15 technologies allowed.");
-        return;
-      }
-      setSelectedTechIds([...selectedTechIds, techId]);
-    }
-  };
-
-  // Custom Technology Creator
-  const handleCreateCustomTech = async () => {
-    const name = techSearch.trim();
-    if (!name) return;
-    try {
-      const res = await fetch("/api/technologies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const newTech: Technology = data.technology;
-        if (!technologies.some((t) => t.id === newTech.id)) {
-          setTechnologies((prev) => [...prev, newTech]);
-        }
-        if (!selectedTechIds.includes(newTech.id) && selectedTechIds.length < 15) {
-          setSelectedTechIds((prev) => [...prev, newTech.id]);
-        }
-        setTechSearch("");
-      }
-    } catch (err) {
-      console.error("Failed to create custom technology", err);
-    }
-  };
-
-  // 6. GitHub Import
-  const [syncToast, setSyncToast] = useState<string | null>(null);
-
-  const openGithubModal = async () => {
-    setGithubModalOpen(true);
-    setLoadingRepos(true);
-    try {
-      const res = await fetch("/api/github/repos");
-      if (res.ok) {
-        const data = await res.json();
-        setGithubRepos(data.repositories || []);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingRepos(false);
-    }
-  };
-
-  const applyGithubRepo = (repo: GithubRepositoryItem) => {
-    setTitle(repo.name);
-    if (repo.description) setSummary(repo.description.slice(0, 140));
-    if (repo.htmlUrl) setRepoUrl(repo.htmlUrl);
-    if (repo.homepage) setLiveUrl(repo.homepage);
-
-    // Map language & topics
-    const matchedIds: string[] = [];
-    const searchTerms = [repo.primaryLanguage, ...(repo.topics || [])].map((s) =>
-      s?.toLowerCase()
-    );
-
-    technologies.forEach((t) => {
-      if (searchTerms.includes(t.slug) || searchTerms.includes(t.name.toLowerCase())) {
-        matchedIds.push(t.id);
-      }
+  // 3. Quality Gate Evaluation (5 Domain Rules)
+  const qualityGate: QualityGateEvaluation = useMemo(() => {
+    return evaluateQualityGate({
+      title,
+      summary,
+      coverImageKey,
+      technologies: selectedTechIds,
+      liveUrl,
+      repoUrl,
     });
+  }, [title, summary, coverImageKey, selectedTechIds, liveUrl, repoUrl]);
 
-    if (matchedIds.length > 0) {
-      setSelectedTechIds(Array.from(new Set([...selectedTechIds, ...matchedIds])).slice(0, 15));
-    }
-
-    setGithubModalOpen(false);
-    setSyncToast(`Synchronized with ${repo.name}!`);
-    setTimeout(() => setSyncToast(null), 3000);
-  };
-
-  // 7. Quality Gate Checklist
-  const qualityGate: QualityGateEvaluation = evaluateQualityGate({
-    title,
-    summary,
-    coverImageKey,
-    technologies: selectedTechIds,
-    liveUrl,
-    repoUrl,
-  });
-
-  // 8. Publish Handler
+  // 4. Publish Handler
   const handlePublish = async () => {
     if (!qualityGate.canPublish) {
       alert(`Cannot publish:\n- ${qualityGate.missingRules.join("\n- ")}`);
@@ -401,136 +224,170 @@ export default function EditProjectPage({
       if (res.ok) {
         const data = await res.json();
         setStatus("PUBLISHED");
-        setPublishSuccessUrl(data.publicUrl);
+        setPublishSuccessUrl(data.publicUrl || `/${authorUser.slug}/${data.project?.slug || id}`);
       } else {
         const err = await res.json();
-        alert(err.error?.message || "Failed to publish.");
+        alert(err.error?.message || "Failed to publish project.");
       }
     } catch {
-      alert("Publish error.");
+      alert("Publish connection error.");
     }
   };
 
-  const selectedTechObjects = technologies.filter((t) => selectedTechIds.includes(t.id));
-  const coverUrl = getCoverImageUrl(coverImageKey);
+  // 5. GitHub Auto-Fill Modal
+  const openGithubModal = async () => {
+    setGithubModalOpen(true);
+    setLoadingRepos(true);
+    try {
+      const res = await fetch("/api/github/repos");
+      if (res.ok) {
+        const data = await res.json();
+        setGithubRepos(data.repositories || []);
+      }
+    } catch (err) {
+      console.error("GitHub repos fetch error", err);
+    } finally {
+      setLoadingRepos(false);
+    }
+  };
+
+  const applyGithubRepo = (repo: GithubRepositoryItem) => {
+    setTitle(repo.name);
+    if (repo.description) setSummary(repo.description.slice(0, 140));
+    if (repo.htmlUrl) setRepoUrl(repo.htmlUrl);
+    if (repo.homepage) setLiveUrl(repo.homepage);
+
+    // Map repository topics & language to technology catalog
+    const matchedIds: string[] = [];
+    const searchTerms = [repo.primaryLanguage, ...(repo.topics || [])]
+      .filter(Boolean)
+      .map((s) => s?.toLowerCase());
+
+    technologiesCatalog.forEach((t) => {
+      if (searchTerms.includes(t.slug.toLowerCase()) || searchTerms.includes(t.name.toLowerCase())) {
+        matchedIds.push(t.id);
+      }
+    });
+
+    if (matchedIds.length > 0) {
+      setSelectedTechIds(Array.from(new Set([...selectedTechIds, ...matchedIds])).slice(0, 15));
+    }
+
+    // Auto-map topics to #tags (up to 5)
+    if (repo.topics && repo.topics.length > 0) {
+      const formattedTags = repo.topics
+        .slice(0, 5)
+        .map((t) => `#${t.toLowerCase().replace(/[^a-z0-9_-]/g, "")}`);
+      setTags(formattedTags);
+    }
+
+    setGithubModalOpen(false);
+    setSyncToast(`Synchronized with ${repo.name}!`);
+    setTimeout(() => setSyncToast(null), 3000);
+  };
+
+  // Selected technologies mapped for preview
+  const selectedTechObjects = useMemo(() => {
+    return selectedTechIds
+      .map((tId) => technologiesCatalog.find((t) => t.id === tId))
+      .filter((t): t is TechnologyItem => Boolean(t))
+      .map((t) => ({ name: t.name, slug: t.slug, iconColor: t.iconColor }));
+  }, [selectedTechIds, technologiesCatalog]);
 
   if (loading) {
     return (
-      <div className="flex-1 flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex-1 flex flex-col items-center justify-center py-24 space-y-3">
+        <div className="w-8 h-8 border-2 border-[#0052ff] border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-mono text-[var(--foreground-muted)]">Loading Showcase Studio...</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[var(--background)]">
-      {/* Top Action Bar */}
-      <div className="border-b border-[var(--border)] bg-[var(--card)] px-4 sm:px-6 py-3 flex items-center justify-between gap-4 sticky top-16 z-40">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push("/dashboard")}
-            className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
-          >
-            ← Back to Dashboard
-          </button>
-          <span className="text-zinc-600">|</span>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--muted)] text-[var(--foreground)]">
-            {status}
-          </span>
-          {/* Quality HUD Mini-Pill */}
-          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-xs">
-            <span
-              className={`w-2 h-2 rounded-full transition-colors ${
-                qualityGate.canPublish
-                  ? "bg-emerald-400 shadow-sm shadow-emerald-400 animate-pulse"
-                  : "bg-amber-400"
-              }`}
-            />
-            <span className="font-mono text-[11px] font-semibold text-[var(--foreground)]">
-              {qualityGate.satisfiedCount}/5 Quality Standards
+    <div className="min-h-screen flex flex-col justify-between selection:bg-blue-500/25 selection:text-blue-900 dark:selection:text-blue-200">
+      {/* Top Breadcrumb & GitHub Sync Bar */}
+      <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-xl px-4 sm:px-6 py-3.5">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 text-xs text-[var(--foreground-muted)] truncate min-w-0">
+            <Link
+              href="/dashboard"
+              className="hover:text-[var(--foreground)] transition-colors flex items-center gap-1 font-semibold"
+            >
+              <span>←</span>
+              <span>Dashboard</span>
+            </Link>
+            <span>/</span>
+            <span className="font-bold text-[var(--foreground)] truncate">
+              {title || "Untitled Project"}
             </span>
           </div>
-          <span className="text-xs text-[var(--muted-foreground)] hidden sm:inline">
-            {saving ? "Saving..." : lastSaved ? `Saved at ${lastSaved}` : "Auto-saved"}
-          </span>
-          {syncToast && (
-            <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-md animate-fade-in">
-              ✓ {syncToast}
-            </span>
-          )}
-        </div>
 
-        {/* Mobile View Toggle */}
-        <div className="flex lg:hidden items-center rounded-lg border border-[var(--border)] bg-[var(--muted)] p-0.5 text-xs">
-          <button
-            onClick={() => setMobileTab("edit")}
-            className={`px-3 py-1 rounded-md font-medium ${
-              mobileTab === "edit" ? "bg-[var(--card)] text-[var(--foreground)] shadow" : "text-[var(--muted-foreground)]"
-            }`}
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => setMobileTab("preview")}
-            className={`px-3 py-1 rounded-md font-medium ${
-              mobileTab === "preview" ? "bg-[var(--card)] text-[var(--foreground)] shadow" : "text-[var(--muted-foreground)]"
-            }`}
-          >
-            Preview
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Auto-fill from GitHub */}
+            <button
+              type="button"
+              onClick={openGithubModal}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-xs font-semibold text-[#0052ff] dark:text-blue-300 hover:bg-blue-500/20 active:scale-95 transition-all cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+              <span>Auto-fill GitHub</span>
+            </button>
+          </div>
         </div>
+      </header>
 
-        <div className="flex items-center gap-2">
-          <button
-            onClick={openGithubModal}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-amber-500/40 bg-amber-500/10 text-xs font-semibold hover:bg-amber-500/20 text-amber-400 transition-colors"
-          >
-            <span>⚡ Sync from GitHub</span>
-          </button>
-          <button
-            onClick={handlePublish}
-            disabled={!qualityGate.canPublish}
-            className="px-4 py-1.5 rounded-md bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:hover:bg-amber-500 text-black font-bold text-xs shadow-md transition-all min-touch"
-            title={
-              !qualityGate.canPublish
-                ? `Missing: ${qualityGate.missingRules.join(", ")}`
-                : "Publish project to live profile"
-            }
-          >
-            {status === "PUBLISHED" ? "Update Live" : "Publish"}
-          </button>
+      {/* Sync Toast Notification */}
+      {syncToast && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full bg-[#0052ff] text-white text-xs font-bold shadow-xl animate-fade-in flex items-center gap-2">
+          <span>✓</span>
+          <span>{syncToast}</span>
         </div>
-      </div>
+      )}
 
-      {/* Main Split-Screen Workspace */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-[var(--border)]">
-        {/* Left Column: Form Fields */}
-        <div
-          className={`p-6 sm:p-8 space-y-8 overflow-y-auto max-w-2xl mx-auto w-full ${
-            mobileTab === "preview" ? "hidden lg:block" : "block"
-          }`}
-        >
-          {/* 1. Title */}
+      {/* Main Single-Column Studio Canvas */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 space-y-8 pb-32">
+        {/* Section 1: Cancelable 16:9 Cover Image Pipeline */}
+        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-3">
+          <CoverImageUploader
+            coverImageKey={coverImageKey}
+            onUploadSuccess={(key) => setCoverImageKey(key)}
+            onRemoveCover={() => setCoverImageKey(null)}
+          />
+        </section>
+
+        {/* Section 2: Project Title & Summary */}
+        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-5">
+          {/* Title */}
           <div className="space-y-2">
             <label className="block text-sm font-bold text-[var(--foreground)]">
-              Project Title <span className="text-amber-500">*</span>
+              Project Title <span className="text-[#0052ff]">*</span>
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Distributed Cache Engine"
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] focus:ring-2 focus:ring-amber-500/50 outline-none text-base font-semibold"
+              placeholder="e.g. Bunflare Edge Microservices"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20 text-base font-bold transition-all"
             />
           </div>
 
-          {/* 2. Summary */}
+          {/* Summary with 140-char limit counter */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-sm font-bold text-[var(--foreground)]">
-                Summary <span className="text-amber-500">*</span>
+                Summary <span className="text-[#0052ff]">*</span>
               </label>
-              <span className={`text-xs ${summary.length > 140 ? "text-red-400" : "text-[var(--muted-foreground)]"}`}>
+              <span
+                className={`text-xs font-mono font-medium ${
+                  summary.length > 140
+                    ? "text-red-500 font-bold"
+                    : summary.length >= 120
+                    ? "text-amber-500"
+                    : "text-[var(--foreground-muted)]"
+                }`}
+              >
                 {summary.length} / 140
               </span>
             </div>
@@ -538,569 +395,225 @@ export default function EditProjectPage({
               value={summary}
               onChange={(e) => setSummary(e.target.value.slice(0, 140))}
               rows={2}
-              placeholder="One punchy sentence describing what this project does."
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] focus:ring-2 focus:ring-amber-500/50 outline-none text-sm resize-none"
+              placeholder="One punchy sentence describing what this project does and why it matters."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20 text-sm resize-none transition-all"
             />
           </div>
+        </section>
 
-          {/* 3. Cover Image */}
-          <div className="space-y-2">
+        {/* Section 3: Live & Repository Links */}
+        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
             <label className="block text-sm font-bold text-[var(--foreground)]">
-              16:9 Cover Image <span className="text-amber-500">*</span>
+              Application Links <span className="text-[#0052ff]">* (at least 1 required)</span>
             </label>
-            <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-4 text-center hover:border-amber-500/50 transition-colors bg-[var(--card)] relative">
-              {coverUrl ? (
-                <div className="space-y-3">
-                  <div className="aspect-video w-full rounded-lg overflow-hidden border border-[var(--border)] relative">
-                    <img src={coverUrl} alt="Cover preview" className="w-full h-full object-cover" />
-                  </div>
-                  <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-[var(--border)] text-xs font-semibold hover:bg-[var(--muted)] cursor-pointer text-[var(--foreground)]">
-                    <span>Replace Cover</span>
-                    <input
-                      type="file"
-                      accept="image/png, image/jpeg, image/webp"
-                      onChange={(e) => e.target.files?.[0] && handleImageFile(e.target.files[0])}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-              ) : (
-                <label className="cursor-pointer block py-6 space-y-2">
-                  <div className="w-10 h-10 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto text-lg">
-                    📁
-                  </div>
-                  <div className="text-sm font-medium text-[var(--foreground)]">
-                    {uploadingImage ? "Processing & Uploading to R2..." : "Click or drag 16:9 cover image"}
-                  </div>
-                  <p className="text-xs text-[var(--muted-foreground)]">WebP, PNG, or JPG up to 1MB</p>
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg, image/webp"
-                    disabled={uploadingImage}
-                    onChange={(e) => e.target.files?.[0] && handleImageFile(e.target.files[0])}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
-            {imageWarning && <p className="text-xs text-amber-400 font-medium">{imageWarning}</p>}
           </div>
 
-          {/* 4. Links */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-bold text-[var(--foreground)]">
-                Live & Repository Links <span className="text-amber-500">* (at least one)</span>
-              </label>
-              <button
-                type="button"
-                onClick={openGithubModal}
-                className="text-xs text-amber-400 hover:text-amber-300 font-semibold inline-flex items-center gap-1 cursor-pointer transition-colors"
-              >
-                <span>⚡ Auto-fill from GitHub</span>
-              </button>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <span className="text-xs text-[var(--muted-foreground)] block mb-1">Live Site URL</span>
-                <input
-                  type="url"
-                  value={liveUrl}
-                  onChange={(e) => setLiveUrl(e.target.value)}
-                  placeholder="https://example.com"
-                  className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-amber-500/50"
-                />
-              </div>
-
-              {!isPrivateCode && (
-                <div>
-                  <span className="text-xs text-[var(--muted-foreground)] block mb-1">Repository URL</span>
-                  <input
-                    type="url"
-                    value={repoUrl}
-                    onChange={(e) => setRepoUrl(e.target.value)}
-                    placeholder="https://github.com/..."
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-amber-500/50"
-                  />
-                </div>
-              )}
-
-              <label className="flex items-center gap-2 cursor-pointer pt-1">
-                <input
-                  type="checkbox"
-                  checked={isPrivateCode}
-                  onChange={(e) => {
-                    setIsPrivateCode(e.target.checked);
-                    if (e.target.checked) setRepoUrl("");
-                  }}
-                  className="rounded text-amber-500 focus:ring-amber-500"
-                />
-                <span className="text-xs text-[var(--muted-foreground)]">
-                  Source code is private or closed-source
-                </span>
-              </label>
-            </div>
-          </div>
-
-          {/* Live Sandbox Settings */}
-          <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="pr-3">
-                <span className="text-sm font-bold text-[var(--foreground)] flex items-center gap-1.5">
-                  <span className="text-emerald-400">⚡</span>
-                  <span>In-Browser Live Sandbox</span>
-                </span>
-                <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
-                  Allow visitors to test your interactive application directly in a multi-device viewport (Desktop, Tablet, Mobile).
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer shrink-0">
-                <input
-                  type="checkbox"
-                  checked={sandboxEnabled}
-                  onChange={(e) => setSandboxEnabled(e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-10 h-5 bg-zinc-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-zinc-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
-              </label>
-            </div>
-
-            {sandboxEnabled && (
-              <div className="space-y-1 pt-2 border-t border-[var(--border)]">
-                <span className="text-xs text-[var(--muted-foreground)] block">
-                  Custom Sandbox URL (optional, defaults to Live Site URL)
-                </span>
-                <input
-                  type="url"
-                  value={sandboxUrl}
-                  onChange={(e) => setSandboxUrl(e.target.value)}
-                  placeholder={liveUrl || "https://codesandbox.io/p/sandbox/... or your app URL"}
-                  className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--background)] text-xs text-[var(--foreground)] outline-none focus:ring-2 focus:ring-emerald-500/50"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* 5. Tech Stack */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-bold text-[var(--foreground)]">
-                Technologies Used <span className="text-amber-500">*</span>
-              </label>
-              <span className="text-xs text-[var(--muted-foreground)]">
-                {selectedTechIds.length} / 15
-              </span>
-            </div>
-
-            {/* Selected Pills */}
-            <div className="flex flex-wrap gap-1.5 min-h-[32px] p-2 rounded-lg border border-[var(--border)] bg-[var(--card)]">
-              {selectedTechObjects.length === 0 ? (
-                <span className="text-xs text-[var(--muted-foreground)] py-0.5">
-                  Select technologies below...
-                </span>
-              ) : (
-                selectedTechObjects.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => toggleTech(t.id)}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium hover:bg-amber-500/20"
-                  >
-                    <span>{t.name}</span>
-                    <span className="text-zinc-500 hover:text-red-400">×</span>
-                  </button>
-                ))
-              )}
-            </div>
-
-            {/* Search and Picker */}
-            <input
-              type="text"
-              value={techSearch}
-              onChange={(e) => setTechSearch(e.target.value)}
-              placeholder="Search technologies or type custom (e.g. Bun, LangChain)..."
-              className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] outline-none focus:ring-2 focus:ring-amber-500/50"
-            />
-
-            <div className="max-h-36 overflow-y-auto p-2 rounded-lg border border-[var(--border)] bg-[var(--card)]/50 flex flex-wrap gap-1.5">
-              {techSearch.trim() &&
-                !technologies.some(
-                  (t) => t.name.toLowerCase() === techSearch.trim().toLowerCase()
-                ) && (
-                  <button
-                    type="button"
-                    onClick={handleCreateCustomTech}
-                    className="text-xs px-2.5 py-1 rounded border border-dashed border-amber-500/60 bg-amber-500/10 text-amber-400 font-semibold hover:bg-amber-500/20 flex items-center gap-1 cursor-pointer transition-colors"
-                  >
-                    <span>+ Add &quot;{techSearch.trim()}&quot; (Custom)</span>
-                  </button>
-                )}
-              {technologies
-                .filter((t) => t.name.toLowerCase().includes(techSearch.toLowerCase()))
-                .map((t) => {
-                  const isSelected = selectedTechIds.includes(t.id);
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => toggleTech(t.id)}
-                      className={`text-xs px-2 py-1 rounded border transition-colors ${
-                        isSelected
-                          ? "border-amber-500/50 bg-amber-500/20 text-amber-300 font-bold"
-                          : "border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] hover:border-zinc-500"
-                      }`}
-                    >
-                      {t.name}
-                    </button>
-                  );
-                })}
-            </div>
-          </div>
-
-          {/* 6. Tags */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-bold text-[var(--foreground)]">Free Tags (up to 5)</label>
-              <span className="text-xs text-[var(--muted-foreground)]">{tags.length} / 5</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-                placeholder="e.g. open-source, full-stack, solo"
-                className="flex-1 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] outline-none"
-              />
-              <button
-                type="button"
-                onClick={addTag}
-                disabled={tags.length >= 5 || !tagInput.trim()}
-                className="px-3 py-2 rounded-lg border border-[var(--border)] text-xs font-semibold hover:bg-[var(--muted)] disabled:opacity-30"
-              >
-                Add Tag
-              </button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {tags.map((t) => (
-                  <span
-                    key={t}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--muted-foreground)]"
-                  >
-                    <span>#{t}</span>
-                    <button onClick={() => removeTag(t)} className="hover:text-red-400">
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 7. Markdown Description */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-bold text-[var(--foreground)]">Project Description (Markdown)</label>
-              <div className="flex rounded-md border border-[var(--border)] bg-[var(--card)] text-xs p-0.5">
-                <button
-                  type="button"
-                  onClick={() => setDescTab("write")}
-                  className={`px-2.5 py-0.5 rounded ${descTab === "write" ? "bg-[var(--muted)] font-bold text-[var(--foreground)]" : "text-[var(--muted-foreground)]"}`}
-                >
-                  Write
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setDescTab("preview")}
-                  className={`px-2.5 py-0.5 rounded ${descTab === "preview" ? "bg-[var(--muted)] font-bold text-[var(--foreground)]" : "text-[var(--muted-foreground)]"}`}
-                >
-                  Preview
-                </button>
-              </div>
-            </div>
-
-            {descTab === "write" ? (
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={6}
-                placeholder="Explain the architectural decisions, challenges, and implementation details using Markdown."
-                className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] font-mono text-xs focus:ring-2 focus:ring-amber-500/50 outline-none"
-              />
-            ) : (
-              <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--card)] min-h-[140px] prose prose-invert prose-sm max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
-                  {description || "*No description yet.*"}
-                </ReactMarkdown>
-              </div>
-            )}
-          </div>
-
-          {/* 8. Role and Learnings */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-[var(--foreground)]">Your Role</label>
+            {/* Live URL */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[var(--foreground-muted)] flex items-center gap-1">
+                <span>🌐 Live URL</span>
+              </label>
               <input
-                type="text"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                placeholder="e.g. Lead Architect & Developer"
-                className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] outline-none"
+                type="url"
+                value={liveUrl}
+                onChange={(e) => setLiveUrl(e.target.value)}
+                placeholder="https://your-app.com"
+                className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-xs font-mono placeholder:text-[var(--foreground-muted)] outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20"
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-xs font-bold text-[var(--foreground)]">What You Learned</label>
+
+            {/* Repository URL */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[var(--foreground-muted)] flex items-center gap-1">
+                <span>📦 Source Repository</span>
+              </label>
               <input
-                type="text"
-                value={learnings}
-                onChange={(e) => setLearnings(e.target.value)}
-                placeholder="e.g. Raft consensus & distributed lock patterns"
-                className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs text-[var(--foreground)] outline-none"
+                type="url"
+                value={repoUrl}
+                onChange={(e) => setRepoUrl(e.target.value)}
+                placeholder="https://github.com/user/repo"
+                className="w-full px-3 py-2 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] text-xs font-mono placeholder:text-[var(--foreground-muted)] outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20"
               />
             </div>
           </div>
+        </section>
 
-          {/* Real-Time 5-Rule Quality HUD Panel */}
-          <div className="p-5 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-amber-500 text-sm">🎯</span>
-                <h4 className="text-sm font-bold text-[var(--foreground)]">Quality Gate HUD</h4>
-              </div>
-              <span
-                className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-colors ${
-                  qualityGate.canPublish
-                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 font-bold"
-                    : "border-amber-500/30 bg-amber-500/10 text-amber-500"
+        {/* Section 4: Technologies & Tools Picker */}
+        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+          <TechStackPicker
+            selectedTechIds={selectedTechIds}
+            onChange={(ids) => setSelectedTechIds(ids)}
+          />
+        </section>
+
+        {/* Section 5: #Tags Input Engine */}
+        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
+          <TagTokenizer
+            tags={tags}
+            onChange={(newTags) => setTags(newTags)}
+            maxTags={5}
+          />
+        </section>
+
+        {/* Section 6: Long-Form Markdown Description */}
+        <section className="p-4 sm:p-6 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="block text-sm font-bold text-[var(--foreground)]">
+              Deep-Dive Description <span className="text-xs text-[var(--foreground-muted)] font-normal">(Markdown supported)</span>
+            </label>
+            <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setDescTab("write")}
+                className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
+                  descTab === "write" ? "bg-[var(--card)] text-[#0052ff] shadow-sm" : "text-[var(--foreground-muted)]"
                 }`}
               >
-                {qualityGate.satisfiedCount} of 5 Passed
-              </span>
-            </div>
-
-            <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
-              <div
-                className={`h-full transition-all duration-500 ease-out ${
-                  qualityGate.canPublish
-                    ? "bg-emerald-400 shadow-sm shadow-emerald-400"
-                    : "bg-amber-500"
+                Write
+              </button>
+              <button
+                type="button"
+                onClick={() => setDescTab("preview")}
+                className={`px-2.5 py-1 rounded-md font-semibold transition-all ${
+                  descTab === "preview" ? "bg-[var(--card)] text-[#0052ff] shadow-sm" : "text-[var(--foreground-muted)]"
                 }`}
-                style={{ width: `${(qualityGate.satisfiedCount / 5) * 100}%` }}
-              />
-            </div>
-
-            <ul className="text-xs space-y-2.5">
-              {[
-                { rule: qualityGate.rules.title, label: "Project Title specified" },
-                { rule: qualityGate.rules.summary, label: "Summary under 140 characters" },
-                { rule: qualityGate.rules.coverImage, label: "16:9 Cover Image stored in R2" },
-                { rule: qualityGate.rules.technologies, label: "At least one technology tagged" },
-                { rule: qualityGate.rules.links, label: "Live Site URL or Repository URL specified" },
-              ].map((item, idx) => (
-                <li
-                  key={idx}
-                  className={`flex items-center gap-2.5 transition-colors duration-200 ${
-                    item.rule ? "text-emerald-400 font-medium" : "text-zinc-500"
-                  }`}
-                >
-                  <span
-                    className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold transition-all duration-300 ${
-                      item.rule
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 scale-105 shadow-sm shadow-emerald-500/20"
-                        : "bg-zinc-800 text-zinc-600 border border-zinc-700 scale-95"
-                    }`}
-                  >
-                    ✓
-                  </span>
-                  <span>{item.label}</span>
-                </li>
-              ))}
-            </ul>
-
-            {qualityGate.canPublish && (
-              <div className="p-2.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 flex items-center gap-2 text-xs text-emerald-400 font-semibold">
-                <span>🚀</span>
-                <span>All 5 standards met! Ready to publish to live profile.</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: Live Card & Page Preview */}
-        <div
-          className={`p-6 sm:p-8 space-y-8 bg-[var(--card)]/30 overflow-y-auto ${
-            mobileTab === "edit" ? "hidden lg:block" : "block"
-          }`}
-        >
-          <div className="space-y-2">
-            <span className="text-xs uppercase tracking-wider font-mono text-amber-500 font-bold">
-              Live Card Preview (As Seen on Profile Grid)
-            </span>
-
-            {/* Live Project Card */}
-            <div className="max-w-md rounded-xl border border-[var(--border)] bg-[var(--card)] overflow-hidden shadow-lg group">
-              <div className="aspect-video w-full bg-zinc-900 border-b border-[var(--border)] flex items-center justify-center relative overflow-hidden">
-                {coverUrl ? (
-                  <img src={coverUrl} alt="Preview" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-xs text-zinc-500 font-mono">16:9 Cover Image Placeholder</span>
-                )}
-                {sandboxEnabled && (
-                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold flex items-center gap-1 backdrop-blur-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Live Sandbox</span>
-                  </span>
-                )}
-              </div>
-              <div className="p-5 space-y-3">
-                <h3 className="font-bold text-lg text-[var(--foreground)]">
-                  {title || "Untitled Project"}
-                </h3>
-                <p className="text-xs text-[var(--muted-foreground)] line-clamp-2">
-                  {summary || "Your summary will appear here."}
-                </p>
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {selectedTechObjects.slice(0, 3).map((t) => (
-                    <TechBadge key={t.id} name={t.name} iconName={t.iconColor} size="sm" />
-                  ))}
-                  {selectedTechObjects.length > 3 && (
-                    <span className="text-xs font-medium px-2 py-0.5 rounded border border-[var(--border)] bg-[var(--card)] text-[var(--muted-foreground)]">
-                      +{selectedTechObjects.length - 3} more
-                    </span>
-                  )}
-                </div>
-              </div>
+              >
+                Preview
+              </button>
             </div>
           </div>
 
-          {/* Live Page Preview */}
-          <div className="space-y-4 pt-4 border-t border-[var(--border)]">
-            <span className="text-xs uppercase tracking-wider font-mono text-amber-500 font-bold">
-              Live Detail Page Preview
-            </span>
-            <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--card)] space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-2xl font-extrabold text-[var(--foreground)]">
-                  {title || "Untitled Project"}
-                </h2>
-                <p className="text-sm text-[var(--muted-foreground)]">{summary}</p>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {liveUrl && (
-                    <span className="text-xs px-3 py-1.5 rounded-md bg-amber-500 text-black font-bold">
-                      Live Site ↗
-                    </span>
-                  )}
-                  {repoUrl ? (
-                    <span className="text-xs px-3 py-1.5 rounded-md border border-[var(--border)] text-[var(--foreground)] font-medium">
-                      Source Code ↗
-                    </span>
-                  ) : isPrivateCode ? (
-                    <span className="text-xs px-3 py-1.5 rounded-md bg-zinc-800 text-zinc-400 font-medium">
-                      Source code is private
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-
-              {selectedTechObjects.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-[var(--muted-foreground)] uppercase">Tech Stack</h4>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedTechObjects.map((t) => (
-                      <TechBadge key={t.id} name={t.name} iconName={t.iconColor} size="sm" />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {description && (
-                <div className="space-y-2 border-t border-[var(--border)] pt-4">
-                  <h4 className="text-xs font-bold text-[var(--muted-foreground)] uppercase">Description</h4>
-                  <div className="prose prose-invert prose-xs max-w-none">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
-                      {description}
-                    </ReactMarkdown>
-                  </div>
-                </div>
+          {descTab === "write" ? (
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={8}
+              placeholder="Explain how you built this, key architecture decisions, challenges solved, and performance optimizations..."
+              className="w-full px-3.5 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--background)] text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] outline-none focus:border-[#0052ff] focus:ring-2 focus:ring-[#0052ff]/20 text-sm font-mono leading-relaxed transition-all"
+            />
+          ) : (
+            <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--background)] prose dark:prose-invert max-w-none text-sm min-h-[180px]">
+              {description.trim() ? (
+                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
+                  {description}
+                </ReactMarkdown>
+              ) : (
+                <p className="text-[var(--foreground-muted)] italic">No description written yet.</p>
               )}
             </div>
-          </div>
-        </div>
-      </div>
+          )}
+        </section>
+      </main>
 
-      {/* GitHub Import Modal */}
+      {/* Sticky Floating Action Dock */}
+      <StickyActionDock
+        status={status}
+        saving={saving}
+        lastSavedTime={lastSaved}
+        qualityGate={qualityGate}
+        onSaveDraft={saveChanges}
+        onPublish={handlePublish}
+        onTogglePreview={() => setIsPreviewOpen((prev) => !prev)}
+        isPreviewOpen={isPreviewOpen}
+      />
+
+      {/* Live Card Preview Drawer */}
+      <LiveCardPreviewDrawer
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        title={title}
+        summary={summary}
+        coverImageKey={coverImageKey}
+        technologies={selectedTechObjects}
+        liveUrl={liveUrl}
+        repoUrl={repoUrl}
+        user={authorUser}
+      />
+
+      {/* GitHub Repositories Selector Modal */}
       {githubModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg rounded-xl border border-[var(--border)] bg-[var(--card)] p-6 space-y-4 shadow-2xl max-h-[85vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-md rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
-              <h3 className="text-base font-bold text-[var(--foreground)]">Import from Public GitHub Repos</h3>
-              <button onClick={() => setGithubModalOpen(false)} className="text-zinc-400 hover:text-white">
+              <h3 className="font-bold text-sm text-[var(--foreground)] flex items-center gap-2">
+                <span>⚡ Auto-fill from GitHub Repository</span>
+              </h3>
+              <button
+                type="button"
+                onClick={() => setGithubModalOpen(false)}
+                className="text-[var(--foreground-muted)] hover:text-[var(--foreground)] font-bold text-sm p-1"
+              >
                 ✕
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto space-y-2 py-2">
-              {loadingRepos ? (
-                <p className="text-center text-sm text-[var(--muted-foreground)] py-8">Loading repositories...</p>
-              ) : githubRepos.length === 0 ? (
-                <p className="text-center text-sm text-[var(--muted-foreground)] py-8">No public repositories found.</p>
-              ) : (
-                githubRepos.map((repo) => (
-                  <div
+            {loadingRepos ? (
+              <div className="py-8 text-center text-xs text-[var(--foreground-muted)] flex flex-col items-center gap-2">
+                <div className="w-5 h-5 border-2 border-[#0052ff] border-t-transparent rounded-full animate-spin" />
+                <span>Loading your GitHub repositories...</span>
+              </div>
+            ) : githubRepos.length > 0 ? (
+              <div className="max-h-72 overflow-y-auto space-y-1.5 pr-1">
+                {githubRepos.map((repo) => (
+                  <button
                     key={repo.id}
+                    type="button"
                     onClick={() => applyGithubRepo(repo)}
-                    className="p-3 rounded-lg border border-[var(--border)] hover:border-amber-500/50 hover:bg-[var(--muted)] cursor-pointer transition-colors space-y-1"
+                    className="w-full text-left p-3 rounded-xl border border-[var(--border)] hover:border-[#0052ff] hover:bg-blue-500/5 transition-all cursor-pointer group"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-sm text-[var(--foreground)]">{repo.name}</span>
-                      {repo.primaryLanguage && (
-                        <span className="text-[11px] text-amber-400 font-mono">{repo.primaryLanguage}</span>
-                      )}
+                    <div className="font-bold text-xs text-[var(--foreground)] group-hover:text-[#0052ff] truncate">
+                      {repo.name}
                     </div>
                     {repo.description && (
-                      <p className="text-xs text-[var(--muted-foreground)] line-clamp-1">{repo.description}</p>
+                      <p className="text-[11px] text-[var(--foreground-muted)] line-clamp-1 mt-0.5">
+                        {repo.description}
+                      </p>
                     )}
-                  </div>
-                ))
-              )}
-            </div>
+                    <div className="flex items-center gap-2 mt-1.5 text-[10px] font-mono text-[var(--foreground-muted)]">
+                      {repo.primaryLanguage && <span>● {repo.primaryLanguage}</span>}
+                      {repo.topics && repo.topics.length > 0 && <span>#{repo.topics.slice(0, 2).join(" #")}</span>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="py-6 text-center text-xs text-[var(--foreground-muted)]">
+                No repositories found or GitHub account not linked.
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {/* First-Publish Success Modal */}
+      {/* Publish Success Celebration Modal */}
       {publishSuccessUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="w-full max-w-md rounded-xl border border-amber-500/30 bg-[var(--card)] p-6 space-y-5 shadow-2xl text-center">
-            <div className="w-12 h-12 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center mx-auto text-2xl">
-              🎉
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-2xl text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/30 flex items-center justify-center mx-auto text-2xl font-bold shadow-lg">
+              ✓
             </div>
-            <div className="space-y-1.5">
-              <h3 className="text-xl font-bold text-[var(--foreground)]">Project is Live!</h3>
-              <p className="text-xs text-[var(--muted-foreground)]">
-                Your project passed the Quality Gate and is now publicly visible.
+            <div className="space-y-1">
+              <h3 className="font-extrabold text-lg text-[var(--foreground)]">Project is Live!</h3>
+              <p className="text-xs text-[var(--foreground-muted)] leading-relaxed">
+                Your project satisfied all 5 Quality Gate rules and is now visible on the homepage discovery feed.
               </p>
             </div>
 
-            <div className="p-3 rounded-lg bg-[var(--muted)] border border-[var(--border)] text-xs font-mono text-amber-400 break-all select-all">
-              {publishSuccessUrl}
-            </div>
-
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(publishSuccessUrl);
-                  alert("Link copied!");
-                }}
-                className="px-4 py-2 rounded-lg bg-amber-500 text-black font-bold text-xs shadow-md"
+            <div className="pt-2 flex flex-col gap-2">
+              <Link
+                href={publishSuccessUrl}
+                className="w-full py-2.5 rounded-xl bg-[#0052ff] hover:bg-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/25 active:scale-95 transition-all"
               >
-                Copy Link
-              </button>
-              <button
-                onClick={() => setPublishSuccessUrl(null)}
-                className="px-4 py-2 rounded-lg border border-[var(--border)] text-xs font-medium text-[var(--foreground)]"
+                View Live Showcase →
+              </Link>
+              <Link
+                href="/"
+                className="w-full py-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--foreground)] font-semibold text-xs hover:bg-[var(--surface-glass)] transition-all"
               >
-                Continue Editing
-              </button>
+                Go to Homepage Feed
+              </Link>
             </div>
           </div>
         </div>

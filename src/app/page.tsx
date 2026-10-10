@@ -15,68 +15,63 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   let projects = INITIAL_SHOWCASE_PROJECTS;
 
-  // 0ms instant fallback if database is offline or unconfigured during local development
-  const isDbConfigured =
-    Boolean(process.env.DATABASE_URL) &&
-    process.env.DATABASE_URL?.startsWith("postgres") &&
-    !process.env.DATABASE_URL?.includes("placeholder") &&
-    !process.env.DATABASE_URL?.includes("localhost:5432/showphan");
+  // Attempt to load real projects whenever database is reachable, with zero-delay fallback
+  const isDbConfigured = Boolean(process.env.DATABASE_URL) && !process.env.DATABASE_URL?.includes("placeholder");
 
   if (isDbConfigured) {
     try {
       const { projects: dbProjects } = await getExploreProjects({
         tab: "trending",
-        limit: 20,
+        limit: 24,
       });
 
-    if (dbProjects && dbProjects.length > 0) {
-      const mapped = dbProjects.map((p, index) => {
-        const coverUrl = getCoverImageUrl(p.coverImageKey ?? undefined);
-        const fallbackProject = INITIAL_SHOWCASE_PROJECTS[index % INITIAL_SHOWCASE_PROJECTS.length];
+      if (dbProjects && dbProjects.length > 0) {
+        const mapped = dbProjects.map((p, index) => {
+          const coverUrl = getCoverImageUrl(p.coverImageKey ?? undefined);
+          const fallbackProject = INITIAL_SHOWCASE_PROJECTS[index % INITIAL_SHOWCASE_PROJECTS.length];
 
-        return {
-          id: p.id,
-          slug: p.slug,
-          title: p.title,
-          summary: p.summary || fallbackProject.summary,
-          coverImageUrl: coverUrl || fallbackProject.coverImageUrl,
-          codeSnippet: fallbackProject.codeSnippet,
-          statusBadge: fallbackProject.statusBadge,
-          liveUrl: p.liveUrl || fallbackProject.liveUrl,
-          repoUrl: p.repoUrl || fallbackProject.repoUrl,
-          upvotesCount: p.kudosCount || fallbackProject.upvotesCount,
-          commentsCount: fallbackProject.commentsCount,
-          bookmarksCount: fallbackProject.bookmarksCount,
-          viewsCount: p.viewsCount || fallbackProject.viewsCount,
-          reactionsCounts: fallbackProject.reactionsCounts,
-          user: {
-            name: p.user.name || fallbackProject.user.name,
-            displayName: p.user.displayName || fallbackProject.user.displayName,
-            slug: p.user.slug || fallbackProject.user.slug,
-            avatarUrl: p.user.avatarUrl || fallbackProject.user.avatarUrl,
-            badge: fallbackProject.user.badge,
-          },
-          technologies:
-            p.technologies && p.technologies.length > 0
-              ? p.technologies.map((t) => ({
-                  name: t.technology.name,
-                  slug: t.technology.slug,
-                  iconColor: t.technology.iconColor,
-                }))
-              : fallbackProject.technologies,
-        };
-      });
+          return {
+            id: p.id,
+            slug: p.slug,
+            title: p.title,
+            summary: p.summary || fallbackProject.summary,
+            coverImageUrl: coverUrl || fallbackProject.coverImageUrl,
+            codeSnippet: fallbackProject.codeSnippet,
+            statusBadge: { text: "Verified", variant: "blue" as const },
+            liveUrl: p.liveUrl || fallbackProject.liveUrl,
+            repoUrl: p.repoUrl || fallbackProject.repoUrl,
+            upvotesCount: p.kudosCount || 0,
+            commentsCount: fallbackProject.commentsCount,
+            bookmarksCount: fallbackProject.bookmarksCount,
+            viewsCount: p.viewsCount || 0,
+            reactionsCounts: fallbackProject.reactionsCounts,
+            user: {
+              name: p.user.name || fallbackProject.user.name,
+              displayName: p.user.displayName || fallbackProject.user.displayName,
+              slug: p.user.slug || fallbackProject.user.slug,
+              avatarUrl: p.user.avatarUrl || fallbackProject.user.avatarUrl,
+              badge: fallbackProject.user.badge,
+            },
+            technologies:
+              p.technologies && p.technologies.length > 0
+                ? p.technologies.map((t) => ({
+                    name: t.technology.name,
+                    slug: t.technology.slug,
+                    iconColor: t.technology.iconColor,
+                  }))
+                : fallbackProject.technologies,
+          };
+        });
 
-      // If database has at least 3 projects, use mapped, otherwise use the complete initial showcase set
-      if (mapped.length >= 3) {
-        projects = mapped;
+        // Prepend real projects to community feed
+        const realIds = new Set(mapped.map((m) => m.id));
+        const remainingFallbacks = INITIAL_SHOWCASE_PROJECTS.filter((ip) => !realIds.has(ip.id));
+        projects = [...mapped, ...remainingFallbacks];
       }
+    } catch {
+      // Graceful fallback to initial projects
     }
-  } catch {
-    // If DB is offline or empty during dev, seamlessly fall back to curated showcases
-    projects = INITIAL_SHOWCASE_PROJECTS;
   }
-}
 
   return <HomepageShell initialProjects={projects} />;
 }

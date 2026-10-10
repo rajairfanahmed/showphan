@@ -16,7 +16,18 @@ export function HomepageShell({
 }: HomepageShellProps) {
   const [activeNav, setActiveNav] = useState("feed");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("showphan-sidebar-collapsed") === "true";
+  });
+
+  const handleToggleSidebar = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem("showphan-sidebar-collapsed", String(next));
+      return next;
+    });
+  };
 
   return (
     <div className="w-full flex-1 flex flex-col justify-between selection:bg-blue-500/25 selection:text-blue-900 dark:selection:text-blue-200 pb-20 lg:pb-0">
@@ -29,7 +40,7 @@ export function HomepageShell({
           isMobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           isCollapsed={isSidebarCollapsed}
-          onToggleCollapsed={() => setIsSidebarCollapsed((prev) => !prev)}
+          onToggleCollapsed={handleToggleSidebar}
         />
 
         {/* 

@@ -11,7 +11,7 @@ interface TechBadgeProps {
 }
 
 const ACCENT_PALETTES = [
-  { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400", dot: "bg-amber-400" },
+  { bg: "bg-indigo-500/10", border: "border-indigo-500/30", text: "text-indigo-500 dark:text-indigo-400", dot: "bg-indigo-500" },
   { bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", dot: "bg-emerald-400" },
   { bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-400", dot: "bg-cyan-400" },
   { bg: "bg-violet-500/10", border: "border-violet-500/30", text: "text-violet-400", dot: "bg-violet-400" },

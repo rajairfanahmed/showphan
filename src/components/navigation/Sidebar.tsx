@@ -21,7 +21,10 @@ export function Sidebar({
   onToggleCollapsed,
 }: SidebarProps) {
   const pathname = usePathname();
-  const [internalCollapsed, setInternalCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("showphan-sidebar-collapsed") === "true";
+  });
   const [isDarkTheme, setIsDarkTheme] = useState(() => {
     if (typeof window === "undefined") return true;
     return document.documentElement.getAttribute("data-theme") !== "light";

@@ -183,6 +183,70 @@ interface HomepageFeedProps {
 function HomepageFeedContent({
   initialProjects = INITIAL_SHOWCASE_PROJECTS,
 }: HomepageFeedProps) {
+  // Real projects state with seamless initial fallback
+  const [feedProjects, setFeedProjects] = useState<ProjectCardData[]>(initialProjects);
+
+  // Client-side dynamic hydration from real database explore API
+  React.useEffect(() => {
+    let isMounted = true;
+    async function fetchLatestProjects() {
+      try {
+        const res = await fetch("/api/explore?tab=trending");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.projects && Array.isArray(data.projects) && data.projects.length > 0 && isMounted) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const mapped: ProjectCardData[] = data.projects.map((p: any) => {
+            const coverUrl = p.coverImageKey
+              ? (p.coverImageKey.startsWith("http")
+                  ? p.coverImageKey
+                  : `https://pub-7951652fb9484b909e8f3989e79f7111.r2.dev/${p.coverImageKey}`)
+              : null;
+
+            return {
+              id: p.id,
+              slug: p.slug,
+              title: p.title,
+              summary: p.summary || "Developer showcase project.",
+              coverImageUrl: coverUrl,
+              publishedAt: p.createdAt
+                ? new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                : "Just now",
+              liveUrl: p.liveUrl || null,
+              repoUrl: p.repoUrl || null,
+              upvotesCount: p.kudosCount || 0,
+              viewsCount: p.viewsCount || 0,
+              commentsCount: p._count?.comments || 0,
+              bookmarksCount: p._count?.bookmarks || 0,
+              statusBadge: { text: "Verified", variant: "blue" as const },
+              user: {
+                name: p.user?.displayName || p.user?.name || "Developer",
+                displayName: p.user?.displayName || p.user?.name || "Developer",
+                slug: p.user?.slug || "dev",
+                avatarUrl: p.user?.avatarUrl || null,
+              },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              technologies: (p.technologies || []).map((t: any) => ({
+                name: t.technology?.name || t.name,
+                slug: t.technology?.slug || t.slug,
+              })),
+            };
+          });
+
+          const realIds = new Set(mapped.map((m) => m.id));
+          const remaining = initialProjects.filter((ip) => !realIds.has(ip.id));
+          setFeedProjects([...mapped, ...remaining]);
+        }
+      } catch {
+        // Keep initial fallback feed
+      }
+    }
+    fetchLatestProjects();
+    return () => {
+      isMounted = false;
+    };
+  }, [initialProjects]);
+
   // Instant reactive category state from CategoryFilterProvider (daily.dev style smooth responses)
   const { selectedCategory } = useCategoryFilter();
 
@@ -192,7 +256,7 @@ function HomepageFeedContent({
 
   // Filter projects smoothly by category and sort
   const sortedProjects = useMemo(() => {
-    let list = [...initialProjects];
+    let list = [...feedProjects];
 
     // Category filter matching IDs smoothly
     if (selectedCategory && selectedCategory !== "all") {
@@ -229,7 +293,7 @@ function HomepageFeedContent({
       default:
         return list;
     }
-  }, [initialProjects, selectedCategory, sortOption]);
+  }, [feedProjects, selectedCategory, sortOption]);
 
   const sortLabels = {
     trending: "Trending Today",
