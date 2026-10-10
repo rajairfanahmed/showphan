@@ -138,6 +138,19 @@ _Avoid_: Frame wrapper, Embed lock, Security border.
 The interactive header and hero navigation control displaying real-time GitHub repository star counts, direct repo links, and creator portfolio attribution to Raja Irfan Ahmed.
 _Avoid_: Star button, GitHub badge, Like widget.
 
+**Mobile Navigation Dock**:
+The bottom floating frosted-glass navigation pill on mobile viewports (< 1024px) providing primary 1-tap thumb access to Feed, Search, Explore, Bookmarks, and Submit Project.
+_Avoid_: Bottom bar, Mobile tab bar, Phone navigation.
+
+**Launch Bar**:
+The horizontal metadata row situated directly between the Cover Image and Title containing the Status Badge, Developer Attribution, Relative Publication Date, and external Live Application link.
+_Avoid_: Header bar, Subtitle row, Card metadata strip.
+
+**Dynamic Fluid Grid**:
+The responsive CSS Grid container configured with a 380px minimum card threshold, ensuring cards never suffer from horizontal truncation or button clipping while expanding smoothly across wide viewports.
+_Avoid_: Masonry layout, Fixed 3-column grid, Static breakpoints.
+
+
 
 
 

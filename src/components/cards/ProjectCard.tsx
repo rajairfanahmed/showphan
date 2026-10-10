@@ -17,6 +17,7 @@ export interface ProjectCardData {
     text: string;
     variant?: "amber" | "emerald" | "blue" | "rose" | "cyan" | "purple";
   };
+  publishedAt?: string | null;
   liveUrl?: string | null;
   repoUrl?: string | null;
   upvotesCount?: number;
@@ -125,11 +126,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
       <div className="p-3.5 sm:p-5 md:p-6 flex-1 flex flex-col justify-between gap-4 sm:gap-5">
         <div className="space-y-3 sm:space-y-4">
           {/* Metadata Launch Row: Status Badge on Left + Visit App Button on Right */}
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-wrap min-w-0">
               {project.statusBadge && (
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold border ${getBadgeStyle(
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-semibold border shrink-0 ${getBadgeStyle(
                     project.statusBadge.variant
                   )}`}
                 >
@@ -137,26 +138,31 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 </span>
               )}
 
-              {/* Creator Attribution */}
-              <Link
-                href={`/${user.slug}`}
-                className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[var(--foreground-muted)] hover:text-amber-500 transition-colors"
-              >
+              {/* Creator Attribution & Published Date */}
+              <div className="inline-flex items-center gap-1.5 text-[11px] sm:text-xs text-[var(--foreground-muted)] truncate">
                 <span>by</span>
-                <span className="font-medium text-[var(--foreground)] underline decoration-transparent hover:decoration-current">
+                <Link
+                  href={`/${user.slug}`}
+                  className="font-medium text-[var(--foreground)] hover:text-amber-500 transition-colors underline decoration-transparent hover:decoration-current"
+                >
                   @{user.slug}
-                </span>
-              </Link>
+                </Link>
+                {project.publishedAt && (
+                  <span className="text-[var(--foreground-muted)] opacity-75 whitespace-nowrap">
+                    • {project.publishedAt}
+                  </span>
+                )}
+              </div>
             </div>
 
-            {/* Visit App ↗ Button */}
+            {/* Visit App ↗ Button cleanly pinned on the right */}
             {project.liveUrl && (
               <a
                 href={project.liveUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold text-[var(--foreground)] hover:text-amber-500 dark:hover:text-amber-400 bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 border border-[var(--border)] hover:border-amber-500/40 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold text-[var(--foreground)] hover:text-amber-500 dark:hover:text-amber-400 bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 border border-[var(--border)] hover:border-amber-500/40 transition-colors cursor-pointer shrink-0 whitespace-nowrap"
                 title="Visit live application"
               >
                 <span>Visit App</span>
@@ -167,9 +173,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
             )}
           </div>
 
-          {/* Project Title */}
+          {/* Project Title (Generous 2-line title support) */}
           <Link href={projectHref} className="block group/title">
-            <h3 className="font-extrabold text-lg sm:text-xl text-[var(--foreground)] group-hover/title:text-amber-500 transition-colors tracking-tight line-clamp-1">
+            <h3 className="font-extrabold text-lg sm:text-xl text-[var(--foreground)] group-hover/title:text-amber-500 transition-colors tracking-tight line-clamp-2 leading-snug">
               {project.title}
             </h3>
           </Link>

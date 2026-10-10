@@ -12,6 +12,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     summary:
       "It is the best platform to showcase developer projects, discover real high-velocity engineering, and connect with peer builders.",
     statusBadge: { text: "Live Demo", variant: "amber" },
+    publishedAt: "2h ago",
     liveUrl: "https://showphan.vercel.app",
     repoUrl: "https://github.com/rajairfanahmed/showphan",
     codeSnippet: `<Showphan showcase={maker}>\n  <Platform stack={['Next15',\n  'Tailwind']}/>`,
@@ -40,6 +41,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     summary:
       "Visual node based canvas to compose multi agent LLM pipelines, test prompts with automated eval metrics, and deploy instantly.",
     statusBadge: { text: "v2.4 Released", variant: "emerald" },
+    publishedAt: "4h ago",
     liveUrl: "https://promptforge.dev",
     repoUrl: "https://github.com/promptforge/builder",
     codeSnippet: `const pipeline = new AIWorkflow({\n  model: 'gpt-4o'\n})`,
@@ -67,6 +69,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     summary:
       "Turn messy code snippets into aesthetic, exportable 4K images with customizable syntax themes, gradients, and custom watermarks.",
     statusBadge: { text: "Trending #1", variant: "blue" },
+    publishedAt: "yesterday",
     liveUrl: "https://devlens.app",
     repoUrl: "https://github.com/devlens/app",
     codeSnippet: `git clone devlens-visualizer.git`,
@@ -94,6 +97,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     summary:
       "Sync real time tables between PostgreSQL and client states with end to end type safety, optimistic offline cache, and zero latency.",
     statusBadge: { text: "Open Beta", variant: "rose" },
+    publishedAt: "2d ago",
     liveUrl: "https://postgressync.io",
     repoUrl: "https://github.com/postgressync/core",
     codeSnippet: `SELECT * FROM schema_realtime;`,
@@ -121,6 +125,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     summary:
       "A collection of 60+ micro interactions and animated component primitives tailored specifically for developer facing landing pages.",
     statusBadge: { text: "Components", variant: "cyan" },
+    publishedAt: "3d ago",
     liveUrl: "https://hyperui.design",
     repoUrl: "https://github.com/hyperui/kit",
     codeSnippet: `npx shadcn-ui@latest add dock-bar`,
@@ -148,6 +153,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     summary:
       "Lightweight starter toolkit for zero cold start edge functions powered by Bun, Cloudflare Workers, and Hono with full OpenAPI typing.",
     statusBadge: { text: "Open Source", variant: "purple" },
+    publishedAt: "Oct 08",
     liveUrl: "https://bunflare.dev",
     repoUrl: "https://github.com/bunflare/starter",
     codeSnippet: `> bun test --coverage --bail`,
@@ -234,7 +240,7 @@ function HomepageFeedContent({
 
   return (
     <section className="space-y-5 sm:space-y-6 w-full">
-      {/* Feed Controls Header: Sort dropdown + Status count without any animated dot icons */}
+      {/* Feed Controls Header: Sort dropdown + Status count without animated dots */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
         <div className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)] font-mono">
           <span>Showing {sortedProjects.length} showcases</span>
@@ -286,10 +292,13 @@ function HomepageFeedContent({
       </div>
 
       {/* 
-        3 Cards per Row on Desktop (Mobile First: 1 col on mobile 320px+, 2 cols on tablet, 3 cols on desktop).
-        When the sidebar closes, card widths smoothly increase; when opening, they stretch/shrink fluidly like daily.dev!
+        Dynamic Fluid Card Grid:
+        - Mobile/Tablet: 1 col (320px - 767px).
+        - Desktop with Sidebar: 2 generous columns (~480px-550px each), providing complete breathing room
+          so title, launch bar, and bottom action bar fit with zero wrapping or clipping!
+        - Ultra-wide or with collapsed sidebar (≥1600px): 3 columns.
       */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 xl:gap-6 transition-all duration-300">
+      <div className="grid grid-cols-1 md:grid-cols-2 min-[1600px]:grid-cols-3 gap-5 xl:gap-7 transition-[grid-template-columns] duration-300">
         {sortedProjects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}

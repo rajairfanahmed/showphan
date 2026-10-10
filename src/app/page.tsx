@@ -15,11 +15,19 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   let projects = INITIAL_SHOWCASE_PROJECTS;
 
-  try {
-    const { projects: dbProjects } = await getExploreProjects({
-      tab: "trending",
-      limit: 20,
-    });
+  // 0ms instant fallback if database is offline or unconfigured during local development
+  const isDbConfigured =
+    Boolean(process.env.DATABASE_URL) &&
+    process.env.DATABASE_URL?.startsWith("postgres") &&
+    !process.env.DATABASE_URL?.includes("placeholder") &&
+    !process.env.DATABASE_URL?.includes("localhost:5432/showphan");
+
+  if (isDbConfigured) {
+    try {
+      const { projects: dbProjects } = await getExploreProjects({
+        tab: "trending",
+        limit: 20,
+      });
 
     if (dbProjects && dbProjects.length > 0) {
       const mapped = dbProjects.map((p, index) => {
@@ -68,6 +76,7 @@ export default async function HomePage() {
     // If DB is offline or empty during dev, seamlessly fall back to curated showcases
     projects = INITIAL_SHOWCASE_PROJECTS;
   }
+}
 
   return <HomepageShell initialProjects={projects} />;
 }

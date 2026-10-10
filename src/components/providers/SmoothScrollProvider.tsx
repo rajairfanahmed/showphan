@@ -10,12 +10,12 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     if (typeof window === "undefined") return;
 
     const lenis = new Lenis({
-      duration: 1.0,
+      duration: 0.75,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
-      wheelMultiplier: 0.9,
+      wheelMultiplier: 1.15,
       touchMultiplier: 1.5,
     });
 

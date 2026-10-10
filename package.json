@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "test": "tsx -r dotenv/config tests/backend-suite.test.ts && tsx -r dotenv/config tests/e2e-integration.test.ts && tsx -r dotenv/config tests/requirements-verification.test.ts && tsx tests/monitoring-observability.test.ts",
