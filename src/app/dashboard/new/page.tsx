@@ -7,7 +7,6 @@ import { signIn, useSession } from "@/lib/auth-client";
 export default function NewProjectPage() {
   const { data: session, isPending } = useSession();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
   const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
   const [isSlow, setIsSlow] = useState(false);
   const hasTriggeredRef = useRef(false);
@@ -17,7 +16,6 @@ export default function NewProjectPage() {
     if (isPending || !session?.user || hasTriggeredRef.current) return;
 
     hasTriggeredRef.current = true;
-    setIsCreating(true);
     setErrorMsg(null);
 
     const slowTimer = setTimeout(() => {
@@ -43,7 +41,6 @@ export default function NewProjectPage() {
             window.location.replace(`/dashboard/project/${projId}/edit`);
           } else {
             setErrorMsg("Project draft created, but no ID was returned.");
-            setIsCreating(false);
             hasTriggeredRef.current = false;
           }
         } else {
@@ -52,13 +49,11 @@ export default function NewProjectPage() {
             errData.error?.message ||
               "Failed to initialize a new project draft. Please try again."
           );
-          setIsCreating(false);
           hasTriggeredRef.current = false;
         }
       } catch {
         clearTimeout(slowTimer);
         setErrorMsg("Network error initializing project. Please check your connection.");
-        setIsCreating(false);
         hasTriggeredRef.current = false;
       }
     }
@@ -83,7 +78,6 @@ export default function NewProjectPage() {
 
   const handleRetry = () => {
     setErrorMsg(null);
-    setIsCreating(false);
     hasTriggeredRef.current = false;
     setIsSlow(false);
   };

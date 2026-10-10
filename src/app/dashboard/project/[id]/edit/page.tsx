@@ -12,32 +12,6 @@ import { TagTokenizer } from "@/components/studio/TagTokenizer";
 import { StickyActionDock } from "@/components/studio/StickyActionDock";
 import { LiveCardPreviewDrawer } from "@/components/studio/LiveCardPreviewDrawer";
 
-interface ProjectLoadedItem {
-  id: string;
-  title?: string;
-  summary?: string;
-  coverImageKey?: string | null;
-  liveUrl?: string | null;
-  repoUrl?: string | null;
-  sandboxUrl?: string | null;
-  sandboxEnabled?: boolean;
-  description?: string;
-  role?: string;
-  learnings?: string;
-  tags?: string[];
-  technologies?: { technology: TechnologyItem }[];
-  slug?: string;
-  status?: "DRAFT" | "PUBLISHED";
-  updatedAt?: string;
-  user?: {
-    id: string;
-    slug: string;
-    name?: string | null;
-    displayName?: string | null;
-    avatarUrl?: string | null;
-  };
-}
-
 interface GithubRepositoryItem {
   id: number | string;
   name: string;

@@ -30,7 +30,6 @@ export async function generateMetadata({
   }
 
   const { project, author } = data;
-  const authorName = author.displayName || author.name || author.slug;
   const title = `${project.title} by @${author.slug} — Showphan Showcase`;
   const description = project.summary;
   const coverUrl = getCoverImageUrl(project.coverImageKey);

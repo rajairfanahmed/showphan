@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -49,28 +49,31 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   const [isLoading, setIsLoading] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
+  const handleClose = useCallback(() => {
+    setQuery("");
+    onClose();
+  }, [onClose]);
+
   // Keyboard shortcut listener (Cmd+K / Ctrl+K and ESC)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        if (isOpen) onClose();
+        if (isOpen) handleClose();
       } else if (e.key === "Escape" && isOpen) {
-        onClose();
+        handleClose();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, handleClose]);
 
   // Initial load for trending showcases & tech catalog
   useEffect(() => {
-    if (!isOpen) {
-      setQuery("");
-      return;
-    }
+    if (!isOpen) return;
 
+    let isCurrent = true;
     async function loadInitialData() {
       setIsLoading(true);
       try {
@@ -79,23 +82,29 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           fetch("/api/technologies"),
         ]);
 
-        if (exploreRes.ok) {
+        if (exploreRes.ok && isCurrent) {
           const eData = await exploreRes.json();
           setProjects(eData.projects || []);
         }
 
-        if (techRes.ok) {
+        if (techRes.ok && isCurrent) {
           const tData = await techRes.json();
           setTechnologies((tData.technologies || []).slice(0, 8));
         }
       } catch (err) {
         console.error("Failed to load command palette initial data:", err);
       } finally {
-        setIsLoading(false);
+        if (isCurrent) {
+          setIsLoading(false);
+        }
       }
     }
 
     loadInitialData();
+
+    return () => {
+      isCurrent = false;
+    };
   }, [isOpen]);
 
   // Debounced live search
@@ -154,7 +163,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
     : technologies;
 
   const handleSelect = (href: string) => {
-    onClose();
+    handleClose();
     router.push(href);
   };
 
@@ -166,7 +175,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={handleClose}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         />
 
