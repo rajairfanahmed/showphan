@@ -57,12 +57,12 @@ export function VoteControl({
         title="Upvote"
         className={`flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md transition-colors cursor-pointer ${
           voteState === "up"
-            ? "bg-amber-500/20 text-amber-500 dark:text-amber-400 font-bold"
+            ? "bg-blue-500/15 text-[#0052ff] dark:text-blue-400 font-bold"
             : "hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)]"
         }`}
       >
         <svg
-          className={`w-3.5 h-3.5 ${voteState === "up" ? "text-amber-500 dark:text-amber-400" : ""}`}
+          className={`w-3.5 h-3.5 ${voteState === "up" ? "text-[#0052ff] dark:text-blue-400" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

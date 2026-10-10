@@ -64,7 +64,7 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
     <>
       {/* Top Reading Progress Bar (Live updating with zero delay) */}
       <div
-        className="fixed top-0 left-0 h-[3px] z-[100] pointer-events-none bg-gradient-to-r from-amber-500 to-orange-500 shadow-[0_0_8px_rgba(245,158,11,0.8)]"
+        className="fixed top-0 left-0 h-[3px] z-[100] pointer-events-none bg-gradient-to-r from-[#0052ff] to-[#4378ff] shadow-[0_0_8px_rgba(0,82,255,0.5)]"
         style={{
           width: `${scrollProgress}%`,
           opacity: scrollProgress > 0.2 ? 1 : 0,

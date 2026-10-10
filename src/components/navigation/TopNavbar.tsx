@@ -71,7 +71,7 @@ function TopNavbarContent({ onToggleSidebar }: { onToggleSidebar?: () => void })
               className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 text-xs text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer group shadow-sm"
               aria-label="Search developer showcases"
             >
-              <svg className="w-4 h-4 text-[var(--foreground-muted)] group-hover:text-amber-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-[var(--foreground-muted)] group-hover:text-[#0052ff] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <span className="font-normal">Search dev...</span>
@@ -95,7 +95,7 @@ function TopNavbarContent({ onToggleSidebar }: { onToggleSidebar?: () => void })
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? "bg-amber-500 text-black font-bold shadow-sm shadow-amber-500/25 scale-102"
+                      ? "bg-[#0052ff] text-white font-bold shadow-sm shadow-blue-500/25 scale-102"
                       : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                   }`}
                 >
@@ -127,7 +127,7 @@ function TopNavbarContent({ onToggleSidebar }: { onToggleSidebar?: () => void })
             {/* + Submit Project Button (Mobile first, perfectly responsive down to 320px) */}
             <Link
               href="/dashboard/new"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-bold text-xs sm:text-sm shadow-md shadow-amber-500/20 hover:shadow-amber-500/30 active:scale-98 transition-all cursor-pointer whitespace-nowrap"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-98 transition-all cursor-pointer whitespace-nowrap"
             >
               <span className="text-sm leading-none">+</span>
               <span className="hidden min-[380px]:inline">Submit</span>
@@ -152,7 +152,7 @@ function TopNavbarContent({ onToggleSidebar }: { onToggleSidebar?: () => void })
                 <button
                   type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center rounded-full ring-2 ring-amber-500/40 hover:ring-amber-500 transition-all cursor-pointer"
+                  className="flex items-center rounded-full ring-2 ring-blue-500/40 hover:ring-blue-500 transition-all cursor-pointer"
                   aria-label="User account menu"
                 >
                   {session.user.image ? (
@@ -224,7 +224,7 @@ function TopNavbarContent({ onToggleSidebar }: { onToggleSidebar?: () => void })
               <button
                 type="button"
                 onClick={handleSignIn}
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-bold text-xs flex items-center justify-center ring-2 ring-amber-500/40 hover:scale-105 transition-all cursor-pointer"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-bold text-xs flex items-center justify-center ring-2 ring-blue-500/40 hover:scale-105 transition-all cursor-pointer"
                 title="Sign in with GitHub"
                 aria-label="Sign in"
               >
@@ -245,7 +245,7 @@ function TopNavbarContent({ onToggleSidebar }: { onToggleSidebar?: () => void })
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-3 py-1 rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap shrink-0 ${
                   isActive
-                    ? "bg-amber-500 text-black font-bold shadow-sm shadow-amber-500/25"
+                    ? "bg-[#0052ff] text-white font-bold shadow-sm shadow-blue-500/25"
                     : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                 }`}
               >

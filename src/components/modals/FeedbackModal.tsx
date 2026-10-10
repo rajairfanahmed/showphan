@@ -84,7 +84,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                     onClick={() => setFeedbackType(t.id)}
                     className={`py-1.5 sm:py-2 px-1 sm:px-3 rounded-lg text-[11px] sm:text-xs font-semibold transition-colors cursor-pointer truncate ${
                       feedbackType === t.id
-                        ? "bg-amber-500 text-black shadow-sm font-bold"
+                        ? "bg-[#0052ff] text-white shadow-sm font-bold"
                         : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                     }`}
                   >
@@ -104,7 +104,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Tell us what you'd love to see or what we can improve..."
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] p-3 text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:outline-none focus:border-amber-500 transition-colors resize-none"
+                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] p-3 text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--foreground-muted)] focus:outline-none focus:border-blue-500 transition-colors resize-none"
                 />
               </div>
 
@@ -119,7 +119,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                 </button>
                 <button
                   type="submit"
-                  className="px-4.5 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-black shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                  className="px-4.5 py-2 rounded-xl text-xs font-bold bg-[#0052ff] hover:bg-blue-600 text-white shadow-md shadow-blue-500/20 active:scale-95 transition-all cursor-pointer"
                 >
                   Send Feedback
                 </button>

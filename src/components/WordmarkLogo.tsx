@@ -24,7 +24,7 @@ export function WordmarkLogo({
       title="Showphan"
     >
       {/* Exact Trophy Logo clearly big shown without any text */}
-      <div className="shrink-0 text-amber-500 hover:text-amber-400 transition-transform duration-200 hover:scale-105 flex items-center justify-center">
+      <div className="shrink-0 text-[#0052ff] hover:text-blue-600 transition-transform duration-200 hover:scale-105 flex items-center justify-center">
         <TrophyLogo size={iconSize} />
       </div>
     </div>

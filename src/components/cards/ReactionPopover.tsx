@@ -136,7 +136,7 @@ export function ReactionPopover({
                   onMouseEnter={() => setHoveredReaction(item.id)}
                   onMouseLeave={() => setHoveredReaction(null)}
                   className={`relative p-1 rounded-full text-base cursor-pointer transition-transform duration-100 ${
-                    isSelected ? "bg-white/20 ring-1 ring-amber-400" : "hover:scale-120"
+                    isSelected ? "bg-white/20 ring-1 ring-blue-500" : "hover:scale-120"
                   }`}
                   title={item.label}
                 >
@@ -167,7 +167,7 @@ export function ReactionPopover({
         }}
         className={`group inline-flex items-center gap-1 sm:gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
           activeReaction
-            ? "border-amber-500/50 bg-amber-500/15 text-amber-500 dark:text-amber-400 shadow-sm"
+            ? "border-blue-500/40 bg-blue-500/15 text-[#0052ff] dark:text-blue-400 shadow-sm"
             : "border-[var(--border)] bg-[var(--surface-glass)] hover:border-[var(--border-hover)] text-[var(--foreground-muted)] hover:text-[var(--foreground)]"
         }`}
         title="React with developer emojis"

@@ -11,7 +11,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     title: "Showphan: A platform for you",
     summary:
       "It is the best platform to showcase developer projects, discover real high-velocity engineering, and connect with peer builders.",
-    statusBadge: { text: "Live Demo", variant: "amber" },
+    statusBadge: { text: "Live Demo", variant: "blue" },
     publishedAt: "2h ago",
     liveUrl: "https://showphan.vercel.app",
     repoUrl: "https://github.com/rajairfanahmed/showphan",
@@ -278,12 +278,12 @@ function HomepageFeedContent({
                   }}
                   className={`w-full text-left px-3.5 py-2 text-xs font-medium transition-colors cursor-pointer flex items-center justify-between ${
                     sortOption === key
-                      ? "text-amber-500 font-bold bg-[var(--surface-glass)]"
+                      ? "text-[#0052ff] dark:text-blue-400 font-bold bg-[var(--surface-glass)]"
                       : "text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                   }`}
                 >
                   <span>{sortLabels[key]}</span>
-                  {sortOption === key && <span className="text-amber-500">✓</span>}
+                  {sortOption === key && <span className="text-[#0052ff] dark:text-blue-400">✓</span>}
                 </button>
               ))}
             </div>
@@ -292,12 +292,12 @@ function HomepageFeedContent({
       </div>
 
       {/* 
-        Dynamic Fluid Card Grid:
-        - Mobile: 1 col (320px - 767px).
-        - Tablet/Compact: 2 cols (768px - 1279px).
-        - Desktop (>=1280px): 3 columns in a row (daily.dev style, responsive on sidebar collapse/expand).
+        Awwwards Intrinsic Fluid Card Grid:
+        - Mobile: 1 fluid column (320px - 639px).
+        - Tablet/Desktop: Container-aware repeat(auto-fill, minmax(360px, 1fr)).
+        - Cards guaranteed >=360px width with zero HUD clipping!
       */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 xl:gap-6 transition-[grid-template-columns] duration-300">
+      <div className="awwwards-fluid-grid transition-all duration-300">
         {sortedProjects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}

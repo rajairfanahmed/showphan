@@ -80,7 +80,7 @@ export function Sidebar({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
       ),
-      badge: { text: "HOT", color: "bg-amber-500/15 text-amber-500 dark:text-amber-400 border-amber-500/30" },
+      badge: { text: "HOT", color: "bg-blue-500/10 text-[#0052ff] dark:text-blue-400 border-blue-500/25" },
     },
     {
       id: "bookmarks",
@@ -112,7 +112,7 @@ export function Sidebar({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
       ),
-      badge: { text: "Top 100", color: "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/20" },
+      badge: { text: "Top 100", color: "bg-blue-500/10 text-[#0052ff] dark:text-blue-400 border-blue-500/20" },
     },
     {
       id: "settings",
@@ -186,7 +186,7 @@ export function Sidebar({
                 }}
                 className={`w-full relative flex items-center gap-3 px-3 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-150 cursor-pointer group select-none ${
                   isActive
-                    ? "bg-amber-500/15 text-[var(--foreground)] font-bold border border-amber-500/30 shadow-sm"
+                    ? "bg-blue-500/10 text-[var(--foreground)] font-bold border border-blue-500/25 shadow-sm"
                     : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                 } ${isCollapsed ? "justify-center px-0" : ""}`}
                 title={item.label}
@@ -194,7 +194,7 @@ export function Sidebar({
                 <span
                   className={`transition-colors shrink-0 ${
                     isActive
-                      ? "text-amber-500 dark:text-amber-400"
+                      ? "text-[#0052ff] dark:text-blue-400"
                       : "text-[var(--foreground-muted)] group-hover:text-[var(--foreground)]"
                   }`}
                 >
@@ -228,11 +228,11 @@ export function Sidebar({
               onClick={toggleTheme}
               title={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
               aria-label={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
-              className="w-10 h-10 rounded-xl bg-[var(--surface-glass)] border border-[var(--border)] hover:border-amber-500/40 text-[var(--foreground)] hover:text-amber-500 flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+              className="w-10 h-10 rounded-xl bg-[var(--surface-glass)] border border-[var(--border)] hover:border-blue-500/40 text-[var(--foreground)] hover:text-[#0052ff] flex items-center justify-center transition-colors cursor-pointer shadow-sm"
             >
               {isDarkTheme ? (
                 <svg
-                  className="w-4 h-4 text-amber-400"
+                  className="w-4 h-4 text-blue-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -246,7 +246,7 @@ export function Sidebar({
                 </svg>
               ) : (
                 <svg
-                  className="w-4 h-4 text-amber-600"
+                  className="w-4 h-4 text-blue-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -265,13 +265,13 @@ export function Sidebar({
           /* Full Theme Toggle Switch for Expanded Mode */
           <div
             onClick={toggleTheme}
-            className="flex items-center justify-between px-3 py-2 rounded-2xl bg-[var(--surface-glass)] border border-[var(--border)] cursor-pointer hover:border-amber-500/40 transition-colors"
+            className="flex items-center justify-between px-3 py-2 rounded-2xl bg-[var(--surface-glass)] border border-[var(--border)] cursor-pointer hover:border-blue-500/40 transition-colors"
             title={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
           >
             <div className="flex items-center gap-2">
               {isDarkTheme ? (
                 <svg
-                  className="w-4 h-4 text-amber-400 shrink-0"
+                  className="w-4 h-4 text-blue-400 shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -285,7 +285,7 @@ export function Sidebar({
                 </svg>
               ) : (
                 <svg
-                  className="w-4 h-4 text-amber-600 shrink-0"
+                  className="w-4 h-4 text-blue-600 shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -305,7 +305,7 @@ export function Sidebar({
 
             <div
               className={`w-10 h-5 flex items-center rounded-full p-0.5 transition-colors ${
-                isDarkTheme ? "bg-amber-500" : "bg-zinc-300 dark:bg-zinc-700"
+                isDarkTheme ? "bg-[#0052ff]" : "bg-zinc-300 dark:bg-zinc-700"
               }`}
             >
               <div

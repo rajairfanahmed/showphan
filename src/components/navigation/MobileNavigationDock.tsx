@@ -23,7 +23,7 @@ export function MobileNavigationDock() {
             aria-label="Community Feed"
             className={`p-2.5 rounded-full transition-colors relative flex items-center justify-center cursor-pointer min-touch ${
               pathname === "/"
-                ? "bg-amber-500/20 text-amber-500 font-bold"
+                ? "bg-blue-500/15 text-[#0052ff] dark:text-blue-400 font-bold"
                 : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
             }`}
           >
@@ -50,7 +50,7 @@ export function MobileNavigationDock() {
             aria-label="Explore Showcases"
             className={`p-2.5 rounded-full transition-colors relative flex items-center justify-center cursor-pointer min-touch ${
               pathname.startsWith("/explore")
-                ? "bg-amber-500/20 text-amber-500 font-bold"
+                ? "bg-blue-500/15 text-[#0052ff] dark:text-blue-400 font-bold"
                 : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
             }`}
           >
@@ -65,7 +65,7 @@ export function MobileNavigationDock() {
             aria-label="Bookmarks"
             className={`p-2.5 rounded-full transition-colors relative flex items-center justify-center cursor-pointer min-touch ${
               pathname.includes("/bookmarks")
-                ? "bg-amber-500/20 text-amber-500 font-bold"
+                ? "bg-blue-500/15 text-[#0052ff] dark:text-blue-400 font-bold"
                 : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
             }`}
           >
@@ -77,11 +77,11 @@ export function MobileNavigationDock() {
           {/* Divider */}
           <div className="w-[1px] h-5 bg-[var(--border)] mx-0.5" />
 
-          {/* 5. Submit Project (+) Prominent Amber Button */}
+          {/* 5. Submit Project (+) Prominent Cobalt Button */}
           <Link
             href="/dashboard/new"
             aria-label="Submit Project"
-            className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-black font-bold shadow-md shadow-amber-500/25 active:scale-95 transition-transform cursor-pointer"
+            className="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold shadow-md shadow-blue-500/30 active:scale-95 transition-transform cursor-pointer"
           >
             <span className="text-xl leading-none">+</span>
           </Link>

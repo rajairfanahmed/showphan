@@ -89,13 +89,13 @@ export function ViewportSwitcher({ current, onChange }: ViewportSwitcherProps) {
             onClick={() => onChange(opt.id)}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all duration-200 select-none ${
               isActive
-                ? "bg-amber-500 text-black shadow-sm font-bold scale-100"
-                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60"
+                ? "bg-[#0052ff] text-white shadow-sm font-bold scale-100"
+                : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface-muted)]"
             }`}
           >
             <span>{opt.icon}</span>
             <span className="hidden sm:inline">{opt.label}</span>
-            <span className={`text-[10px] opacity-75 font-mono ${isActive ? "text-zinc-900 font-bold" : "text-zinc-400"}`}>
+            <span className={`text-[10px] opacity-75 font-mono ${isActive ? "text-white/80 font-bold" : "text-[var(--muted-foreground)]"}`}>
               {opt.width}
             </span>
           </button>

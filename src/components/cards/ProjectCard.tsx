@@ -76,50 +76,43 @@ export function ProjectCard({ project }: ProjectCardProps) {
     return String(val);
   };
 
-  // Badge styles with high contrast for Day and Night modes
-  const getBadgeStyle = (variant = "amber") => {
+  // Badge styles with high contrast for Day and Night modes (Awwwards Klein Cobalt system)
+  const getBadgeStyle = (variant = "blue") => {
     switch (variant) {
       case "emerald":
-        return "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10";
-      case "blue":
-        return "text-blue-600 dark:text-blue-400 border-blue-500/30 bg-blue-500/10";
+        return "text-emerald-700 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10";
       case "rose":
-        return "text-rose-600 dark:text-rose-400 border-rose-500/30 bg-rose-500/10";
+        return "text-rose-700 dark:text-rose-400 border-rose-500/30 bg-rose-500/10";
       case "cyan":
-        return "text-cyan-600 dark:text-cyan-400 border-cyan-500/30 bg-cyan-500/10";
+        return "text-cyan-700 dark:text-cyan-400 border-cyan-500/30 bg-cyan-500/10";
       case "purple":
-        return "text-purple-600 dark:text-purple-400 border-purple-500/30 bg-purple-500/10";
-      case "amber":
+        return "text-purple-700 dark:text-purple-400 border-purple-500/30 bg-purple-500/10";
+      case "blue":
       default:
-        return "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10";
+        return "text-[#0052ff] dark:text-blue-400 border-blue-500/30 bg-blue-500/10";
     }
   };
 
   return (
-    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--border-hover)] transition-all duration-200 shadow-sm hover:shadow-xl overflow-hidden w-full @container card-container">
+    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-blue-500/40 transition-all duration-300 overflow-hidden w-full @container card-container awwwards-card">
       {/* 
-        1. 16:9 Cover Image / Code Preview Area:
-        Clean and unobstructed. No tags or overlays blocking the image preview.
+        1. 16:9 Cover Image / Visual Preview Area:
+        Awwwards Pristine Media: completely unobstructed, zero text or badge overlays on image.
       */}
-      <Link href={projectHref} className="block relative aspect-video w-full overflow-hidden bg-zinc-950 border-b border-[var(--border)]">
+      <Link href={projectHref} className="block relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-[var(--border)]">
         {project.coverImageUrl ? (
           <img
             src={project.coverImageUrl}
             alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full p-4 sm:p-6 flex flex-col justify-center items-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 bg-grid-pattern relative">
-            <div className="w-full max-w-sm rounded-lg border border-white/10 bg-black/85 backdrop-blur-md p-3 sm:p-4 shadow-xl">
-              <div className="flex items-center gap-1.5 mb-2.5">
-                <span className="w-2 h-2 rounded-full bg-rose-500/80" />
-                <span className="w-2 h-2 rounded-full bg-amber-500/80" />
-                <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
-              </div>
-              <pre className="font-mono text-[11px] sm:text-xs leading-relaxed text-zinc-300 overflow-x-hidden">
-                <code>{project.codeSnippet || `<Showphan showcase={maker} />\n<Platform stack={['Next15', 'Tailwind']} />`}</code>
-              </pre>
+          <div className="w-full h-full p-4 sm:p-6 flex flex-col justify-center items-center bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 bg-grid-pattern relative">
+            <div className="w-full max-w-xs h-24 rounded-xl border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center p-4 shadow-xl">
+              <svg className="w-8 h-8 text-blue-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+              </svg>
             </div>
           </div>
         )}
@@ -139,7 +132,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               <span className="shrink-0">by</span>
               <Link
                 href={`/${user.slug}`}
-                className="font-medium text-[var(--foreground)] hover:text-amber-500 transition-colors truncate underline decoration-transparent hover:decoration-current"
+                className="font-medium text-[var(--foreground)] hover:text-[#0052ff] transition-colors truncate underline decoration-transparent hover:decoration-current"
               >
                 @{user.slug}
               </Link>
@@ -168,7 +161,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold text-[var(--foreground)] hover:text-amber-500 dark:hover:text-amber-400 bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 border border-[var(--border)] hover:border-amber-500/40 transition-colors cursor-pointer whitespace-nowrap"
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold text-[var(--foreground)] hover:text-[#0052ff] dark:hover:text-blue-400 bg-[var(--surface-glass)] hover:bg-blue-500/10 border border-[var(--border)] hover:border-blue-500/40 transition-colors cursor-pointer whitespace-nowrap"
                   title="Visit live application"
                 >
                   <span>Visit App</span>
@@ -182,7 +175,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
           {/* Project Title (Generous 2-line title support) */}
           <Link href={projectHref} className="block group/title">
-            <h3 className="font-extrabold text-lg sm:text-xl text-[var(--foreground)] group-hover/title:text-amber-500 transition-colors tracking-tight line-clamp-2 leading-snug">
+            <h3 className="font-extrabold text-lg sm:text-xl text-[var(--foreground)] group-hover/title:text-[#0052ff] transition-colors tracking-tight line-clamp-2 leading-snug">
               {project.title}
             </h3>
           </Link>
@@ -244,7 +237,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
               onClick={handleBookmarkToggle}
               className={`inline-flex items-center gap-1 px-1.5 py-1 sm:px-2 sm:py-1 rounded-lg transition-colors cursor-pointer ${
                 bookmarked
-                  ? "text-amber-500 bg-amber-500/10 font-bold"
+                  ? "text-[#0052ff] bg-blue-500/10 font-bold"
                   : "hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)]"
               }`}
               title={bookmarked ? "Remove bookmark" : "Save bookmark"}
@@ -282,7 +275,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
               {copied && (
-                <span className="absolute -top-7 right-0 px-2 py-0.5 rounded bg-amber-500 text-black text-[10px] font-bold shadow-md animate-fade-in whitespace-nowrap">
+                <span className="absolute -top-7 right-0 px-2 py-0.5 rounded bg-[#0052ff] text-white text-[10px] font-bold shadow-md animate-fade-in whitespace-nowrap">
                   Copied!
                 </span>
               )}

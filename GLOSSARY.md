@@ -147,8 +147,17 @@ The horizontal metadata row situated directly between the Cover Image and Title 
 _Avoid_: Header bar, Subtitle row, Card metadata strip.
 
 **Dynamic Fluid Grid**:
-The responsive CSS Grid container configured with a 380px minimum card threshold, ensuring cards never suffer from horizontal truncation or button clipping while expanding smoothly across wide viewports.
+The responsive CSS Grid container configured with a 360px minimum card threshold (`repeat(auto-fill, minmax(360px, 1fr))`), ensuring cards never suffer from horizontal truncation or button clipping while expanding smoothly across wide viewports.
 _Avoid_: Masonry layout, Fixed 3-column grid, Static breakpoints.
+
+**Ceramic Daylight System**:
+The Awwwards-caliber Day/Light design system based on silk mineral canvas (`#f5f6fa`), ceramic floating white surfaces (`#ffffff`), deep obsidian ink typography (`#0a0d14`), and Electric Klein Cobalt (`#0052ff`) accents, completely devoid of orange or amber tones.
+_Avoid_: Light mode, Plain white theme, Default skin.
+
+**Pristine 16:9 Media**:
+The unobstructed project visual container rendered in strict 16:9 aspect ratio completely free of text overlays, watermarks, tags, or badges.
+_Avoid_: Card thumbnail, Image banner with tags.
+
 
 
 

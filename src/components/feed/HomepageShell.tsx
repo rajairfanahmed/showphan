@@ -19,7 +19,7 @@ export function HomepageShell({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="w-full flex-1 flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200 pb-20 lg:pb-0">
+    <div className="w-full flex-1 flex flex-col justify-between selection:bg-blue-500/25 selection:text-blue-900 dark:selection:text-blue-200 pb-20 lg:pb-0">
       {/* Main Platform Shell: Mobile-first responsive container (starting from 320px) */}
       <div className="w-full max-w-[1750px] mx-auto px-2.5 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 flex gap-4 lg:gap-6 xl:gap-8 items-start flex-1">
         {/* Floating Rounded Sidebar with panel dock toggle and collapsed theme switcher */}
