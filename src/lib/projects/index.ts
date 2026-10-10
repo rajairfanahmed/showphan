@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma, ensureDatabaseSchema } from "@/lib/prisma";
 import { ProjectStatus } from "@/generated/prisma/enums";
 
 export * from "./trending";
@@ -222,6 +222,7 @@ export async function deleteProject(userId: string, projectId: string) {
 }
 
 export async function getPublicProfileBySlug(slug: string) {
+  await ensureDatabaseSchema();
   const user = await prisma.user.findUnique({
     where: { slug },
     select: {
@@ -249,12 +250,30 @@ export async function getPublicProfileBySlug(slug: string) {
 
   const featuredProjects = user.projects.filter((p) => p.isFeatured);
   const regularProjects = user.projects.filter((p) => !p.isFeatured);
+  const totalKudos = user.projects.reduce((acc, p) => acc + (p.kudosCount || 0), 0);
+
+  const techMap = new Map<string, { id: string; name: string; slug: string; iconColor: string }>();
+  user.projects.forEach((proj) => {
+    proj.technologies.forEach(({ technology }) => {
+      if (!techMap.has(technology.id)) {
+        techMap.set(technology.id, {
+          id: technology.id,
+          name: technology.name,
+          slug: technology.slug,
+          iconColor: technology.iconColor,
+        });
+      }
+    });
+  });
+  const allTechnologies = Array.from(techMap.values());
 
   return {
     user,
     featuredProjects,
     regularProjects,
     publishedCount: user.projects.length,
+    totalKudos,
+    allTechnologies,
   };
 }
 

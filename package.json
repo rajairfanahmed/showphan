@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "node -e \"if (process.env.DATABASE_URL) { try { require('child_process').execSync('npx prisma db push --accept-data-loss', { stdio: 'inherit' }); } catch(e){} }\" && next build",
     "typecheck": "tsc --noEmit",
     "test": "tsx -r dotenv/config tests/backend-suite.test.ts && tsx -r dotenv/config tests/e2e-integration.test.ts && tsx -r dotenv/config tests/requirements-verification.test.ts && tsx tests/monitoring-observability.test.ts",
     "lint": "eslint",

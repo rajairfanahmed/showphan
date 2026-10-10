@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
+
+const emptySubscribe = () => () => {};
 
 interface SidebarProps {
   isMobileOpen?: boolean;
@@ -21,6 +23,7 @@ export function Sidebar({
   onToggleCollapsed,
 }: SidebarProps) {
   const pathname = usePathname();
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [internalCollapsed, setInternalCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("showphan-sidebar-collapsed") === "true";
@@ -109,7 +112,9 @@ export function Sidebar({
 
   const sidebarContent = (
     <div
-      className={`h-full flex flex-col justify-between transition-all duration-300 ${
+      className={`h-full flex flex-col justify-between ${
+        isMounted ? "transition-all duration-300" : "transition-none"
+      } ${
         isCollapsed ? "w-12 sm:w-14 items-center" : "w-56 sm:w-60"
       }`}
     >
@@ -203,7 +208,9 @@ export function Sidebar({
   return (
     <>
       {/* Desktop Floating Rounded Sidebar */}
-      <aside className="hidden lg:block sticky top-20 h-[calc(100vh-6rem)] shrink-0 z-30 transition-all duration-300">
+      <aside className={`hidden lg:block sticky top-20 h-[calc(100vh-6rem)] shrink-0 z-30 ${
+        isMounted ? "transition-all duration-300" : "transition-none"
+      }`}>
         <div className="h-full rounded-3xl border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-black/30 p-2 sm:p-3 overflow-hidden">
           {sidebarContent}
         </div>

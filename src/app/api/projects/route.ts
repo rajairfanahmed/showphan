@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { createProjectDraft, getUserProjects } from "@/lib/projects";
+import { ensureDatabaseSchema } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
+    await ensureDatabaseSchema();
     const session = await auth.api.getSession({
       headers: req.headers,
     });
@@ -34,6 +36,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const requestId = req.headers.get("x-request-id") ?? undefined;
   try {
+    await ensureDatabaseSchema();
     const session = await auth.api.getSession({
       headers: req.headers,
     });

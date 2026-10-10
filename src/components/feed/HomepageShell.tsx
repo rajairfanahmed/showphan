@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useSyncExternalStore } from "react";
 import { Sidebar } from "@/components/navigation/Sidebar";
 import { HomepageFeed } from "@/components/feed/HomepageFeed";
 import { FloatingActions } from "@/components/common/FloatingActions";
 import { MobileNavigationDock } from "@/components/navigation/MobileNavigationDock";
 import { ProjectCardData } from "@/components/cards/ProjectCard";
+
+const emptySubscribe = () => () => {};
 
 interface HomepageShellProps {
   initialProjects?: ProjectCardData[];
@@ -16,6 +18,7 @@ export function HomepageShell({
 }: HomepageShellProps) {
   const [activeNav, setActiveNav] = useState("feed");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("showphan-sidebar-collapsed") === "true";
@@ -47,7 +50,7 @@ export function HomepageShell({
           Main Community Feed:
           Fluid width that expands when sidebar closes and decreases when opened like daily.dev
         */}
-        <main className="flex-1 min-w-0 transition-[width] duration-300 ease-in-out">
+        <main className={`flex-1 min-w-0 ${isMounted ? "transition-[width] duration-300 ease-in-out" : "transition-none"}`}>
           <HomepageFeed initialProjects={initialProjects} />
         </main>
       </div>
