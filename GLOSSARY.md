@@ -158,9 +158,13 @@ _Avoid_: Masonry layout, Fixed 3-column grid, Static breakpoints.
 The Awwwards-caliber Day/Light design system based on silk mineral canvas (`#f5f6fa`), ceramic floating white surfaces (`#ffffff`), deep obsidian ink typography (`#0a0d14`), and Electric Klein Cobalt (`#0052ff`) accents, completely devoid of orange or amber tones.
 _Avoid_: Light mode, Plain white theme, Default skin.
 
-**Pristine 16:9 Media**:
-The unobstructed project visual container rendered in strict 16:9 aspect ratio completely free of text overlays, watermarks, tags, or badges.
-_Avoid_: Card thumbnail, Image banner with tags.
+**Portfolio Shelf**:
+The curated top section of a developer's public profile page (`/<slug>`) highlighting up to 4–6 flagship published projects in prominent 16:9 cards before the full project archive.
+_Avoid_: Pinned list, Featured row, Top grid.
+
+**Proof-of-Work Badges**:
+The aggregated, verified platform metrics displayed on a developer's profile banner denoting total community Kudos earned and published project count.
+_Avoid_: Vanity metrics, Profile stats, Karma badges.
 
 
 
