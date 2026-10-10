@@ -28,6 +28,47 @@ const s3Client = new S3Client({
       : undefined,
 });
 
+export async function uploadCoverBufferToR2(
+  userId: string,
+  buffer: Buffer | Uint8Array,
+  mimeType: string = "image/webp"
+): Promise<{ key: string }> {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  if (!allowedTypes.includes(mimeType)) {
+    throw new Error("INVALID_FILE_TYPE: Only WebP, PNG, and JPEG images are allowed.");
+  }
+
+  const timestamp = Date.now();
+  const extension = mimeType === "image/jpeg" ? "jpg" : mimeType.split("/")[1] || "webp";
+  const key = `covers/${userId}/${timestamp}.${extension}`;
+
+  // When Cloudflare R2 credentials are provided, upload to R2 bucket
+  if (accessKeyId && secretAccessKey && !accessKeyId.includes("your-")) {
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+      Body: buffer,
+      ContentType: mimeType,
+    });
+    await s3Client.send(command);
+    return { key };
+  }
+
+  // Local development fallback if R2 credentials are not configured
+  try {
+    const fs = await import("fs/promises");
+    const path = await import("path");
+    const localDir = path.join(process.cwd(), "public", "covers", userId);
+    await fs.mkdir(localDir, { recursive: true });
+    const localFilePath = path.join(localDir, `${timestamp}.${extension}`);
+    await fs.writeFile(localFilePath, buffer);
+    return { key: `/covers/${userId}/${timestamp}.${extension}` };
+  } catch (fsErr) {
+    logger.warn("Local storage fallback write error", { error: fsErr });
+    return { key };
+  }
+}
+
 export async function createPresignedCoverUpload(
   userId: string,
   mimeType: string,

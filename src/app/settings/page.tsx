@@ -55,6 +55,7 @@ export default function SettingsPage() {
         body: JSON.stringify({
           displayName,
           bio,
+          slug,
           searchVisible,
         }),
       });
@@ -62,7 +63,8 @@ export default function SettingsPage() {
         setSavedSuccess(true);
         setTimeout(() => setSavedSuccess(false), 2500);
       } else {
-        alert("Failed to save settings.");
+        const err = await res.json().catch(() => ({}));
+        alert(err.error?.message || "Failed to save settings.");
       }
     } catch {
       alert("Error saving settings.");
@@ -126,7 +128,7 @@ export default function SettingsPage() {
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-amber-500/50"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-[#0052ff]/50"
             />
           </div>
 
@@ -141,19 +143,32 @@ export default function SettingsPage() {
               onChange={(e) => setBio(e.target.value.slice(0, 160))}
               rows={3}
               placeholder="Tell visitors about your background, what you build, and what you're looking for."
-              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-amber-500/50 resize-none"
+              className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-[var(--background)] text-sm text-[var(--foreground)] outline-none focus:ring-2 focus:ring-[#0052ff]/50 resize-none"
             />
           </div>
 
-          {/* Profile Slug (Read-Only) */}
+          {/* Profile Slug (Editable) */}
           <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-[var(--foreground)]">Profile URL</label>
-            <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg border border-[var(--border)] bg-zinc-900/50 text-sm font-mono text-zinc-400 select-all">
-              <span>https://showphan.vercel.app/</span>
-              <span className="text-amber-400 font-bold">{slug}</span>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-semibold text-[var(--foreground)]">Profile Handle</label>
+              <span className="text-xs text-[var(--muted-foreground)] font-mono">
+                showphan.vercel.app/{slug}
+              </span>
+            </div>
+            <div className="flex items-center rounded-lg border border-[var(--border)] bg-[var(--background)] overflow-hidden focus-within:ring-2 focus-within:ring-[#0052ff]/50">
+              <span className="px-3.5 py-2.5 text-sm font-mono font-bold text-[#0052ff] bg-blue-50/50 dark:bg-zinc-800/80 border-r border-[var(--border)] select-none">
+                @
+              </span>
+              <input
+                type="text"
+                value={slug}
+                onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+                placeholder="rajairfanahmed"
+                className="w-full px-3.5 py-2.5 bg-transparent text-sm font-mono text-[var(--foreground)] outline-none"
+              />
             </div>
             <p className="text-xs text-[var(--muted-foreground)]">
-              Your profile slug is permanent to ensure shared links on resumes and social posts never break.
+              Your public portfolio URL handle (e.g. rajairfanahmed). Letters, numbers, underscores, and hyphens.
             </p>
           </div>
         </div>
@@ -162,11 +177,11 @@ export default function SettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-black font-bold text-sm shadow-md transition-all"
+            className="px-5 py-2.5 rounded-lg bg-[#0052ff] hover:bg-blue-600 disabled:opacity-50 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
-          {savedSuccess && <span className="text-xs text-emerald-400 font-medium">Saved successfully! ✓</span>}
+          {savedSuccess && <span className="text-xs text-emerald-500 font-semibold">Saved successfully! ✓</span>}
         </div>
       </section>
 
@@ -188,7 +203,7 @@ export default function SettingsPage() {
             type="checkbox"
             checked={searchVisible}
             onChange={(e) => setSearchVisible(e.target.checked)}
-            className="w-5 h-5 accent-amber-500 rounded cursor-pointer"
+            className="w-5 h-5 accent-[#0052ff] rounded cursor-pointer"
           />
         </div>
 
@@ -214,7 +229,7 @@ export default function SettingsPage() {
 
         <button
           onClick={() => setDeleteModalOpen(true)}
-          className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold transition-colors"
+          className="px-4 py-2 rounded-lg border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-bold transition-colors cursor-pointer"
         >
           Delete Account
         </button>
@@ -226,7 +241,7 @@ export default function SettingsPage() {
           <div className="w-full max-w-md rounded-xl border border-red-500/40 bg-[var(--card)] p-6 space-y-4 shadow-2xl">
             <h3 className="text-lg font-bold text-[var(--foreground)]">Permanently delete account?</h3>
             <p className="text-xs text-[var(--muted-foreground)]">
-              Please type your username <strong className="text-amber-400">&quot;{slug}&quot;</strong> to confirm account deletion.
+              Please type your username <strong className="text-[#0052ff] dark:text-blue-400">&quot;{slug}&quot;</strong> to confirm account deletion.
             </p>
 
             <input

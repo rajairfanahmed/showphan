@@ -36,16 +36,20 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          const existingSlug = (user as { slug?: string }).slug;
-          const fallbackSlug = (user.name || "dev")
+          const userAny = user as { slug?: string; name?: string; email?: string };
+          const existingSlug = userAny.slug;
+          // Clean slug derived without inserting dashes between words in name
+          const nameClean = (user.name || "dev")
             .toLowerCase()
-            .replace(/[^a-z0-9_-]/g, "-")
-            .replace(/-+/g, "-")
-            .replace(/^-|-$/g, "");
+            .replace(/[^a-z0-9]/g, "");
+          const emailClean = user.email
+            ? user.email.split("@")[0].toLowerCase().replace(/[^a-z0-9_-]/g, "")
+            : "";
+          const fallbackSlug = nameClean || emailClean || `dev-${Date.now().toString(36)}`;
           return {
             data: {
               ...user,
-              slug: existingSlug || fallbackSlug || `dev-${Date.now().toString(36)}`,
+              slug: existingSlug || fallbackSlug,
             },
           };
         },

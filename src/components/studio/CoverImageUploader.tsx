@@ -19,6 +19,7 @@ export function CoverImageUploader({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const xhrRef = useRef<XMLHttpRequest | null>(null);
@@ -44,13 +45,14 @@ export function CoverImageUploader({
   const processAndUploadFile = useCallback(
     async (file: File) => {
       if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-        alert("Only JPG, PNG, and WebP images are accepted.");
+        setErrorMessage("Only JPG, PNG, and WebP images are accepted.");
         return;
       }
 
       setIsUploading(true);
       setUploadProgress(0);
       setWarningMessage(null);
+      setErrorMessage(null);
 
       const img = new Image();
       const reader = new FileReader();
@@ -82,26 +84,10 @@ export function CoverImageUploader({
             }
 
             try {
-              // 1. Get Presigned PUT URL
-              const presignRes = await fetch("/api/uploads/cover", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  mimeType: "image/webp",
-                  fileSize: blob.size,
-                }),
-              });
+              // Direct server-side upload via FormData (immune to client CORS errors)
+              const formData = new FormData();
+              formData.append("file", blob, "cover.webp");
 
-              if (!presignRes.ok) {
-                const err = await presignRes.json();
-                alert(err.error?.message || "Failed to initialize image upload.");
-                setIsUploading(false);
-                return;
-              }
-
-              const { uploadUrl, key } = await presignRes.json();
-
-              // 2. Direct upload via XHR with progress tracking and abort support
               const xhr = new XMLHttpRequest();
               xhrRef.current = xhr;
 
@@ -114,14 +100,27 @@ export function CoverImageUploader({
 
               xhr.onload = () => {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                  setUploadProgress(100);
-                  setTimeout(() => {
-                    setIsUploading(false);
-                    setUploadProgress(0);
-                    onUploadSuccess(key);
-                  }, 250);
+                  try {
+                    const data = JSON.parse(xhr.responseText);
+                    if (data.key) {
+                      setUploadProgress(100);
+                      setTimeout(() => {
+                        setIsUploading(false);
+                        setUploadProgress(0);
+                        onUploadSuccess(data.key);
+                      }, 200);
+                      return;
+                    }
+                  } catch {}
+                  setIsUploading(false);
+                  setUploadProgress(0);
                 } else {
-                  alert(`Upload failed with status code ${xhr.status}.`);
+                  let msg = `Upload failed with status ${xhr.status}.`;
+                  try {
+                    const data = JSON.parse(xhr.responseText);
+                    if (data?.error?.message) msg = data.error.message;
+                  } catch {}
+                  setErrorMessage(msg);
                   setIsUploading(false);
                   setUploadProgress(0);
                 }
@@ -129,7 +128,7 @@ export function CoverImageUploader({
               };
 
               xhr.onerror = () => {
-                alert("Network error during image transfer.");
+                setErrorMessage("Network error during image transfer. Please try again.");
                 setIsUploading(false);
                 setUploadProgress(0);
                 xhrRef.current = null;
@@ -141,11 +140,11 @@ export function CoverImageUploader({
                 xhrRef.current = null;
               };
 
-              xhr.open("PUT", uploadUrl, true);
-              xhr.setRequestHeader("Content-Type", "image/webp");
-              xhr.send(blob);
+              xhr.open("POST", "/api/uploads/cover", true);
+              xhr.send(formData);
             } catch (err) {
               console.error("Upload error", err);
+              setErrorMessage("Failed to initiate image upload.");
               setIsUploading(false);
               setUploadProgress(0);
             }
@@ -183,7 +182,7 @@ export function CoverImageUploader({
   };
 
   // SVG Circular Ring calculation
-  const circleRadius = 38;
+  const circleRadius = 36;
   const circumference = 2 * Math.PI * circleRadius;
   const strokeDashoffset = circumference * (1 - uploadProgress / 100);
 
@@ -203,24 +202,24 @@ export function CoverImageUploader({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         className={`relative aspect-video w-full rounded-2xl border-2 border-dashed transition-all duration-200 overflow-hidden bg-[var(--card)] flex flex-col items-center justify-center ${
-          isDragging
-            ? "border-[#0052ff] bg-blue-500/5 scale-[1.005]"
-            : "border-[var(--border)] hover:border-blue-500/50"
+          isDragging || isUploading
+            ? "border-[#0052ff] bg-blue-50/20 dark:bg-blue-950/10 scale-[1.002]"
+            : "border-[var(--border)] hover:border-[#0052ff]/50"
         }`}
       >
-        {/* State A: Upload In-Flight with Animated Circular Progress & Cancel Button */}
+        {/* State A: Upload In-Flight with Clean Circular Progress & Cancel Button (matching Image 2) */}
         {isUploading ? (
-          <div className="flex flex-col items-center justify-center p-6 space-y-4 animate-fade-in z-20">
+          <div className="flex flex-col items-center justify-center p-6 space-y-3.5 animate-fade-in z-20">
             {/* Circular Progress Ring */}
-            <div className="relative w-24 h-24 flex items-center justify-center">
+            <div className="relative w-20 h-20 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
-                {/* Background Ring */}
+                {/* Background Track Ring */}
                 <circle
                   cx="50"
                   cy="50"
                   r={circleRadius}
-                  className="stroke-slate-200 dark:stroke-slate-800"
-                  strokeWidth="8"
+                  className="stroke-slate-200 dark:stroke-zinc-800"
+                  strokeWidth="6"
                   fill="none"
                 />
                 {/* Animated Value Ring */}
@@ -229,7 +228,7 @@ export function CoverImageUploader({
                   cy="50"
                   r={circleRadius}
                   className="stroke-[#0052ff] transition-all duration-150 ease-out"
-                  strokeWidth="8"
+                  strokeWidth="6"
                   strokeDasharray={circumference}
                   strokeDashoffset={strokeDashoffset}
                   strokeLinecap="round"
@@ -238,30 +237,25 @@ export function CoverImageUploader({
               </svg>
 
               {/* Numerical % Text Inside Circle */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none">
-                <span className="text-lg font-black font-mono text-[var(--foreground)] tracking-tight">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+                <span className="text-xl font-bold font-sans text-zinc-900 dark:text-zinc-100 tracking-tight">
                   {uploadProgress}%
-                </span>
-                <span className="text-[10px] uppercase font-bold text-[#0052ff] tracking-wider">
-                  uploading
                 </span>
               </div>
             </div>
 
-            <p className="text-xs text-[var(--foreground-muted)] font-medium">
-              Optimizing to WebP & streaming to Cloudflare R2...
+            {/* Clean Progress Subtitle matching Image 2 */}
+            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
+              Uploading file...
             </p>
 
-            {/* Cancel Button */}
+            {/* Clean Cancel Button matching Image 2 */}
             <button
               type="button"
               onClick={handleCancelUpload}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500/20 active:scale-95 transition-all cursor-pointer"
+              className="px-5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 active:scale-95 text-sm font-medium shadow-sm transition-all cursor-pointer"
             >
-              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              <span>Cancel Upload</span>
+              Cancel
             </button>
           </div>
         ) : coverUrl ? (
@@ -325,6 +319,25 @@ export function CoverImageUploader({
           </label>
         )}
       </div>
+
+      {errorMessage && (
+        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-semibold flex items-center justify-between animate-fade-in">
+          <div className="flex items-center gap-1.5">
+            <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>{errorMessage}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="text-red-500 hover:text-red-700 font-bold ml-2 text-sm cursor-pointer"
+            aria-label="Dismiss error"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {warningMessage && (
         <p className="text-xs text-blue-600 font-medium animate-fade-in flex items-center gap-1.5">

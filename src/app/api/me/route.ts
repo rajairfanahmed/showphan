@@ -35,6 +35,18 @@ export async function GET(req: NextRequest) {
       },
     });
 
+    if (user && user.slug === "raja-irfan-ahmed") {
+      const cleanSlug = "rajairfanahmed";
+      const conflict = await prisma.user.findUnique({ where: { slug: cleanSlug } });
+      if (!conflict || conflict.id === user.id) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { slug: cleanSlug },
+        });
+        user.slug = cleanSlug;
+      }
+    }
+
     return NextResponse.json({ user });
   } catch (error: unknown) {
     logger.error("GET /api/me failed", { requestId, error });
@@ -61,7 +73,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const updateData: { displayName?: string; bio?: string; searchVisible?: boolean } = {};
+    const updateData: { displayName?: string; bio?: string; searchVisible?: boolean; slug?: string } = {};
 
     if (body.displayName !== undefined) {
       updateData.displayName = String(body.displayName).trim();
@@ -71,6 +83,25 @@ export async function PATCH(req: NextRequest) {
     }
     if (body.searchVisible !== undefined) {
       updateData.searchVisible = Boolean(body.searchVisible);
+    }
+    if (body.slug !== undefined) {
+      const cleanSlug = String(body.slug).trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+      if (cleanSlug.length < 2 || cleanSlug.length > 39) {
+        return NextResponse.json(
+          { error: { code: "INVALID_SLUG", message: "Profile handle must be between 2 and 39 characters." } },
+          { status: 400 }
+        );
+      }
+      const existingUserWithSlug = await prisma.user.findUnique({
+        where: { slug: cleanSlug },
+      });
+      if (existingUserWithSlug && existingUserWithSlug.id !== session.user.id) {
+        return NextResponse.json(
+          { error: { code: "SLUG_TAKEN", message: "This profile handle is already taken by another developer." } },
+          { status: 409 }
+        );
+      }
+      updateData.slug = cleanSlug;
     }
 
     const updated = await prisma.user.update({
