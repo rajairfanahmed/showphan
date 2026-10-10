@@ -15,26 +15,32 @@ export function HomepageShell({
 }: HomepageShellProps) {
   const [activeNav, setActiveNav] = useState("feed");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
     <div className="w-full flex-1 flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
-      {/* Main Platform Shell: Floating Sidebar + Feed */}
-      <div className="w-full max-w-[1700px] mx-auto px-3 sm:px-6 lg:px-8 py-6 flex gap-6 xl:gap-8 items-start flex-1">
-        {/* Floating Rounded Sidebar (expand/collapse toggle, glass hover, compulsory bottom theme switch) */}
+      {/* Main Platform Shell: Mobile-first responsive container (starting from 320px) */}
+      <div className="w-full max-w-[1750px] mx-auto px-2.5 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 flex gap-4 lg:gap-6 xl:gap-8 items-start flex-1">
+        {/* Floating Rounded Sidebar with panel dock toggle and collapsed theme switcher */}
         <Sidebar
           activeNav={activeNav}
           onSelectNav={setActiveNav}
           isMobileOpen={isMobileSidebarOpen}
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapsed={() => setIsSidebarCollapsed((prev) => !prev)}
         />
 
-        {/* Main Community Feed (Tags row removed, sort kept, wider project cards) */}
-        <main className="flex-1 min-w-0">
+        {/* 
+          Main Community Feed:
+          Fluid width that expands when sidebar closes and decreases when opened like daily.dev
+        */}
+        <main className="flex-1 min-w-0 transition-all duration-300 ease-in-out">
           <HomepageFeed initialProjects={initialProjects} />
         </main>
       </div>
 
-      {/* Bottom-Right Floating Actions: Feedback Modal + Scroll-To-Top Going Up Button */}
+      {/* Bottom Floating Actions */}
       <FloatingActions />
     </div>
   );

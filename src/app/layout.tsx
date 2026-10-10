@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
+import { CategoryFilterProvider } from "@/components/providers/CategoryFilterProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,11 +19,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Showphan — Where developers discover and showcase what's next",
+    default: "Showphan: Where developers discover and showcase what is next",
     template: "%s | Showphan",
   },
   description:
-    "Free, open-source developer showcase platform. Discover trending software projects, live interactive sandboxes, verified engineering proofs, and high-impact developer portfolios.",
+    "Free open source developer showcase platform. Discover trending software projects, live interactive sandboxes, verified engineering proofs, and high impact developer portfolios.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app"),
   authors: [{ name: "Raja Irfan Ahmed", url: "https://rajairfanahmed.vercel.app" }],
   creator: "Raja Irfan Ahmed",
@@ -46,16 +48,16 @@ export const metadata: Metadata = {
     "Raja Irfan Ahmed",
   ],
   openGraph: {
-    title: "Showphan — Where developers discover and showcase what's next",
+    title: "Showphan: Where developers discover and showcase what is next",
     description:
-      "Free, open-source developer showcase platform. Discover trending software projects, live interactive sandboxes, and verified developer portfolios.",
+      "Free open source developer showcase platform. Discover trending software projects, live interactive sandboxes, and verified developer portfolios.",
     siteName: "Showphan",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Showphan — Where developers discover and showcase what's next",
+    title: "Showphan: Where developers discover and showcase what is next",
     description:
       "Discover trending software projects, live sandboxes, and verified developer portfolios. Crafted by Raja Irfan Ahmed.",
   },
@@ -138,6 +140,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
@@ -154,9 +157,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]">
         <SmoothScrollProvider>
-          <Header />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
+          <Suspense fallback={null}>
+            <CategoryFilterProvider>
+              <Header />
+              <main className="flex-1 flex flex-col">{children}</main>
+              <Footer />
+            </CategoryFilterProvider>
+          </Suspense>
         </SmoothScrollProvider>
       </body>
     </html>

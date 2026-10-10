@@ -5,14 +5,14 @@ import { WordmarkLogo } from "./WordmarkLogo";
 export function Footer() {
   return (
     <footer className="w-full border-t border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] mt-20 transition-colors">
-      <div className="max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-[1700px] mx-auto px-3.5 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 pb-12 border-b border-[var(--border)]">
-          {/* Brand & Mission Statement Column */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-8 pb-10 sm:pb-12 border-b border-[var(--border)]">
+          {/* Brand Column with Big Trophy Logo */}
           <div className="lg:col-span-2 space-y-4">
-            <WordmarkLogo size="md" />
-            <p className="text-sm text-[var(--foreground-muted)] max-w-sm leading-relaxed">
-              Showphan is the open-source developer showcase platform where engineers discover high-velocity projects, verify engineering proofs, and elevate what they actually built.
+            <WordmarkLogo size="lg" />
+            <p className="text-xs sm:text-sm text-[var(--foreground-muted)] max-w-sm leading-relaxed">
+              Showphan is the open source developer showcase platform where engineers discover high velocity projects, verify engineering proofs, and elevate what they actually built.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
@@ -26,8 +26,8 @@ export function Footer() {
                 </svg>
                 <span>Star on GitHub</span>
               </a>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              {/* v2.0 Beta badge without dot icon */}
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
                 <span>v2.0 Beta</span>
               </span>
             </div>
@@ -38,7 +38,7 @@ export function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
               Discover
             </h4>
-            <ul className="space-y-2 text-sm text-[var(--foreground-muted)]">
+            <ul className="space-y-2 text-xs sm:text-sm text-[var(--foreground-muted)]">
               <li>
                 <Link href="/" className="hover:text-amber-500 transition-colors">
                   Community Feed
@@ -61,7 +61,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/dashboard/bookmarks" className="hover:text-amber-500 transition-colors">
-                  Inspiration Vault 🔖
+                  Inspiration Vault
                 </Link>
               </li>
             </ul>
@@ -72,7 +72,7 @@ export function Footer() {
             <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
               Platform
             </h4>
-            <ul className="space-y-2 text-sm text-[var(--foreground-muted)]">
+            <ul className="space-y-2 text-xs sm:text-sm text-[var(--foreground-muted)]">
               <li>
                 <Link href="/dashboard/new" className="hover:text-amber-500 transition-colors">
                   Submit Project
@@ -96,12 +96,12 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Navigation Column 3: Legal & Open Source */}
+          {/* Navigation Column 3: Ecosystem */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--foreground)]">
               Ecosystem
             </h4>
-            <ul className="space-y-2 text-sm text-[var(--foreground-muted)]">
+            <ul className="space-y-2 text-xs sm:text-sm text-[var(--foreground-muted)]">
               <li>
                 <a
                   href="https://github.com/rajairfanahmed/showphan"
@@ -136,7 +136,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Bottom Bar without dot icons */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--foreground-muted)]">
           <p>
             © {new Date().getFullYear()} Showphan. Crafted with passion by{" "}
@@ -152,8 +152,7 @@ export function Footer() {
           </p>
 
           <div className="flex items-center gap-4">
-            <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="inline-flex items-center text-emerald-600 dark:text-emerald-400 font-medium">
               <span>All Systems Operational</span>
             </span>
           </div>

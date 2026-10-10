@@ -7,9 +7,9 @@ import type { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Showphan — Community Showcase & Developer Discovery Feed",
+  title: "Showphan: Community Showcase and Developer Discovery Feed",
   description:
-    "Discover trending developer showcases, interactive sandboxes, verified engineering proofs, and high-impact software projects.",
+    "Discover trending developer showcases, interactive sandboxes, verified engineering proofs, and high impact software projects.",
 };
 
 export default async function HomePage() {

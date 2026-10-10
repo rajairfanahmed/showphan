@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useMemo, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
+import { useCategoryFilter } from "@/components/providers/CategoryFilterProvider";
 
 export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
   {
@@ -38,7 +38,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     slug: "promptforge-ai-workflow-builder",
     title: "PromptForge: AI Workflow Builder",
     summary:
-      "Visual node-based canvas to compose multi-agent LLM pipelines, test prompts with automated eval metrics, and deploy instantly.",
+      "Visual node based canvas to compose multi agent LLM pipelines, test prompts with automated eval metrics, and deploy instantly.",
     statusBadge: { text: "v2.4 Released", variant: "emerald" },
     liveUrl: "https://promptforge.dev",
     repoUrl: "https://github.com/promptforge/builder",
@@ -90,9 +90,9 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
   {
     id: "proj-4",
     slug: "postgressync-zero-etl-engine",
-    title: "PostgresSync: Zero-ETL Engine",
+    title: "PostgresSync: Zero ETL Engine",
     summary:
-      "Sync real-time tables between PostgreSQL and client states with end-to-end type safety, optimistic offline cache, and zero latency.",
+      "Sync real time tables between PostgreSQL and client states with end to end type safety, optimistic offline cache, and zero latency.",
     statusBadge: { text: "Open Beta", variant: "rose" },
     liveUrl: "https://postgressync.io",
     repoUrl: "https://github.com/postgressync/core",
@@ -119,7 +119,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     slug: "hyperui-framer-motion-kit",
     title: "HyperUI: Framer Motion Kit",
     summary:
-      "A collection of 60+ micro-interactions and animated component primitives tailored specifically for developer-facing landing pages.",
+      "A collection of 60+ micro interactions and animated component primitives tailored specifically for developer facing landing pages.",
     statusBadge: { text: "Components", variant: "cyan" },
     liveUrl: "https://hyperui.design",
     repoUrl: "https://github.com/hyperui/kit",
@@ -146,7 +146,7 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
     slug: "bunflare-edge-microservices",
     title: "Bunflare: Edge Microservices",
     summary:
-      "Lightweight starter toolkit for zero-cold-start edge functions powered by Bun, Cloudflare Workers, and Hono with full OpenAPI typing.",
+      "Lightweight starter toolkit for zero cold start edge functions powered by Bun, Cloudflare Workers, and Hono with full OpenAPI typing.",
     statusBadge: { text: "Open Source", variant: "purple" },
     liveUrl: "https://bunflare.dev",
     repoUrl: "https://github.com/bunflare/starter",
@@ -172,38 +172,39 @@ export const INITIAL_SHOWCASE_PROJECTS: ProjectCardData[] = [
 
 interface HomepageFeedProps {
   initialProjects?: ProjectCardData[];
-  selectedCategory?: string;
 }
 
 function HomepageFeedContent({
   initialProjects = INITIAL_SHOWCASE_PROJECTS,
-  selectedCategory,
 }: HomepageFeedProps) {
-  const searchParams = useSearchParams();
-  const urlCategory = searchParams.get("category");
-  const activeCat = selectedCategory || urlCategory || "all";
+  // Instant reactive category state from CategoryFilterProvider (daily.dev style smooth responses)
+  const { selectedCategory } = useCategoryFilter();
 
-  // Sort State (Notice: Tags row is removed, sort is kept as requested!)
+  // Sort State
   const [sortOption, setSortOption] = useState<"trending" | "upvotes" | "newest" | "views">("trending");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
-  // Filter projects by category and sort
+  // Filter projects smoothly by category and sort
   const sortedProjects = useMemo(() => {
     let list = [...initialProjects];
 
-    // Category filter
-    if (activeCat && activeCat !== "all") {
+    // Category filter matching IDs smoothly
+    if (selectedCategory && selectedCategory !== "all") {
       list = list.filter((p) => {
-        if (activeCat === "nextjs") {
+        if (selectedCategory === "nextjs") {
           return p.technologies?.some((t) => t.slug === "nextjs");
         }
-        if (activeCat === "ai-ml") {
-          return p.technologies?.some((t) => t.slug === "python" || t.slug === "docker") || p.title.toLowerCase().includes("ai");
+        if (selectedCategory === "ai_ml" || selectedCategory === "ai-ml") {
+          return (
+            p.technologies?.some((t) => t.slug === "python" || t.slug === "docker") ||
+            p.title.toLowerCase().includes("ai") ||
+            p.summary.toLowerCase().includes("ai")
+          );
         }
-        if (activeCat === "dev-tools") {
+        if (selectedCategory === "devtools" || selectedCategory === "dev-tools") {
           return p.technologies?.some((t) => t.slug === "docker" || t.slug === "rust" || t.slug === "bun");
         }
-        if (activeCat === "open-source") {
+        if (selectedCategory === "opensource" || selectedCategory === "open-source") {
           return p.statusBadge?.text.toLowerCase().includes("open") || Boolean(p.repoUrl);
         }
         return true;
@@ -217,12 +218,12 @@ function HomepageFeedContent({
       case "views":
         return list.sort((a, b) => (b.viewsCount || 0) - (a.viewsCount || 0));
       case "newest":
-        return list.reverse();
+        return [...list].reverse();
       case "trending":
       default:
         return list;
     }
-  }, [initialProjects, activeCat, sortOption]);
+  }, [initialProjects, selectedCategory, sortOption]);
 
   const sortLabels = {
     trending: "Trending Today",
@@ -232,25 +233,25 @@ function HomepageFeedContent({
   };
 
   return (
-    <section className="space-y-6">
-      {/* Feed Controls Header: Tags row is removed! Only Sort dropdown + Status count is kept! */}
-      <div className="flex items-center justify-between gap-4 pb-2 border-b border-[var(--border)]">
-        <div className="flex items-center gap-2 text-xs text-[var(--muted-foreground)] font-mono">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+    <section className="space-y-5 sm:space-y-6 w-full">
+      {/* Feed Controls Header: Sort dropdown + Status count without any animated dot icons */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
+        <div className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)] font-mono">
           <span>Showing {sortedProjects.length} showcases</span>
         </div>
 
         {/* Sort Dropdown */}
         <div className="relative">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-zinc-400 font-medium">Sort:</span>
+            <span className="text-xs text-[var(--foreground-muted)] font-medium">Sort:</span>
             <button
               type="button"
               onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] hover:bg-white/10 text-xs font-semibold text-[var(--foreground)] transition-colors cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 text-xs font-semibold text-[var(--foreground)] transition-colors cursor-pointer shadow-sm"
+              aria-label="Sort showcases"
             >
               <span>{sortLabels[sortOption]}</span>
-              <svg className="w-3.5 h-3.5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-3.5 h-3.5 text-[var(--foreground-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -284,8 +285,11 @@ function HomepageFeedContent({
         </div>
       </div>
 
-      {/* Increased Width Project Cards Grid: 2 generous columns on desktop, huge breathability! */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-8">
+      {/* 
+        3 Cards per Row on Desktop (Mobile First: 1 col on mobile 320px+, 2 cols on tablet, 3 cols on desktop).
+        When the sidebar closes, card widths smoothly increase; when opening, they stretch/shrink fluidly like daily.dev!
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 xl:gap-6 transition-all duration-300">
         {sortedProjects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}
@@ -296,7 +300,7 @@ function HomepageFeedContent({
 
 export function HomepageFeed(props: HomepageFeedProps) {
   return (
-    <Suspense fallback={<div className="py-12 text-center text-zinc-500 font-mono text-xs">Loading showcase feed...</div>}>
+    <Suspense fallback={<div className="py-12 text-center text-[var(--foreground-muted)] font-mono text-xs">Loading showcase feed...</div>}>
       <HomepageFeedContent {...props} />
     </Suspense>
   );

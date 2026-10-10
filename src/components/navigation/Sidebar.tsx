@@ -8,6 +8,8 @@ interface SidebarProps {
   onCloseMobile?: () => void;
   activeNav?: string;
   onSelectNav?: (navId: string) => void;
+  isCollapsed?: boolean;
+  onToggleCollapsed?: () => void;
 }
 
 export function Sidebar({
@@ -15,10 +17,16 @@ export function Sidebar({
   onCloseMobile,
   activeNav = "feed",
   onSelectNav,
+  isCollapsed: controlledCollapsed,
+  onToggleCollapsed,
 }: SidebarProps) {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(true);
+
+  // Allow either controlled or uncontrolled collapsed state
+  const isCollapsed = controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed;
+  const toggleCollapsed = onToggleCollapsed || (() => setInternalCollapsed((prev) => !prev));
 
   // Synchronize theme on mount
   useEffect(() => {
@@ -45,7 +53,6 @@ export function Sidebar({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       ),
-      activeDot: true,
     },
     {
       id: "explore",
@@ -115,14 +122,18 @@ export function Sidebar({
 
   const sidebarContent = (
     <div
-      className={`h-full flex flex-col justify-between transition-all duration-200 ${
-        isCollapsed ? "w-16" : "w-60"
+      className={`h-full flex flex-col justify-between transition-all duration-300 ${
+        isCollapsed ? "w-12 sm:w-14 items-center" : "w-56 sm:w-60"
       }`}
     >
       {/* Top Section */}
-      <div className="space-y-3">
-        {/* Header with Expand/Collapse Icon */}
-        <div className="flex items-center justify-between px-2 pt-1 pb-1">
+      <div className="space-y-3 w-full">
+        {/* Header with Panel Dock Icon (Strictly centered when collapsed) */}
+        <div
+          className={`flex items-center pt-1 pb-1 w-full ${
+            isCollapsed ? "justify-center" : "justify-between px-2"
+          }`}
+        >
           {!isCollapsed && (
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--foreground-muted)]">
               Menu
@@ -130,24 +141,31 @@ export function Sidebar({
           )}
           <button
             type="button"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5 rounded-lg text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)] transition-colors cursor-pointer ml-auto"
+            onClick={toggleCollapsed}
+            className={`p-2 rounded-xl text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-glass)] transition-colors cursor-pointer flex items-center justify-center ${
+              isCollapsed ? "mx-auto" : "ml-auto"
+            }`}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
+            {/* Modern Panel Dock Icon */}
             <svg
-              className={`w-4 h-4 transition-transform ${isCollapsed ? "rotate-180" : ""}`}
-              fill="none"
+              className="w-4 h-4"
               viewBox="0 0 24 24"
+              fill="none"
               stroke="currentColor"
               strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+              <rect width="18" height="18" x="3" y="3" rx="4" />
+              <path d="M9 3v18" />
             </svg>
           </button>
         </div>
 
-        {/* Navigation Links with High-Contrast Day and Night Styling */}
-        <nav className="space-y-1">
+        {/* Navigation Links (Clean styling without any highlighting dots) */}
+        <nav className="space-y-1 w-full">
           {navItems.map((item) => {
             const isActive = activeNav === item.id || (item.id === "feed" && pathname === "/");
 
@@ -166,11 +184,6 @@ export function Sidebar({
                 } ${isCollapsed ? "justify-center px-0" : ""}`}
                 title={item.label}
               >
-                {/* Active Indicator Left Pill / Dot */}
-                {item.activeDot && isActive && !isCollapsed && (
-                  <span className="absolute left-1 w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500" />
-                )}
-
                 <span
                   className={`transition-colors shrink-0 ${
                     isActive
@@ -198,57 +211,93 @@ export function Sidebar({
         </nav>
       </div>
 
-      {/* Bottom Section: Compulsory Theme Toggle (No Profile Card here) */}
-      <div className="pt-3 border-t border-[var(--border)]">
-        {/* Dark / Light Theme Toggle Switch */}
-        <div
-          className={`flex items-center justify-between px-3 py-2 rounded-2xl bg-[var(--surface-glass)] border border-[var(--border)] ${
-            isCollapsed ? "justify-center p-2" : ""
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            {isDarkTheme ? (
-              <svg
-                className="w-4 h-4 text-amber-400 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="w-4 h-4 text-amber-600 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            )}
-            {!isCollapsed && (
-              <span className="text-xs font-semibold text-[var(--foreground)]">
-                {isDarkTheme ? "Dark Theme" : "Light Theme"}
-              </span>
-            )}
-          </div>
-
-          {!isCollapsed && (
+      {/* Bottom Section: Theme Toggle (Fully accessible and centered even when sidebar is collapsed!) */}
+      <div className="pt-3 border-t border-[var(--border)] w-full">
+        {isCollapsed ? (
+          /* Centered Theme Toggle Icon Button for Collapsed Mode */
+          <div className="flex justify-center w-full">
             <button
               type="button"
               onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className={`w-10 h-5 flex items-center rounded-full p-0.5 cursor-pointer transition-colors ${
+              title={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
+              aria-label={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
+              className="w-10 h-10 rounded-xl bg-[var(--surface-glass)] border border-[var(--border)] hover:border-amber-500/40 text-[var(--foreground)] hover:text-amber-500 flex items-center justify-center transition-colors cursor-pointer shadow-sm"
+            >
+              {isDarkTheme ? (
+                <svg
+                  className="w-4 h-4 text-amber-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4 text-amber-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
+        ) : (
+          /* Full Theme Toggle Switch for Expanded Mode */
+          <div
+            onClick={toggleTheme}
+            className="flex items-center justify-between px-3 py-2 rounded-2xl bg-[var(--surface-glass)] border border-[var(--border)] cursor-pointer hover:border-amber-500/40 transition-colors"
+            title={isDarkTheme ? "Switch to light theme" : "Switch to dark theme"}
+          >
+            <div className="flex items-center gap-2">
+              {isDarkTheme ? (
+                <svg
+                  className="w-4 h-4 text-amber-400 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-4 h-4 text-amber-600 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              )}
+              <span className="text-xs font-semibold text-[var(--foreground)]">
+                {isDarkTheme ? "Dark Theme" : "Light Theme"}
+              </span>
+            </div>
+
+            <div
+              className={`w-10 h-5 flex items-center rounded-full p-0.5 transition-colors ${
                 isDarkTheme ? "bg-amber-500" : "bg-zinc-300 dark:bg-zinc-700"
               }`}
             >
@@ -257,9 +306,9 @@ export function Sidebar({
                   isDarkTheme ? "translate-x-5" : "translate-x-0"
                 }`}
               />
-            </button>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -267,8 +316,8 @@ export function Sidebar({
   return (
     <>
       {/* Desktop Floating Rounded Sidebar */}
-      <aside className="hidden lg:block sticky top-20 h-[calc(100vh-6rem)] shrink-0 z-30">
-        <div className="h-full rounded-3xl border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-black/30 p-3 overflow-hidden">
+      <aside className="hidden lg:block sticky top-20 h-[calc(100vh-6rem)] shrink-0 z-30 transition-all duration-300">
+        <div className="h-full rounded-3xl border border-[var(--border)] bg-[var(--card)]/90 backdrop-blur-2xl shadow-xl shadow-black/10 dark:shadow-black/30 p-2 sm:p-3 overflow-hidden">
           {sidebarContent}
         </div>
       </aside>
@@ -280,7 +329,7 @@ export function Sidebar({
             className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onCloseMobile}
           />
-          <div className="relative w-72 h-full bg-[var(--card)] border-r border-[var(--border)] p-4 shadow-2xl flex flex-col justify-between">
+          <div className="relative w-64 sm:w-72 h-full bg-[var(--card)] border-r border-[var(--border)] p-4 shadow-2xl flex flex-col justify-between">
             {sidebarContent}
           </div>
         </div>
