@@ -1,0 +1,281 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { VoteControl } from "./VoteControl";
+import { ReactionPopover } from "./ReactionPopover";
+
+export interface ProjectCardData {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  coverImageKey?: string | null;
+  coverImageUrl?: string | null;
+  codeSnippet?: string | null;
+  statusBadge?: {
+    text: string;
+    variant?: "amber" | "emerald" | "blue" | "rose" | "cyan" | "purple";
+  };
+  liveUrl?: string | null;
+  repoUrl?: string | null;
+  upvotesCount?: number;
+  commentsCount?: number;
+  bookmarksCount?: number;
+  viewsCount?: number;
+  reactionsCounts?: Record<string, number>;
+  user: {
+    name?: string | null;
+    displayName?: string | null;
+    slug: string;
+    avatarUrl?: string | null;
+    badge?: string | null;
+  };
+  technologies?: Array<{
+    name: string;
+    slug: string;
+    iconColor?: string | null;
+  }>;
+}
+
+interface ProjectCardProps {
+  project: ProjectCardData;
+}
+
+export function ProjectCard({ project }: ProjectCardProps) {
+  const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(project.bookmarksCount || 18);
+  const [copied, setCopied] = useState(false);
+
+  const user = project.user;
+  const projectHref = `/${user.slug}/${project.slug}`;
+
+  const handleBookmarkToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setBookmarked((prev) => !prev);
+    setBookmarkCount((prev) => (bookmarked ? prev - 1 : prev + 1));
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}${projectHref}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {}
+  };
+
+  // Badge styles with high contrast for Day and Night modes
+  const getBadgeStyle = (variant = "amber") => {
+    switch (variant) {
+      case "emerald":
+        return "text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10";
+      case "blue":
+        return "text-blue-600 dark:text-blue-400 border-blue-500/30 bg-blue-500/10";
+      case "rose":
+        return "text-rose-600 dark:text-rose-400 border-rose-500/30 bg-rose-500/10";
+      case "cyan":
+        return "text-cyan-600 dark:text-cyan-400 border-cyan-500/30 bg-cyan-500/10";
+      case "purple":
+        return "text-purple-600 dark:text-purple-400 border-purple-500/30 bg-purple-500/10";
+      case "amber":
+      default:
+        return "text-amber-600 dark:text-amber-400 border-amber-500/30 bg-amber-500/10";
+    }
+  };
+
+  return (
+    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[var(--border-hover)] transition-colors shadow-sm hover:shadow-xl overflow-hidden">
+      {/* 
+        1. 16:9 Cover Image / Code Preview Area:
+        Completely unobstructed and clear. NO tags or buttons overlaid on top of image!
+      */}
+      <Link href={projectHref} className="block relative aspect-video w-full overflow-hidden bg-zinc-950 border-b border-[var(--border)]">
+        {project.coverImageUrl ? (
+          <img
+            src={project.coverImageUrl}
+            alt={project.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full p-6 flex flex-col justify-center items-center bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 bg-grid-pattern relative">
+            <div className="w-full max-w-sm rounded-lg border border-white/10 bg-black/85 backdrop-blur-md p-4 shadow-xl">
+              <div className="flex items-center gap-1.5 mb-3">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+              </div>
+              <pre className="font-mono text-xs leading-relaxed text-zinc-300 overflow-x-hidden">
+                <code>{project.codeSnippet || `<Showphan showcase={maker} />\n<Platform stack={['Next15', 'Tailwind']} />`}</code>
+              </pre>
+            </div>
+          </div>
+        )}
+      </Link>
+
+      {/* 
+        2. Card Content & Meta Header:
+        Status tag and Visit App URL cleanly positioned below the image per UI/UX guidelines!
+      */}
+      <div className="p-6 flex-1 flex flex-col justify-between gap-5">
+        <div className="space-y-4">
+          {/* Metadata Launch Row: Status Badge on Left + Visit App Button on Right */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2">
+              {project.statusBadge && (
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${getBadgeStyle(
+                    project.statusBadge.variant
+                  )}`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                  <span>{project.statusBadge.text}</span>
+                </span>
+              )}
+
+              {/* Creator Attribution */}
+              <Link
+                href={`/${user.slug}`}
+                className="inline-flex items-center gap-1.5 text-xs text-[var(--foreground-muted)] hover:text-amber-500 transition-colors"
+              >
+                <span>by</span>
+                <span className="font-medium text-[var(--foreground)] underline decoration-transparent hover:decoration-current">
+                  @{user.slug}
+                </span>
+              </Link>
+            </div>
+
+            {/* Visit App ↗ Button cleanly positioned in the launch bar */}
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold text-[var(--foreground)] hover:text-amber-500 dark:hover:text-amber-400 bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 border border-[var(--border)] hover:border-amber-500/40 transition-colors cursor-pointer"
+                title="Visit live application"
+              >
+                <span>Visit App</span>
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            )}
+          </div>
+
+          {/* Project Title */}
+          <Link href={projectHref} className="block group/title">
+            <h3 className="font-extrabold text-xl sm:text-2xl text-[var(--foreground)] group-hover/title:text-amber-500 transition-colors tracking-tight line-clamp-1">
+              {project.title}
+            </h3>
+          </Link>
+
+          {/* Project Summary */}
+          <p className="text-sm text-[var(--foreground-muted)] line-clamp-2 leading-relaxed">
+            {project.summary}
+          </p>
+
+          {/* Technology Badges (high contrast on Day and Night) */}
+          {project.technologies && project.technologies.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              {project.technologies.map((tech) => (
+                <span
+                  key={tech.slug}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border border-[var(--tag-border)] bg-[var(--tag-bg)] text-[var(--tag-text)]"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span>{tech.name}</span>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 3. Card Footer Action Bar */}
+        <div className="pt-4 border-t border-[var(--border)] flex flex-wrap items-center justify-between gap-2.5">
+          {/* Left Actions: Upvote & Reactions */}
+          <div className="flex items-center gap-2">
+            {/* Upvote / Downvote */}
+            <VoteControl
+              projectId={project.id}
+              initialVoteCount={project.upvotesCount || 342}
+            />
+
+            {/* Facebook-style Reactions */}
+            <ReactionPopover
+              projectId={project.id}
+              initialCounts={project.reactionsCounts}
+            />
+          </div>
+
+          {/* Right Actions: Comments, Bookmark, Views, Share */}
+          <div className="flex items-center gap-2 text-xs text-[var(--foreground-muted)]">
+            {/* Comment icon */}
+            <Link
+              href={projectHref}
+              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-lg hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+              title="View comments"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <span className="font-mono">{project.commentsCount || 28}</span>
+            </Link>
+
+            {/* Bookmark icon */}
+            <button
+              type="button"
+              onClick={handleBookmarkToggle}
+              className={`inline-flex items-center gap-1 px-2 py-1.5 rounded-lg transition-colors cursor-pointer ${
+                bookmarked
+                  ? "text-amber-500 bg-amber-500/10 font-bold"
+                  : "hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)]"
+              }`}
+              title={bookmarked ? "Remove bookmark" : "Save bookmark"}
+            >
+              <svg
+                className={`w-3.5 h-3.5 ${bookmarked ? "fill-current" : "fill-none"}`}
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              <span className="font-mono">{bookmarkCount}</span>
+            </button>
+
+            {/* View count */}
+            <div className="inline-flex items-center gap-1 px-1.5 py-1" title="Views">
+              <svg className="w-3.5 h-3.5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              <span className="font-mono">{project.viewsCount ? `${(project.viewsCount / 1000).toFixed(1)}k` : "4.2k"}</span>
+            </div>
+
+            {/* Share icon */}
+            <button
+              type="button"
+              onClick={handleShare}
+              className="p-1.5 rounded-lg hover:bg-[var(--surface-glass)] hover:text-[var(--foreground)] transition-colors cursor-pointer relative"
+              title="Share project"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+              {copied && (
+                <span className="absolute -top-7 right-0 px-2 py-0.5 rounded bg-amber-500 text-black text-[10px] font-bold shadow-md animate-fade-in whitespace-nowrap">
+                  Copied!
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  );
+}

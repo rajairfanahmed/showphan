@@ -1,73 +1,143 @@
 @import "tailwindcss";
 
-:root {
-  --background: #09090b;
-  --foreground: #f4f4f5;
-  --card: #121215;
-  --card-foreground: #f4f4f5;
-  --border: #27272a;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --accent: #f59e0b;
-  --accent-foreground: #09090b;
+@layer base {
+  :root {
+    --background: #08090d;
+    --background-subtle: #0f1118;
+    --foreground: #f8fafc;
+    --foreground-muted: #94a3b8;
+    --card: #11131c;
+    --card-hover: #161926;
+    --card-foreground: #f8fafc;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.18);
+    --border-accent: rgba(245, 158, 11, 0.4);
+    --muted: #171a26;
+    --muted-foreground: #9ca3af;
+    --accent: #f59e0b;
+    --accent-hover: #d97706;
+    --accent-glow: rgba(245, 158, 11, 0.25);
+    --accent-foreground: #000000;
+    --glass-bg: rgba(17, 19, 28, 0.88);
+    --glass-border: rgba(255, 255, 255, 0.09);
+    --surface-glass: rgba(255, 255, 255, 0.05);
+    --tag-bg: rgba(255, 255, 255, 0.06);
+    --tag-text: #e2e8f0;
+    --tag-border: rgba(255, 255, 255, 0.1);
+  }
+
+  [data-theme="light"] {
+    --background: #f8fafc;
+    --background-subtle: #f1f5f9;
+    --foreground: #0f172a;
+    --foreground-muted: #475569;
+    --card: #ffffff;
+    --card-hover: #f8fafc;
+    --card-foreground: #0f172a;
+    --border: #e2e8f0;
+    --border-hover: #cbd5e1;
+    --border-accent: rgba(217, 119, 6, 0.4);
+    --muted: #f1f5f9;
+    --muted-foreground: #475569;
+    --accent: #d97706;
+    --accent-hover: #b45309;
+    --accent-glow: rgba(217, 119, 6, 0.15);
+    --accent-foreground: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-border: #e2e8f0;
+    --surface-glass: rgba(15, 23, 42, 0.04);
+    --tag-bg: #f1f5f9;
+    --tag-text: #334155;
+    --tag-border: #e2e8f0;
+  }
 }
 
-[data-theme="light"] {
-  --background: #fafaf8;
-  --foreground: #18181b;
-  --card: #ffffff;
-  --card-foreground: #18181b;
-  --border: #e4e4e7;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #d97706;
-  --accent-foreground: #ffffff;
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+[data-theme="light"] html {
+  color-scheme: light;
 }
 
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  overflow-x: hidden;
+  /* Instant theme change like daily.dev (zero sluggish transition delay) */
 }
 
-/* Custom Scrollbars */
+/* Lenis Recommended CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Custom Minimalist Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
+
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
+  border-radius: 9999px;
+  transition: background 0.15s ease;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted-foreground);
 }
 
-/* Minimum 44px tap target utility */
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-pill {
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+/* Subtle dot-grid pattern for modern backdrop */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+[data-theme="light"] .bg-grid-pattern {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.07) 1px, transparent 1px);
+}
+
+/* Touch utility */
 .min-touch {
   min-height: 44px;
   min-width: 44px;
 }
-
-/* Zero-JS Kudos particle burst animation */
-@keyframes kudos-burst {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(var(--tx, 0px), var(--ty, -15px)) scale(0);
-  }
-}
-
-.kudos-particle {
-  animation: kudos-burst 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-

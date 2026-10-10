@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Showphan — Developer Projects &amp; Builds Showcase</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              100: '#ffedd5',
+              400: '#fb923c',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+            dark: {
+              bg: '#08090b',
+              surface: '#0f1115',
+              card: '#12141a',
+              border: '#1f232d',
+              borderHover: '#333a4a',
+              muted: '#717888',
+              text: '#e6edf3'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          },
+          boxShadow: {
+            'glow-orange': '0 0 25px -4px rgba(249, 115, 22, 0.25)',
+            'card-hover': '0 20px 35px -10px rgba(0, 0, 0, 0.7), 0 0 20px -2px rgba(249, 115, 22, 0.12)'
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Fonts & Refinements -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #08090b;
+      color: #e6edf3;
+      overflow-x: hidden;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #08090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f232d;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #343c4d;
+    }
+    /* Reaction Dock hover magic */
+    .reaction-trigger:hover .reactions-dock,
+    .reactions-dock:hover {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body class="bg-[#08090b] text-[#e6edf3] min-h-screen flex flex-col antialiased selection:bg-brand-500/30 selection:text-brand-400">
+<!-- ===================================================== -->
+<!-- 1. GLOBAL TOP HEADER (Persistent Full-Width Navigation) -->
+<!-- ===================================================== -->
+<header class="h-16 w-full sticky top-0 z-50 bg-[#0d0f14]/90 backdrop-blur-xl border-b border-white/[0.07] px-4 md:px-6 flex items-center justify-between gap-4">
+<!-- Brand / Logo + Shortcut to Feed -->
+<div class="flex items-center gap-6 flex-shrink-0">
+<a aria-label="Showphan Home" class="flex items-center gap-3 group" href="#">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25 group-hover:scale-105 group-hover:shadow-brand-500/40 transition-all duration-300">
+<svg class="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<polyline points="16 18 22 12 16 6"></polyline>
+<polyline points="8 6 2 12 8 18"></polyline>
+</svg>
+</div>
+<div class="flex items-baseline">
+<span class="font-extrabold text-lg tracking-tight text-white group-hover:text-brand-400 transition-colors">Showphan</span>
+<span class="w-1.5 h-1.5 rounded-full bg-brand-500 ml-1 shadow-[0_0_8px_#f97316]"></span>
+</div>
+</a>
+<!-- Quick Category Nav Tabs (Desktop) -->
+<nav class="hidden lg:flex items-center gap-1.5 pl-2 border-l border-white/[0.08]">
+<a class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/[0.08] text-white shadow-inner" href="#">All Projects</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.04] transition" href="#">Next.js</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.04] transition" href="#">AI &amp; ML</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.04] transition" href="#">Dev Tools</a>
+<a class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.04] transition" href="#">Open Source</a>
+</nav>
+</div>
+<!-- Center Search Bar (Daily.dev style with shortcuts) -->
+<div class="flex-1 max-w-xl mx-2">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400 group-focus-within:text-brand-400 transition-colors">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</div>
+<input class="w-full bg-[#13151c]/90 border border-white/[0.08] focus:border-brand-500/70 focus:bg-[#161822] rounded-xl pl-10 pr-20 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-all font-sans" placeholder="Search developer builds, tech stack, creators..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-2.5 flex items-center gap-1.5">
+<kbd class="px-1.5 py-0.5 text-[11px] font-mono-code font-medium text-zinc-400 bg-white/[0.06] border border-white/[0.08] rounded shadow-sm">⌘K</kbd>
+</div>
+</div>
+</div>
+<!-- Header Right Actions: Live counter, Submit CTA, Alerts, Profile -->
+<div class="flex items-center gap-3 flex-shrink-0">
+<div class="hidden sm:flex items-center gap-1.5 text-xs font-mono-code text-zinc-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span>94 new today</span>
+</div>
+<!-- Submit Project CTA -->
+<button class="flex items-center gap-2 py-2 px-3.5 rounded-xl bg-gradient-to-r from-brand-600 via-brand-500 to-amber-500 hover:brightness-110 text-white font-semibold text-xs md:text-sm shadow-md shadow-brand-500/20 active:scale-95 transition-all duration-200">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+<span class="hidden md:inline">Submit Project</span>
+<span class="md:hidden">New</span>
+</button>
+<!-- Notifications with unread badge -->
+<button aria-label="Notifications" class="relative p-2 rounded-xl bg-[#13151c] border border-white/[0.08] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-all">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+</svg>
+<span class="absolute top-1 right-1 w-2 h-2 bg-brand-500 rounded-full ring-2 ring-[#0d0f14]"></span>
+</button>
+<!-- User Profile Avatar Pill -->
+<div class="flex items-center gap-2 pl-1 cursor-pointer group">
+<div class="relative">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center font-bold text-sm text-white ring-1 ring-white/20 group-hover:ring-brand-500/50 transition">
+            I
+          </div>
+<span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0d0f14]"></span>
+</div>
+</div>
+</div>
+</header>
+<!-- ===================================================== -->
+<!-- 2. MAIN LAYOUT: Clean Left Sidebar + Expanded Main Grid -->
+<!-- ===================================================== -->
+<div class="flex flex-1 min-w-0 w-full relative">
+<!-- 3. LEFT SIDEBAR (Starts cleanly below top header, Daily.dev styled) -->
+<aside class="w-60 flex-shrink-0 bg-[#0c0e13] border-r border-white/[0.07] flex flex-col sticky top-16 h-[calc(100vh-4rem)] z-30 transition-all duration-300 select-none">
+<!-- Sidebar Subheader with collapse icon toggle (matching daily.dev reference) -->
+<div class="h-12 px-4 flex items-center justify-between border-b border-white/[0.05] text-zinc-400">
+<span class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono-code">Menu</span>
+<button class="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/[0.06] transition" title="Toggle sidebar">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="18" rx="2" width="18" x="3" y="3"></rect>
+<path d="M9 3v18M14 9l-3 3 3 3"></path>
+</svg>
+</button>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
+<!-- My Feed (Active) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/25 shadow-sm transition-all" href="#">
+<svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+<span class="flex-1">My Feed</span>
+<span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+</a>
+<!-- Explore -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+</svg>
+<span class="flex-1">Explore</span>
+</a>
+<!-- Trending -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+<polyline points="17 6 23 6 23 12"></polyline>
+</svg>
+<span class="flex-1">Trending</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded-md bg-brand-500/15 text-brand-400 border border-brand-500/30 font-mono-code font-bold">HOT</span>
+</a>
+<!-- Bookmarks -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+</svg>
+<span class="flex-1">Bookmarks</span>
+<span class="text-xs text-zinc-500 font-mono-code font-semibold">18</span>
+</a>
+<!-- Tags / Topics -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<line x1="4" x2="20" y1="9" y2="9"></line>
+<line x1="4" x2="20" y1="15" y2="15"></line>
+<line x1="10" x2="8" y1="3" y2="21"></line>
+<line x1="16" x2="14" y1="3" y2="21"></line>
+</svg>
+<span class="flex-1">Tags</span>
+</a>
+<!-- Leaderboard -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+<path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+<path d="M4 22h16"></path>
+<path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+<path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+<path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path>
+</svg>
+<span class="flex-1">Leaderboard</span>
+<span class="text-[10px] font-mono-code px-1.5 py-0.2 rounded bg-white/[0.06] text-amber-300">Top 100</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-all" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+</svg>
+<span class="flex-1">Settings</span>
+</a>
+</nav>
+<!-- Sidebar Bottom Footer: Maker Card & Dark Theme Toggle -->
+<div class="p-3 border-t border-white/[0.06] bg-[#090b0e] space-y-3">
+<div class="flex items-center gap-3 p-2 rounded-xl bg-white/[0.03] border border-white/[0.05] hover:border-white/[0.12] transition cursor-pointer">
+<div class="relative">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-xs text-white">
+              I
+            </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="text-xs font-semibold text-white truncate">Irfan Maulana</div>
+<div class="text-[11px] text-zinc-400 font-mono-code truncate">@irfan · Pro Maker</div>
+</div>
+</div>
+<!-- Dark Theme switch -->
+<div class="flex items-center justify-between px-2 pt-1">
+<span class="text-xs text-zinc-400 font-medium flex items-center gap-2">
+<svg class="w-3.5 h-3.5 text-brand-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+</svg>
+            Dark Theme
+          </span>
+<button aria-label="Toggle theme" class="w-9 h-5 bg-brand-500 rounded-full relative p-0.5 transition-colors focus:outline-none" type="button">
+<span class="block w-4 h-4 bg-white rounded-full shadow-sm transform translate-x-4 transition-transform"></span>
+</button>
+</div>
+</div>
+</aside>
+<!-- ===================================================== -->
+<!-- 4. EXPANDED MAIN GRID (Right Sidebar Completely Removed) -->
+<!-- ===================================================== -->
+<main class="flex-1 min-w-0 px-6 lg:px-10 py-7 max-w-[1920px]">
+<!-- Filter / Tags Toolbar & Sorting -->
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-white/[0.07] mb-7 gap-4">
+<!-- Tag filters -->
+<div class="flex items-center gap-2 overflow-x-auto pb-1 max-w-full scrollbar-none">
+<span class="text-xs uppercase tracking-wider text-zinc-500 font-mono-code mr-1 font-semibold">TAGS:</span>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-brand-500/15 text-brand-400 border border-brand-500/35 font-semibold">#all</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#nextjs</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#typescript</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#tailwind</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#shadcn</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#fullstack</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#rust</button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-mono-code bg-[#12141c] text-zinc-400 border border-white/[0.08] hover:text-zinc-200 hover:border-white/[0.2] transition">#ai-agents</button>
+</div>
+<!-- Sorting dropdown & layout stats -->
+<div class="flex items-center gap-3 text-xs text-zinc-400 flex-shrink-0 self-end md:self-auto">
+<span class="text-zinc-500 font-mono-code">Sort:</span>
+<div class="relative">
+<select class="bg-[#12141c] border border-white/[0.09] text-zinc-300 text-xs rounded-lg px-3 py-1.5 pr-8 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 appearance-none cursor-pointer">
+<option>Trending Today</option>
+<option>Most Upvoted</option>
+<option>Recently Added</option>
+<option>Staff Pick</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-zinc-400">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+</div>
+</div>
+<!-- SPACIOUS 3-COLUMN RESPONSIVE PROJECT SHOWCASE GRID -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-7">
+<!-- ================= CARD 1 ================= -->
+<article class="bg-[#12141f]/80 backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-brand-500/40 hover:shadow-card-hover transition-all duration-300 flex flex-col group relative">
+<!-- Preview & Cover Mockup Area -->
+<div class="h-48 w-full relative bg-[#151724] overflow-hidden rounded-t-2xl border-b border-white/[0.06]">
+<div class="absolute inset-0 bg-gradient-to-tr from-brand-950/50 via-purple-950/20 to-slate-900/60"></div>
+<!-- Grid texture overlay -->
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="p-4 h-full flex flex-col justify-between relative z-10">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono-code font-semibold text-brand-400 border border-brand-500/25">
+<span class="w-1.5 h-1.5 rounded-full bg-brand-400 animate-ping"></span> Live Demo
+                </span>
+<!-- Open live app button with hover state -->
+<a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-brand-500 text-zinc-300 hover:text-white backdrop-blur-md text-xs font-mono-code border border-white/10 hover:border-brand-400 shadow-md transition-all group/btn" href="https://showphan.dev" target="_blank" title="Open live app in new tab">
+<span>Visit App</span>
+<svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+<polyline points="15 3 21 3 21 9"></polyline>
+<line x1="10" x2="21" y1="14" y2="3"></line>
+</svg>
+</a>
+</div>
+<!-- Interactive code snippet mockup preview -->
+<div class="bg-[#0b0c12]/90 rounded-lg p-3 border border-white/[0.06] font-mono-code text-xs text-zinc-400 shadow-lg space-y-1">
+<div class="text-brand-400">&lt;<span class="text-amber-300">Showphan</span> showcase={<span class="text-cyan-300">maker</span>}&gt;</div>
+<div class="text-zinc-500 pl-4">&lt;<span class="text-purple-300">Platform</span> stack={<span class="text-emerald-300">['Next15', 'Tailwind']</span>}/&gt;</div>
+</div>
+</div>
+</div>
+<!-- Card Content Body -->
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<div class="flex items-baseline justify-between gap-2">
+<h2 class="font-bold text-white text-lg group-hover:text-brand-400 transition-colors leading-snug">
+                  Showphan: A platform for you
+                </h2>
+</div>
+<p class="text-zinc-400 text-sm mt-2 leading-relaxed line-clamp-2">
+                It is the best platform to showcase developer projects, discover real builds, and share feedback with peers.
+              </p>
+<!-- Comprehensive Tech Stack with REAL SVG Icons -->
+<div class="flex flex-wrap gap-1.5 mt-4 pt-3.5 border-t border-white/[0.06]">
+<!-- Next.js -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-zinc-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-white" viewbox="0 0 24 24"><path d="M18.665 21.978C16.808 23.255 14.496 24 12 24 5.373 24 0 18.627 0 12S5.373 0 12 0s12 5.373 12 12c0 3.584-1.576 6.801-4.081 8.995l-7.794-10.995h-2.125v8h1.875v-5.698l7.79 10.983v-1.305zm-4.665-9.978v-4.004h1.875v4.004h-1.875z"></path></svg>
+                  Next.js
+                </span>
+<!-- React -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-cyan-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#61DAFB]" viewbox="0 0 24 24"><ellipse cx="12" cy="12" fill="none" rx="10" ry="4.5" stroke="#61DAFB" stroke-width="1.8" transform="rotate(30 12 12)"></ellipse><ellipse cx="12" cy="12" fill="none" rx="10" ry="4.5" stroke="#61DAFB" stroke-width="1.8" transform="rotate(90 12 12)"></ellipse><ellipse cx="12" cy="12" fill="none" rx="10" ry="4.5" stroke="#61DAFB" stroke-width="1.8" transform="rotate(150 12 12)"></ellipse><circle cx="12" cy="12" fill="#61DAFB" r="1.8"></circle></svg>
+                  React
+                </span>
+<!-- Tailwind CSS -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-sky-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#38BDF8]" viewbox="0 0 24 24"><path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z"></path></svg>
+                  Tailwind
+                </span>
+<!-- TypeScript -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-blue-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#3178C6]" viewbox="0 0 24 24"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0H1.125zM12 9.5h-3V19H7.2V9.5H4.2V8H12v1.5zm7.3 3.8c-.2-1.4-1.2-2.1-2.7-2.1-1.6 0-2.6.9-2.6 2.2 0 2.5 4.1 1.6 4.1 3.9 0 .8-.7 1.4-1.8 1.4-1.3 0-2-.7-2.1-1.8h-1.6c.1 1.9 1.5 3.1 3.7 3.1 2.1 0 3.5-1.2 3.5-2.8 0-2.7-4.1-1.7-4.1-3.9 0-.6.5-1.1 1.4-1.1 1.1 0 1.6.5 1.7 1.3h1.6z"></path></svg>
+                  TypeScript
+                </span>
+</div>
+</div>
+<!-- Card Bottom Bar: Author & Daily.dev Reactions Action Bar -->
+<div class="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+<!-- Upvote Button with Hover Reactions Dock -->
+<div class="relative reaction-trigger">
+<!-- Floating Reaction Micro-Dock -->
+<div class="reactions-dock opacity-0 invisible absolute -top-12 left-0 flex items-center gap-1 bg-[#181b24] border border-white/[0.15] rounded-full px-2 py-1 shadow-2xl backdrop-blur-xl transition-all duration-200 transform translate-y-2 scale-95 z-30 pointer-events-none">
+<button class="hover:scale-130 transition-transform text-sm p-1" title="Rocket">🚀</button>
+<button class="hover:scale-130 transition-transform text-sm p-1" title="Fire">🔥</button>
+<button class="hover:scale-130 transition-transform text-sm p-1" title="Love">❤️</button>
+<button class="hover:scale-130 transition-transform text-sm p-1" title="Insightful">💡</button>
+<button class="hover:scale-130 transition-transform text-sm p-1" title="Unicorn">🦄</button>
+<button class="hover:scale-130 transition-transform text-sm p-1" title="Claps">🙌</button>
+</div>
+<!-- Primary Upvote Pill -->
+<div class="flex items-center bg-[#161822] rounded-xl border border-white/[0.09] p-0.5 hover:border-brand-500/50 transition">
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-brand-400 bg-brand-500/15 hover:bg-brand-500/25 font-bold transition active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path d="M12 4l-8 8h5v8h6v-8h5z"></path>
+</svg>
+<span>342</span>
+</button>
+<button class="p-1 hover:text-zinc-200 transition px-1.5 text-zinc-500" title="More reactions" type="button">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="6 9 12 15 18 9"></polyline>
+</svg>
+</button>
+</div>
+</div>
+<!-- Metadata & Social Stats -->
+<div class="flex items-center gap-3">
+<!-- Comments -->
+<button class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition group/btn" title="Comments">
+<svg class="w-4 h-4 text-zinc-500 group-hover/btn:text-brand-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+</svg>
+<span class="font-mono-code">28</span>
+</button>
+<!-- Bookmarks -->
+<button class="flex items-center gap-1 text-zinc-400 hover:text-brand-400 transition" title="Save build">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+</svg>
+<span class="font-mono-code">1.8k</span>
+</button>
+<!-- Views / Impressions -->
+<span class="hidden sm:flex items-center gap-1 text-zinc-500 font-mono-code" title="Views">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<span>4.2k</span>
+</span>
+<!-- Share -->
+<button class="p-1 text-zinc-400 hover:text-white transition" title="Share project">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="18" cy="5" r="3"></circle>
+<circle cx="6" cy="12" r="3"></circle>
+<circle cx="18" cy="19" r="3"></circle>
+<line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+<line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+</svg>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- ================= CARD 2 ================= -->
+<article class="bg-[#12141f]/80 backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-brand-500/40 hover:shadow-card-hover transition-all duration-300 flex flex-col group relative">
+<div class="h-48 w-full relative bg-[#151724] overflow-hidden rounded-t-2xl border-b border-white/[0.06]">
+<div class="absolute inset-0 bg-gradient-to-tr from-emerald-950/50 via-teal-950/20 to-slate-900/60"></div>
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="p-4 h-full flex flex-col justify-between relative z-10">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono-code font-semibold text-emerald-400 border border-emerald-500/25">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> v2.4 Released
+                </span>
+<a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-emerald-500 text-zinc-300 hover:text-white backdrop-blur-md text-xs font-mono-code border border-white/10 hover:border-emerald-400 shadow-md transition-all group/btn" href="https://github.com" target="_blank" title="Open live app">
+<span>Visit App</span>
+<svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+<polyline points="15 3 21 3 21 9"></polyline>
+<line x1="10" x2="21" y1="14" y2="3"></line>
+</svg>
+</a>
+</div>
+<div class="bg-[#0b0c12]/90 rounded-lg p-3 border border-white/[0.06] font-mono-code text-xs text-zinc-400 shadow-lg">
+<span class="text-cyan-400">const</span> <span class="text-emerald-400">pipeline</span> = <span class="text-amber-400">new</span> AIWorkflow({ model: <span class="text-zinc-300">'gpt-4o'</span> })
+              </div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h2 class="font-bold text-white text-lg group-hover:text-brand-400 transition-colors leading-snug">
+                PromptForge: AI Workflow Builder
+              </h2>
+<p class="text-zinc-400 text-sm mt-2 leading-relaxed line-clamp-2">
+                Visual node-based canvas to compose multi-agent LLM pipelines, test prompts, and export to production endpoints.
+              </p>
+<div class="flex flex-wrap gap-1.5 mt-4 pt-3.5 border-t border-white/[0.06]">
+<!-- TypeScript -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-blue-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#3178C6]" viewbox="0 0 24 24"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0H1.125zM12 9.5h-3V19H7.2V9.5H4.2V8H12v1.5zm7.3 3.8c-.2-1.4-1.2-2.1-2.7-2.1-1.6 0-2.6.9-2.6 2.2 0 2.5 4.1 1.6 4.1 3.9 0 .8-.7 1.4-1.8 1.4-1.3 0-2-.7-2.1-1.8h-1.6c.1 1.9 1.5 3.1 3.7 3.1 2.1 0 3.5-1.2 3.5-2.8 0-2.7-4.1-1.7-4.1-3.9 0-.6.5-1.1 1.4-1.1 1.1 0 1.6.5 1.7 1.3h1.6z"></path></svg>
+                  TypeScript
+                </span>
+<!-- Python -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-emerald-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#3776AB]" viewbox="0 0 24 24"><path d="M11.914 0C5.82 0 6.2 2.656 6.2 2.656l.006 2.75h5.813v.825H3.903S0 5.772 0 11.898c0 6.125 3.406 5.918 3.406 5.918h2.034v-2.855s-.11-3.407 3.352-3.407h5.758s3.242.052 3.242-3.137V3.137S18.336 0 11.914 0zm-1.68 1.834c.594 0 1.077.483 1.077 1.078 0 .595-.483 1.078-1.077 1.078s-1.078-.483-1.078-1.078c0-.595.484-1.078 1.078-1.078z"></path></svg>
+                  Python
+                </span>
+<!-- Docker -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-cyan-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#2496ED]" viewbox="0 0 24 24"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.186.185.186zm0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.186.185.186zm0 2.714h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185z"></path></svg>
+                  Docker
+                </span>
+</div>
+</div>
+<!-- Card Bottom Bar -->
+<div class="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+<div class="relative reaction-trigger">
+<div class="reactions-dock opacity-0 invisible absolute -top-12 left-0 flex items-center gap-1 bg-[#181b24] border border-white/[0.15] rounded-full px-2 py-1 shadow-2xl backdrop-blur-xl transition-all duration-200 transform translate-y-2 scale-95 z-30 pointer-events-none">
+<button class="hover:scale-130 transition-transform text-sm p-1">🚀</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🔥</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">❤️</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">💡</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🦄</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🙌</button>
+</div>
+<div class="flex items-center bg-[#161822] rounded-xl border border-white/[0.09] p-0.5 hover:border-brand-500/50 transition">
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-brand-400 bg-brand-500/15 hover:bg-brand-500/25 font-bold transition active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"></path></svg>
+<span>198</span>
+</button>
+<button class="p-1 hover:text-zinc-200 transition px-1.5 text-zinc-500" type="button">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition group/btn">
+<svg class="w-4 h-4 text-zinc-500 group-hover/btn:text-brand-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+<span class="font-mono-code">14</span>
+</button>
+<button class="flex items-center gap-1 text-zinc-400 hover:text-brand-400 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+<span class="font-mono-code">950</span>
+</button>
+<span class="hidden sm:flex items-center gap-1 text-zinc-500 font-mono-code">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<span>2.1k</span>
+</span>
+<button class="p-1 text-zinc-400 hover:text-white transition">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- ================= CARD 3 ================= -->
+<article class="bg-[#12141f]/80 backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-brand-500/40 hover:shadow-card-hover transition-all duration-300 flex flex-col group relative">
+<div class="h-48 w-full relative bg-[#151724] overflow-hidden rounded-t-2xl border-b border-white/[0.06]">
+<div class="absolute inset-0 bg-gradient-to-tr from-amber-950/50 via-blue-950/20 to-slate-900/60"></div>
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="p-4 h-full flex flex-col justify-between relative z-10">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono-code font-semibold text-blue-400 border border-blue-500/25">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span> Trending #1
+                </span>
+<a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-blue-500 text-zinc-300 hover:text-white backdrop-blur-md text-xs font-mono-code border border-white/10 hover:border-blue-400 shadow-md transition-all group/btn" href="https://github.com" target="_blank" title="Open live app">
+<span>Visit App</span>
+<svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+<polyline points="15 3 21 3 21 9"></polyline>
+<line x1="10" x2="21" y1="14" y2="3"></line>
+</svg>
+</a>
+</div>
+<div class="bg-[#0b0c12]/90 rounded-lg p-3 border border-white/[0.06] font-mono-code text-xs text-zinc-400 shadow-lg">
+<span class="text-brand-400">git clone</span> <span class="text-zinc-200">devlens-visualizer.git</span>
+</div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h2 class="font-bold text-white text-lg group-hover:text-brand-400 transition-colors leading-snug">
+                DevLens: Code Snippet Visualizer
+              </h2>
+<p class="text-zinc-400 text-sm mt-2 leading-relaxed line-clamp-2">
+                Turn messy code snippets into aesthetic, exportable 4K images with custom syntax highlighting and themes.
+              </p>
+<div class="flex flex-wrap gap-1.5 mt-4 pt-3.5 border-t border-white/[0.06]">
+<!-- React -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-cyan-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#61DAFB]" viewbox="0 0 24 24"><ellipse cx="12" cy="12" fill="none" rx="10" ry="4.5" stroke="#61DAFB" stroke-width="1.8" transform="rotate(30 12 12)"></ellipse><ellipse cx="12" cy="12" fill="none" rx="10" ry="4.5" stroke="#61DAFB" stroke-width="1.8" transform="rotate(90 12 12)"></ellipse><ellipse cx="12" cy="12" fill="none" rx="10" ry="4.5" stroke="#61DAFB" stroke-width="1.8" transform="rotate(150 12 12)"></ellipse><circle cx="12" cy="12" fill="#61DAFB" r="1.8"></circle></svg>
+                  React
+                </span>
+<!-- Supabase -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-emerald-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#3ECF8E]" viewbox="0 0 24 24"><path d="M21.362 9.354H12V.343a.343.343 0 0 0-.604-.225L.548 13.067a1.2 1.2 0 0 0 .918 1.933H12v9.011a.343.343 0 0 0 .604.226l10.848-12.949a1.2 1.2 0 0 0-.918-1.934h-1.172z"></path></svg>
+                  Supabase
+                </span>
+<!-- Tailwind -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-sky-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#38BDF8]" viewbox="0 0 24 24"><path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z"></path></svg>
+                  Tailwind
+                </span>
+</div>
+</div>
+<!-- Card Bottom Bar -->
+<div class="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+<div class="relative reaction-trigger">
+<div class="reactions-dock opacity-0 invisible absolute -top-12 left-0 flex items-center gap-1 bg-[#181b24] border border-white/[0.15] rounded-full px-2 py-1 shadow-2xl backdrop-blur-xl transition-all duration-200 transform translate-y-2 scale-95 z-30 pointer-events-none">
+<button class="hover:scale-130 transition-transform text-sm p-1">🚀</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🔥</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">❤️</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">💡</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🦄</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🙌</button>
+</div>
+<div class="flex items-center bg-[#161822] rounded-xl border border-white/[0.09] p-0.5 hover:border-brand-500/50 transition">
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-brand-400 bg-brand-500/15 hover:bg-brand-500/25 font-bold transition active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"></path></svg>
+<span>512</span>
+</button>
+<button class="p-1 hover:text-zinc-200 transition px-1.5 text-zinc-500" type="button">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition group/btn">
+<svg class="w-4 h-4 text-zinc-500 group-hover/btn:text-brand-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+<span class="font-mono-code">42</span>
+</button>
+<button class="flex items-center gap-1 text-zinc-400 hover:text-brand-400 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+<span class="font-mono-code">2.4k</span>
+</button>
+<span class="hidden sm:flex items-center gap-1 text-zinc-500 font-mono-code">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<span>5.8k</span>
+</span>
+<button class="p-1 text-zinc-400 hover:text-white transition">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- ================= CARD 4 ================= -->
+<article class="bg-[#12141f]/80 backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-brand-500/40 hover:shadow-card-hover transition-all duration-300 flex flex-col group relative">
+<div class="h-48 w-full relative bg-[#151724] overflow-hidden rounded-t-2xl border-b border-white/[0.06]">
+<div class="absolute inset-0 bg-gradient-to-tr from-rose-950/50 via-indigo-950/20 to-slate-900/60"></div>
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="p-4 h-full flex flex-col justify-between relative z-10">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono-code font-semibold text-rose-400 border border-rose-500/25">
+<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> Open Beta
+                </span>
+<a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-rose-500 text-zinc-300 hover:text-white backdrop-blur-md text-xs font-mono-code border border-white/10 hover:border-rose-400 shadow-md transition-all group/btn" href="https://github.com" target="_blank" title="Open live app">
+<span>Visit App</span>
+<svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+<polyline points="15 3 21 3 21 9"></polyline>
+<line x1="10" x2="21" y1="14" y2="3"></line>
+</svg>
+</a>
+</div>
+<div class="bg-[#0b0c12]/90 rounded-lg p-3 border border-white/[0.06] font-mono-code text-xs text-zinc-400 shadow-lg">
+<span class="text-rose-400">SELECT</span> * <span class="text-rose-400">FROM</span> schema_realtime;
+              </div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h2 class="font-bold text-white text-lg group-hover:text-brand-400 transition-colors leading-snug">
+                PostgresSync: Zero-ETL Engine
+              </h2>
+<p class="text-zinc-400 text-sm mt-2 leading-relaxed line-clamp-2">
+                Sync real-time tables between PostgreSQL and client states with end-to-end encryption and offline mutations.
+              </p>
+<div class="flex flex-wrap gap-1.5 mt-4 pt-3.5 border-t border-white/[0.06]">
+<!-- Rust -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-amber-500 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#DEA584]" viewbox="0 0 24 24"><path d="M23.834 11.999c0-.285-.018-.567-.053-.844l-2.02.13c.023.235.035.474.035.714 0 2.213-.746 4.256-1.996 5.888l1.636 1.206c1.516-1.986 2.42-4.475 2.42-7.094h-.022zM8.337 2.036l.758 1.884c.69-.278 1.425-.472 2.188-.57l-.27-2.008C9.91 1.488 8.924 1.705 8.337 2.036z"></path></svg>
+                  Rust
+                </span>
+<!-- PostgreSQL -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-blue-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#4169E1]" viewbox="0 0 24 24"><path d="M12 0C5.372 0 0 5.373 0 12c0 6.628 5.372 12 12 12 6.627 0 12-5.372 12-12 0-6.627-5.373-12-12-12zm-1.042 3.655c.783-.02 1.571.18 2.235.587 1.329.813 1.954 2.41 1.638 3.896-.2 1.05-.884 1.96-1.85 2.408 1.077.587 1.802 1.767 1.79 3.064-.012 1.385-.86 2.62-2.128 3.123-1.037.411-2.228.326-3.197-.245v-4.103h.828c.683 0 1.272-.416 1.492-1.062.22-.647-.02-1.353-.61-1.776-.328-.235-.733-.356-1.14-.338h-.57V3.81c.5-.102 1.018-.155 1.542-.155z"></path></svg>
+                  PostgreSQL
+                </span>
+<!-- Docker -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-cyan-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#2496ED]" viewbox="0 0 24 24"><path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185z"></path></svg>
+                  Docker
+                </span>
+</div>
+</div>
+<div class="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+<div class="relative reaction-trigger">
+<div class="reactions-dock opacity-0 invisible absolute -top-12 left-0 flex items-center gap-1 bg-[#181b24] border border-white/[0.15] rounded-full px-2 py-1 shadow-2xl backdrop-blur-xl transition-all duration-200 transform translate-y-2 scale-95 z-30 pointer-events-none">
+<button class="hover:scale-130 transition-transform text-sm p-1">🚀</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🔥</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">❤️</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">💡</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🦄</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🙌</button>
+</div>
+<div class="flex items-center bg-[#161822] rounded-xl border border-white/[0.09] p-0.5 hover:border-brand-500/50 transition">
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-brand-400 bg-brand-500/15 hover:bg-brand-500/25 font-bold transition active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"></path></svg>
+<span>284</span>
+</button>
+<button class="p-1 hover:text-zinc-200 transition px-1.5 text-zinc-500" type="button">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition group/btn">
+<svg class="w-4 h-4 text-zinc-500 group-hover/btn:text-brand-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+<span class="font-mono-code">19</span>
+</button>
+<button class="flex items-center gap-1 text-zinc-400 hover:text-brand-400 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+<span class="font-mono-code">1.2k</span>
+</button>
+<span class="hidden sm:flex items-center gap-1 text-zinc-500 font-mono-code">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<span>3.6k</span>
+</span>
+<button class="p-1 text-zinc-400 hover:text-white transition">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- ================= CARD 5 ================= -->
+<article class="bg-[#12141f]/80 backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-brand-500/40 hover:shadow-card-hover transition-all duration-300 flex flex-col group relative">
+<div class="h-48 w-full relative bg-[#151724] overflow-hidden rounded-t-2xl border-b border-white/[0.06]">
+<div class="absolute inset-0 bg-gradient-to-tr from-cyan-950/50 via-sky-950/20 to-slate-900/60"></div>
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="p-4 h-full flex flex-col justify-between relative z-10">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono-code font-semibold text-cyan-400 border border-cyan-500/25">
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Components
+                </span>
+<a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-cyan-500 text-zinc-300 hover:text-white backdrop-blur-md text-xs font-mono-code border border-white/10 hover:border-cyan-400 shadow-md transition-all group/btn" href="https://github.com" target="_blank" title="Open live app">
+<span>Visit App</span>
+<svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+<polyline points="15 3 21 3 21 9"></polyline>
+<line x1="10" x2="21" y1="14" y2="3"></line>
+</svg>
+</a>
+</div>
+<div class="bg-[#0b0c12]/90 rounded-lg p-3 border border-white/[0.06] font-mono-code text-xs text-zinc-400 shadow-lg">
+<span class="text-cyan-400">npx</span> shadcn-ui@latest add dock-bar
+              </div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h2 class="font-bold text-white text-lg group-hover:text-brand-400 transition-colors leading-snug">
+                HyperUI: Framer Motion Kit
+              </h2>
+<p class="text-zinc-400 text-sm mt-2 leading-relaxed line-clamp-2">
+                A collection of 60+ micro-interactions and animated component primitives crafted for Tailwind CSS and React 19.
+              </p>
+<div class="flex flex-wrap gap-1.5 mt-4 pt-3.5 border-t border-white/[0.06]">
+<!-- Framer Motion -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-pink-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#0055FF]" viewbox="0 0 24 24"><path d="M4 0h16v8h-8zM4 8h8l8 8H4zM4 16h8v8z"></path></svg>
+                  Framer
+                </span>
+<!-- Tailwind -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-sky-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#38BDF8]" viewbox="0 0 24 24"><path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.336 6.182 14.975 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.336 13.382 8.975 12 6.001 12z"></path></svg>
+                  Tailwind
+                </span>
+<!-- React -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-cyan-300 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#61DAFB]" viewbox="0 0 24 24"><circle cx="12" cy="12" fill="#61DAFB" r="1.8"></circle></svg>
+                  React 19
+                </span>
+</div>
+</div>
+<div class="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+<div class="relative reaction-trigger">
+<div class="reactions-dock opacity-0 invisible absolute -top-12 left-0 flex items-center gap-1 bg-[#181b24] border border-white/[0.15] rounded-full px-2 py-1 shadow-2xl backdrop-blur-xl transition-all duration-200 transform translate-y-2 scale-95 z-30 pointer-events-none">
+<button class="hover:scale-130 transition-transform text-sm p-1">🚀</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🔥</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">❤️</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">💡</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🦄</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🙌</button>
+</div>
+<div class="flex items-center bg-[#161822] rounded-xl border border-white/[0.09] p-0.5 hover:border-brand-500/50 transition">
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-brand-400 bg-brand-500/15 hover:bg-brand-500/25 font-bold transition active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"></path></svg>
+<span>630</span>
+</button>
+<button class="p-1 hover:text-zinc-200 transition px-1.5 text-zinc-500" type="button">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition group/btn">
+<svg class="w-4 h-4 text-zinc-500 group-hover/btn:text-brand-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+<span class="font-mono-code">35</span>
+</button>
+<button class="flex items-center gap-1 text-zinc-400 hover:text-brand-400 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+<span class="font-mono-code">3.1k</span>
+</button>
+<span class="hidden sm:flex items-center gap-1 text-zinc-500 font-mono-code">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<span>7.4k</span>
+</span>
+<button class="p-1 text-zinc-400 hover:text-white transition">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+</button>
+</div>
+</div>
+</div>
+</article>
+<!-- ================= CARD 6 ================= -->
+<article class="bg-[#12141f]/80 backdrop-blur-md rounded-2xl border border-white/[0.08] hover:border-brand-500/40 hover:shadow-card-hover transition-all duration-300 flex flex-col group relative">
+<div class="h-48 w-full relative bg-[#151724] overflow-hidden rounded-t-2xl border-b border-white/[0.06]">
+<div class="absolute inset-0 bg-gradient-to-tr from-violet-950/50 via-fuchsia-950/20 to-slate-900/60"></div>
+<div class="absolute inset-0 opacity-15 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="p-4 h-full flex flex-col justify-between relative z-10">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-mono-code font-semibold text-violet-400 border border-violet-500/25">
+<span class="w-1.5 h-1.5 rounded-full bg-violet-400"></span> Open Source
+                </span>
+<a class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 hover:bg-violet-500 text-zinc-300 hover:text-white backdrop-blur-md text-xs font-mono-code border border-white/10 hover:border-violet-400 shadow-md transition-all group/btn" href="https://github.com" target="_blank" title="Open live app">
+<span>Visit App</span>
+<svg class="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+<polyline points="15 3 21 3 21 9"></polyline>
+<line x1="10" x2="21" y1="14" y2="3"></line>
+</svg>
+</a>
+</div>
+<div class="bg-[#0b0c12]/90 rounded-lg p-3 border border-white/[0.06] font-mono-code text-xs text-zinc-400 shadow-lg">
+<span class="text-violet-400">&gt;</span> bun test --coverage --bail
+              </div>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h2 class="font-bold text-white text-lg group-hover:text-brand-400 transition-colors leading-snug">
+                Bunflare: Edge Microservices
+              </h2>
+<p class="text-zinc-400 text-sm mt-2 leading-relaxed line-clamp-2">
+                Lightweight starter toolkit for zero-cold-start edge functions powered by Bun runtime and Cloudflare Workers.
+              </p>
+<div class="flex flex-wrap gap-1.5 mt-4 pt-3.5 border-t border-white/[0.06]">
+<!-- TypeScript -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-yellow-300 border border-white/[0.08]">
+<span class="font-bold">⚡</span> Bun
+                </span>
+<!-- Cloudflare -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-orange-400 border border-white/[0.08]">
+<svg class="w-3.5 h-3.5 fill-[#F38020]" viewbox="0 0 24 24"><path d="M16.5 7.5c-.3-1.8-1.8-3.2-3.7-3.4-1.9-.2-3.7 1-4.4 2.7-.8-.4-1.8-.4-2.6.1-.9.5-1.4 1.4-1.5 2.4-2.1.3-3.8 2.2-3.8 4.4 0 2.5 2 4.5 4.5 4.5h11c2.5 0 4.5-2 4.5-4.5 0-2.3-1.7-4.2-3.9-4.5-.1-.6-.4-1.2-.7-1.7z"></path></svg>
+                  Cloudflare
+                </span>
+<!-- Rust -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#161822] text-xs font-mono-code text-zinc-300 border border-white/[0.08]">
+<span class="text-brand-400 font-bold">H</span> Hono
+                </span>
+</div>
+</div>
+<div class="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400">
+<div class="relative reaction-trigger">
+<div class="reactions-dock opacity-0 invisible absolute -top-12 left-0 flex items-center gap-1 bg-[#181b24] border border-white/[0.15] rounded-full px-2 py-1 shadow-2xl backdrop-blur-xl transition-all duration-200 transform translate-y-2 scale-95 z-30 pointer-events-none">
+<button class="hover:scale-130 transition-transform text-sm p-1">🚀</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🔥</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">❤️</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">💡</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🦄</button>
+<button class="hover:scale-130 transition-transform text-sm p-1">🙌</button>
+</div>
+<div class="flex items-center bg-[#161822] rounded-xl border border-white/[0.09] p-0.5 hover:border-brand-500/50 transition">
+<button class="flex items-center gap-1.5 px-3 py-1 rounded-lg text-brand-400 bg-brand-500/15 hover:bg-brand-500/25 font-bold transition active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24"><path d="M12 4l-8 8h5v8h6v-8h5z"></path></svg>
+<span>441</span>
+</button>
+<button class="p-1 hover:text-zinc-200 transition px-1.5 text-zinc-500" type="button">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-1.5 text-zinc-400 hover:text-white transition group/btn">
+<svg class="w-4 h-4 text-zinc-500 group-hover/btn:text-brand-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+<span class="font-mono-code">31</span>
+</button>
+<button class="flex items-center gap-1 text-zinc-400 hover:text-brand-400 transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path></svg>
+<span class="font-mono-code">2.0k</span>
+</button>
+<span class="hidden sm:flex items-center gap-1 text-zinc-500 font-mono-code">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<span>4.9k</span>
+</span>
+<button class="p-1 text-zinc-400 hover:text-white transition">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line></svg>
+</button>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- END: 3-Column Responsive Grid -->
+</main>
+</div>
+<!-- ===================================================== -->
+<!-- 5. FLOATING ACTIONS: Return to Top & Feedback Pill -->
+<!-- ===================================================== -->
+<div class="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-50">
+<!-- Return to top -->
+<button class="w-10 h-10 rounded-xl bg-[#161822]/90 hover:bg-brand-500 text-zinc-400 hover:text-white border border-white/[0.1] flex items-center justify-center shadow-2xl backdrop-blur-md transition-all active:scale-95 group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Return to top" type="button">
+<svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<polyline points="18 15 12 9 6 15"></polyline>
+</svg>
+</button>
+<!-- Feedback button pill -->
+<button class="px-4 py-2 rounded-full bg-[#161822]/90 hover:bg-[#1f2230] text-zinc-300 hover:text-brand-400 border border-white/[0.1] text-xs font-mono-code shadow-2xl backdrop-blur-md flex items-center gap-2 transition-all active:scale-95" type="button">
+<svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+</svg>
+<span>Feedback</span>
+</button>
+</div>
+</body></html>
