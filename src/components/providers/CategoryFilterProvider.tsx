@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 
 export interface CategoryItem {
@@ -30,19 +30,17 @@ const CategoryContext = createContext<CategoryContextType>({
 
 export function CategoryFilterProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
-  const [selectedCategory, setCategoryState] = useState<string>("all");
+  const rawParam = searchParams.get("category");
+  const initialCategory = rawParam ? rawParam.replace(/-/g, "_") : "all";
 
-  // Sync with initial URL parameter on mount or direct navigation
-  useEffect(() => {
-    const param = searchParams.get("category");
-    if (param) {
-      // Normalize backwards compatibility (e.g. ai-ml -> ai_ml)
-      const normalized = param.replace(/-/g, "_");
-      setCategoryState(normalized);
-    } else {
-      setCategoryState("all");
-    }
-  }, [searchParams]);
+  const [selectedCategory, setCategoryState] = useState<string>(initialCategory);
+  const [prevParam, setPrevParam] = useState<string | null>(rawParam);
+
+  // Sync state during render when URL parameter changes without cascading effect renders
+  if (rawParam !== prevParam) {
+    setPrevParam(rawParam);
+    setCategoryState(rawParam ? rawParam.replace(/-/g, "_") : "all");
+  }
 
   // Smooth daily.dev style instant category switcher with URL sync
   const setSelectedCategory = useCallback((catId: string) => {

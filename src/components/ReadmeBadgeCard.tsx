@@ -82,7 +82,6 @@ export function ReadmeBadgeCard({ slug }: ReadmeBadgeCardProps) {
             title="Click to view public profile"
             className="group block"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`/api/badge/${slug}`}
               alt={`${slug}'s Showphan Showcase Badge`}

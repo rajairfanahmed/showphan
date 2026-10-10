@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface ReactionItem {
@@ -30,22 +30,30 @@ export function ReactionPopover({
   initialActiveReaction = null,
 }: ReactionPopoverProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeReaction, setActiveReaction] = useState<string | null>(initialActiveReaction);
+  const [activeReaction, setActiveReaction] = useState<string | null>(() => {
+    if (typeof window === "undefined") return initialActiveReaction;
+    try {
+      return localStorage.getItem(`showphan_reaction_${projectId}`) || initialActiveReaction;
+    } catch {
+      return initialActiveReaction;
+    }
+  });
+  const [prevProjectId, setPrevProjectId] = useState(projectId);
+  if (projectId !== prevProjectId) {
+    setPrevProjectId(projectId);
+    try {
+      const saved = typeof window !== "undefined" ? localStorage.getItem(`showphan_reaction_${projectId}`) : null;
+      setActiveReaction(saved || initialActiveReaction);
+    } catch {
+      setActiveReaction(initialActiveReaction);
+    }
+  }
   const [counts, setCounts] = useState<Record<string, number>>(initialCounts);
   const [hoveredReaction, setHoveredReaction] = useState<string | null>(null);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const totalReactions = Object.values(counts).reduce((acc, curr) => acc + curr, 0);
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(`showphan_reaction_${projectId}`);
-      if (saved) {
-        setActiveReaction(saved);
-      }
-    } catch {}
-  }, [projectId]);
 
   const handleMouseEnter = () => {
     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);

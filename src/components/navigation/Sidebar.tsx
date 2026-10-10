@@ -22,17 +22,24 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const [internalCollapsed, setInternalCollapsed] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
+  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return document.documentElement.getAttribute("data-theme") !== "light";
+  });
 
   // Allow either controlled or uncontrolled collapsed state
   const isCollapsed = controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed;
   const toggleCollapsed = onToggleCollapsed || (() => setInternalCollapsed((prev) => !prev));
 
-  // Synchronize theme on mount
+  // Observe theme attribute changes externally without cascading render
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
-    setIsDarkTheme(currentTheme === "dark");
+    const observer = new MutationObserver(() => {
+      const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+      setIsDarkTheme(currentTheme === "dark");
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => observer.disconnect();
   }, []);
 
   const toggleTheme = () => {
