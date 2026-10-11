@@ -140,6 +140,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-theme="light"
       data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
@@ -147,7 +148,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{document.documentElement.setAttribute("data-theme","light");localStorage.setItem("showphan-theme","light");}catch(e){}})();`,
+            __html: `(function(){try{document.documentElement.setAttribute("data-theme","light");document.documentElement.classList.remove("dark");localStorage.setItem("showphan-theme","light");}catch(e){}})();`,
           }}
         />
         <script

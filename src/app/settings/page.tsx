@@ -211,7 +211,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between py-2">
           <div className="space-y-0.5">
             <span className="text-sm font-semibold text-[var(--foreground)] block">Theme Selection</span>
-            <p className="text-xs text-[var(--muted-foreground)]">Toggle between Dark, Light, or System default.</p>
+            <p className="text-xs text-[var(--muted-foreground)]">Ceramic Daylight system (default).</p>
           </div>
           <ThemeToggle />
         </div>

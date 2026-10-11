@@ -39,11 +39,11 @@ export function HomepageHero() {
   return (
     <section
       aria-label="Platform Introduction"
-      className="relative w-full rounded-3xl border border-[var(--border)] bg-gradient-to-br from-white via-slate-50/60 to-blue-50/30 dark:from-zinc-900 dark:via-zinc-900/60 dark:to-blue-950/20 p-6 sm:p-8 overflow-hidden shadow-sm transition-all duration-300"
+      className="relative w-full rounded-3xl border border-[var(--border)] bg-gradient-to-br from-white via-slate-50/80 to-blue-50/30 p-6 sm:p-8 overflow-hidden shadow-sm transition-all duration-300"
     >
       {/* Background Architectural Grid Pattern */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-35 dark:opacity-20"
+        className="absolute inset-0 pointer-events-none opacity-30"
         style={{
           backgroundImage:
             "radial-gradient(#0052ff 0.75px, transparent 0.75px), radial-gradient(#0052ff 0.75px, transparent 0.75px)",
@@ -112,21 +112,21 @@ export function HomepageHero() {
         <div className="hidden lg:flex flex-col gap-2.5 shrink-0 min-w-[240px]">
           <div className="p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex items-center justify-between gap-4">
             <span className="text-xs font-semibold text-[var(--foreground-muted)]">Verified Catalog</span>
-            <span className="text-xs font-mono font-bold text-[var(--foreground)] bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-mono font-bold text-[var(--foreground)] bg-zinc-100 px-2 py-0.5 rounded-md">
               700+ Badges
             </span>
           </div>
 
           <div className="p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex items-center justify-between gap-4">
             <span className="text-xs font-semibold text-[var(--foreground-muted)]">Live Metrics</span>
-            <span className="text-xs font-mono font-bold text-[#0052ff] dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-mono font-bold text-[#0052ff] bg-blue-500/10 px-2 py-0.5 rounded-md">
               100% Real Kudos
             </span>
           </div>
 
           <div className="p-3.5 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-xs flex items-center justify-between gap-4">
             <span className="text-xs font-semibold text-[var(--foreground-muted)]">Sandbox Previews</span>
-            <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs font-mono font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
               Responsive
             </span>
           </div>
