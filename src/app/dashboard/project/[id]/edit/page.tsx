@@ -13,6 +13,7 @@ import { StickyActionDock } from "@/components/studio/StickyActionDock";
 import { LiveCardPreviewDrawer } from "@/components/studio/LiveCardPreviewDrawer";
 import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
 import { getCoverImageUrl } from "@/lib/storage/urls";
+import { CATALOG_TECHNOLOGIES } from "@/lib/catalog/technologies";
 
 interface GithubRepositoryItem {
   id: number | string;
@@ -50,7 +51,7 @@ export default function EditProjectPage({
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [technologiesCatalog, setTechnologiesCatalog] = useState<TechnologyItem[]>([]);
+  const [technologiesCatalog, setTechnologiesCatalog] = useState<TechnologyItem[]>(CATALOG_TECHNOLOGIES);
   const [localCoverPreviewUrl, setLocalCoverPreviewUrl] = useState<string | null>(null);
   const [authorUser, setAuthorUser] = useState<{
     slug: string;
@@ -81,7 +82,9 @@ export default function EditProjectPage({
         const techRes = await fetch("/api/technologies");
         if (techRes.ok) {
           const tData = await techRes.json();
-          setTechnologiesCatalog(tData.technologies || []);
+          if (tData.technologies && tData.technologies.length > 0) {
+            setTechnologiesCatalog(tData.technologies);
+          }
         }
 
         // Load Project Details directly by ID
@@ -99,7 +102,11 @@ export default function EditProjectPage({
             setSandboxEnabled(Boolean(p.sandboxEnabled));
             setDescription(p.description || "");
             setTags(p.tags || []);
-            setSelectedTechIds(p.technologies?.map((t: { technology: TechnologyItem }) => t.technology.id) || []);
+            setSelectedTechIds(
+              p.technologies?.map(
+                (t: { technology: TechnologyItem }) => t.technology.slug || t.technology.id
+              ) || []
+            );
             setStatus(p.status || "DRAFT");
             setClientUpdatedAt(p.updatedAt || new Date().toISOString());
 
@@ -156,11 +163,19 @@ export default function EditProjectPage({
 
       if (res.ok) {
         const data = await res.json();
-        setClientUpdatedAt(data.project.updatedAt);
+        if (data.project?.updatedAt) {
+          setClientUpdatedAt(data.project.updatedAt);
+        }
         setLastSaved(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+        return true;
+      } else {
+        const err = await res.json().catch(() => ({}));
+        console.warn("Autosave response not ok", res.status, err);
+        return false;
       }
     } catch (err) {
       console.error("Autosave error", err);
+      return false;
     } finally {
       setSaving(false);
     }
@@ -203,23 +218,51 @@ export default function EditProjectPage({
 
   // 4. Publish Handler
   const handlePublish = async () => {
+    // 1. Immediately save latest in-flight changes to backend
+    setSaving(true);
+    const saved = await saveChanges();
+    if (!saved) {
+      alert("Failed to save your latest changes before publishing. Please try again.");
+      return;
+    }
+
     if (!qualityGate.canPublish) {
-      alert(`Cannot publish:\n- ${qualityGate.missingRules.join("\n- ")}`);
+      alert(`Cannot publish until all quality rules are satisfied:\n- ${qualityGate.missingRules.join("\n- ")}`);
       return;
     }
 
     try {
-      const res = await fetch(`/api/projects/${id}/publish`, { method: "POST" });
+      const res = await fetch(`/api/projects/${id}/publish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          summary,
+          coverImageKey,
+          liveUrl,
+          repoUrl,
+          sandboxUrl: sandboxUrl.trim() || null,
+          sandboxEnabled,
+          description,
+          tags,
+          technologyIds: selectedTechIds,
+        }),
+      });
+
       if (res.ok) {
         const data = await res.json();
         setStatus("PUBLISHED");
         setPublishSuccessUrl(data.publicUrl || `/${authorUser.slug}/${data.project?.slug || id}`);
       } else {
-        const err = await res.json();
-        alert(err.error?.message || "Failed to publish project.");
+        const err = await res.json().catch(() => ({}));
+        const missing = err.error?.missingRules;
+        const msg = missing && Array.isArray(missing) && missing.length > 0
+          ? `Cannot publish until all quality rules are satisfied:\n- ${missing.join("\n- ")}`
+          : (err.error?.message || "Failed to publish project.");
+        alert(msg);
       }
     } catch {
-      alert("Publish connection error.");
+      alert("Publish connection error. Please try again.");
     }
   };
 

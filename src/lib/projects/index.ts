@@ -1,5 +1,6 @@
 import { prisma, ensureDatabaseSchema } from "@/lib/prisma";
 import { ProjectStatus } from "@/generated/prisma/enums";
+import { CATALOG_TECHNOLOGIES } from "@/lib/catalog/technologies";
 
 export * from "./trending";
 export * from "./kudos";
@@ -103,8 +104,8 @@ export async function updateProject(
     throw new Error("NOT_FOUND: Project not found or access denied.");
   }
 
-  // Optimistic locking check
-  if (data.clientUpdatedAt) {
+  // Optimistic locking check (relaxed for drafts to prevent autosave race conditions)
+  if (data.clientUpdatedAt && existing.status !== ProjectStatus.DRAFT) {
     const existingIso = existing.updatedAt.toISOString();
     if (existingIso !== data.clientUpdatedAt) {
       throw new Error(
@@ -146,14 +147,46 @@ export async function updateProject(
     ...(data.tags !== undefined && { tags: data.tags.slice(0, 5) }),
   };
 
-  // Update technologies relationship if provided (max 15)
+  // Update technologies relationship if provided (max 15) using resilient connectOrCreate
   if (data.technologyIds !== undefined) {
     const cappedTechIds = data.technologyIds.slice(0, 15);
+    const catalogMap = new Map(CATALOG_TECHNOLOGIES.map((t) => [t.id, t]));
+    const catalogSlugMap = new Map(CATALOG_TECHNOLOGIES.map((t) => [t.slug, t]));
+
+    const techCreates = [];
+    for (const tId of cappedTechIds) {
+      const catalogItem = catalogMap.get(tId) || catalogSlugMap.get(tId);
+      if (catalogItem) {
+        techCreates.push({
+          technology: {
+            connectOrCreate: {
+              where: { slug: catalogItem.slug },
+              create: {
+                slug: catalogItem.slug,
+                name: catalogItem.name,
+                iconColor: catalogItem.iconColor,
+                iconMono: catalogItem.iconMono || "",
+              },
+            },
+          },
+        });
+      } else {
+        const dbTech = await prisma.technology.findFirst({
+          where: { OR: [{ id: tId }, { slug: tId }] },
+        });
+        if (dbTech) {
+          techCreates.push({
+            technology: {
+              connect: { id: dbTech.id },
+            },
+          });
+        }
+      }
+    }
+
     updatePayload.technologies = {
       deleteMany: {},
-      create: cappedTechIds.map((technologyId) => ({
-        technology: { connect: { id: technologyId } },
-      })),
+      create: techCreates,
     };
   }
 

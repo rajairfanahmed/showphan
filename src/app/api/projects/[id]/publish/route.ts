@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { evaluateQualityGate } from "@/lib/projects/quality-gate";
+import { updateProject } from "@/lib/projects";
 import { ProjectStatus } from "@/generated/prisma/enums";
 import { logger } from "@/lib/logger";
 
@@ -25,6 +26,17 @@ export async function POST(
     }
 
     const { id } = await params;
+    const body = await req.json().catch(() => ({}));
+
+    // If latest project fields were submitted with publish request, update first
+    if (body && Object.keys(body).length > 0) {
+      try {
+        await updateProject(session.user.id, id, body);
+      } catch (updateErr) {
+        logger.warn("Pre-publish update notice", { error: updateErr });
+      }
+    }
+
     const project = await prisma.project.findFirst({
       where: { id, userId: session.user.id },
       include: {
@@ -61,7 +73,7 @@ export async function POST(
       },
     });
 
-    const userSlug = project.user.slug;
+    const userSlug = project.user.slug === "raja-irfan-ahmed" ? "rajairfanahmed" : project.user.slug;
     const projectSlug = published.slug;
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app";
     const publicUrl = `${baseUrl}/${userSlug}/${projectSlug}`;

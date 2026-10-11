@@ -139,16 +139,18 @@ export function TechStackPicker({
         selectedTechIds.filter((id) => id !== tech.id && id !== tech.slug)
       );
     } else {
-      onChange([...selectedTechIds, tech.id]);
+      onChange([...selectedTechIds, tech.slug]);
       setSearch("");
       setIsDropdownOpen(false);
     }
   };
 
-  const handleRemoveTech = (techId: string, e: React.MouseEvent) => {
+  const handleRemoveTech = (tech: TechnologyCatalogItem, e: React.MouseEvent) => {
     e.stopPropagation();
     if (disabled) return;
-    onChange(selectedTechIds.filter((id) => id !== techId));
+    onChange(
+      selectedTechIds.filter((id) => id !== tech.id && id !== tech.slug)
+    );
   };
 
   return (
@@ -193,7 +195,7 @@ export function TechStackPicker({
               <TechBadge name={tech.name} iconName={tech.iconColor || undefined} size="sm" />
               <button
                 type="button"
-                onClick={(e) => handleRemoveTech(tech.id, e)}
+                onClick={(e) => handleRemoveTech(tech, e)}
                 disabled={disabled}
                 className="hover:text-red-500 text-blue-500/70 dark:text-blue-300/70 transition-colors p-0.5 rounded cursor-pointer"
                 title={`Remove ${tech.name}`}
