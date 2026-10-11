@@ -16,12 +16,12 @@ export async function generateMetadata({
   const data = await getPublicProfileBySlug(slug);
 
   if (!data) {
-    return { title: "Profile Not Found — Showphan" };
+    return { title: "Profile Not Found: Showphan" };
   }
 
   const { user, publishedCount } = data;
   const authorName = user.displayName || user.name || user.slug;
-  const title = `${authorName} (@${user.slug}) — Developer Portfolio on Showphan`;
+  const title = `${authorName} (@${user.slug}) | Developer Portfolio on Showphan`;
   const description =
     user.bio ||
     `${authorName}'s developer portfolio with ${publishedCount} published showcase${publishedCount === 1 ? "" : "s"}.`;

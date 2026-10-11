@@ -26,11 +26,11 @@ export async function generateMetadata({
   const data = await getPublicProject(slug, projectSlug);
 
   if (!data || data.project.status !== "PUBLISHED") {
-    return { title: "Project Not Found — Showphan" };
+    return { title: "Project Not Found: Showphan" };
   }
 
   const { project, author } = data;
-  const title = `${project.title} by @${author.slug} — Showphan Showcase`;
+  const title = `${project.title} by @${author.slug} | Showphan Showcase`;
   const description = project.summary;
   const coverUrl = getCoverImageUrl(project.coverImageKey);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://showphan.vercel.app";

@@ -101,7 +101,7 @@ export function MediaLightbox({ src, alt, title }: MediaLightboxProps) {
               className="max-h-[90vh] max-w-[95vw] w-auto h-auto object-contain select-none"
             />
             <div className="absolute bottom-0 inset-x-0 p-3 bg-gradient-to-t from-black/80 to-transparent text-white text-xs font-medium flex items-center justify-between">
-              <span className="truncate pr-4">{title} — Pristine 16:9 Showcase</span>
+              <span className="truncate pr-4">{title}: Pristine 16:9 Showcase</span>
               <span className="text-white/60 font-mono text-[11px] shrink-0">Press ESC to exit</span>
             </div>
           </div>

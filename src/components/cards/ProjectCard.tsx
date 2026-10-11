@@ -95,7 +95,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   };
 
   return (
-    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-blue-500/40 transition-all duration-300 overflow-hidden w-full @container card-container awwwards-card">
+    <article className="group flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--card)] hover:border-[#0052ff]/40 hover:shadow-lg dark:hover:shadow-blue-500/5 transition-all duration-300 overflow-hidden w-full @container card-container awwwards-card">
       {/* 
         1. 16:9 Cover Image / Visual Preview Area:
         Awwwards Pristine Media: completely unobstructed, zero text or badge overlays on image.

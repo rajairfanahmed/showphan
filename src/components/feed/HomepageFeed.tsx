@@ -4,6 +4,7 @@ import React, { useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
 import { useCategoryFilter } from "@/components/providers/CategoryFilterProvider";
+import { HomepageHero } from "./HomepageHero";
 
 interface HomepageFeedProps {
   initialProjects?: ProjectCardData[];
@@ -130,21 +131,27 @@ function HomepageFeedContent({
   };
 
   return (
-    <section className="space-y-5 sm:space-y-6 w-full">
-      {/* Feed Controls Header: Sort dropdown + Status count */}
+    <section className="space-y-6 w-full">
+      {/* 1. Top Restrained Discovery Hero Banner */}
+      <HomepageHero />
+
+      {/* 2. Feed Controls Header: Sort dropdown + Status count */}
       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[var(--border)]">
-        <div className="flex items-center gap-1.5 text-xs text-[var(--foreground-muted)] font-mono">
-          <span>Showing {sortedProjects.length} showcases</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-[var(--foreground)]">Community Feed</span>
+          <span className="text-[11px] text-[var(--foreground-muted)] font-mono bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full">
+            {sortedProjects.length} showcases
+          </span>
         </div>
 
         {/* Sort Dropdown */}
         <div className="relative">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--foreground-muted)] font-medium">Sort:</span>
+            <span className="text-xs text-[var(--foreground-muted)] font-medium">Sort by:</span>
             <button
               type="button"
               onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 text-xs font-semibold text-[var(--foreground)] transition-colors cursor-pointer shadow-sm"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-glass)] hover:bg-[var(--surface-glass)]/80 text-xs font-semibold text-[var(--foreground)] active:scale-[0.98] transition-all cursor-pointer shadow-xs"
               aria-label="Sort showcases"
             >
               <span>{sortLabels[sortOption]}</span>
@@ -156,7 +163,7 @@ function HomepageFeedContent({
 
           {sortDropdownOpen && (
             <div
-              className="absolute right-0 mt-2 w-44 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl py-1 z-30"
+              className="absolute right-0 mt-2 w-44 rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl py-1 z-30 animate-fade-in"
               onMouseLeave={() => setSortDropdownOpen(false)}
             >
               {(Object.keys(sortLabels) as Array<keyof typeof sortLabels>).map((key) => (
@@ -169,12 +176,12 @@ function HomepageFeedContent({
                   }}
                   className={`w-full text-left px-3.5 py-2 text-xs font-medium transition-colors cursor-pointer flex items-center justify-between ${
                     sortOption === key
-                      ? "text-[#0052ff] font-bold bg-[var(--surface-glass)]"
+                      ? "text-[#0052ff] font-bold bg-blue-50/50 dark:bg-zinc-800/80"
                       : "text-[var(--foreground)] hover:bg-[var(--surface-glass)]"
                   }`}
                 >
                   <span>{sortLabels[key]}</span>
-                  {sortOption === key && <span className="text-[#0052ff]">✓</span>}
+                  {sortOption === key && <span className="text-[#0052ff] font-bold">✓</span>}
                 </button>
               ))}
             </div>
@@ -183,27 +190,30 @@ function HomepageFeedContent({
       </div>
 
       {/* 
-        Awwwards Intrinsic Fluid Card Grid / Empty State:
+        3. Awwwards Intrinsic Fluid Card Grid / Empty State:
         - Mobile: 1 fluid column (320px - 639px).
         - Tablet/Desktop: Container-aware repeat(auto-fill, minmax(360px, 1fr)).
       */}
       {sortedProjects.length === 0 ? (
-        <div className="rounded-3xl border border-[var(--border)] bg-white/70 backdrop-blur-md p-10 sm:p-14 text-center shadow-sm max-w-xl mx-auto my-8 space-y-5">
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 text-[#0052ff] flex items-center justify-center mx-auto text-2xl shadow-inner border border-blue-100">
-            🚀
+        <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-10 sm:p-14 text-center shadow-xs max-w-xl mx-auto my-6 space-y-5">
+          {/* Architectural SVG Emblem (Replacing raw emojis per design-taste Section 3.D) */}
+          <div className="w-16 h-16 rounded-2xl bg-blue-500/10 text-[#0052ff] dark:text-blue-400 flex items-center justify-center mx-auto border border-blue-500/20 shadow-xs">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
           </div>
           <div className="space-y-2">
-            <h3 className="text-xl sm:text-2xl font-black text-[#0c0d12] tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-black text-[var(--foreground)] tracking-tight">
               Be the first to showcase your project
             </h3>
-            <p className="text-sm text-[#555a6d] leading-relaxed max-w-md mx-auto">
+            <p className="text-sm text-[var(--foreground-muted)] leading-relaxed max-w-md mx-auto">
               Showphan is live! Share your work with fellow engineers, gather kudos, and discover high-impact engineering builds.
             </p>
           </div>
           <div className="pt-2">
             <Link
               href="/dashboard/new"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0052ff] hover:bg-blue-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 active:scale-98 transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0052ff] hover:bg-blue-600 text-white font-bold text-sm shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all cursor-pointer"
             >
               <span>+ Submit First Project</span>
             </Link>
