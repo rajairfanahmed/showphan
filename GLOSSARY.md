@@ -124,7 +124,7 @@ _Avoid_: Emojis, Stickers, Comment badges.
 
 **Inspiration Vault**:
 A Developer's private collection of bookmarked projects saved while browsing the Showcase Directory, located at `/dashboard/bookmarks`.
-_Avoid_: Bookmarks, Favorites list, Saved items.
+_Avoid_: Bookmarks Hub, Favorites list, Saved items, Bookmarks list.
 
 **Showcase Simulator**:
 The interactive hero component on the homepage allowing prospective developers and visitors to test showcase features (16:9 lightbox, viewport switching, and tech tags) live without an account.

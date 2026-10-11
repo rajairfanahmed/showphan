@@ -26,6 +26,8 @@ export interface ProjectCardData {
   bookmarksCount?: number;
   viewsCount?: number;
   reactionsCounts?: Record<string, number>;
+  hasGivenKudos?: boolean;
+  hasBookmarked?: boolean;
   user: {
     name?: string | null;
     displayName?: string | null;
@@ -42,10 +44,20 @@ export interface ProjectCardData {
 
 interface ProjectCardProps {
   project: ProjectCardData;
+  initialBookmarked?: boolean;
+  onBookmarkToggle?: (projectId: string, nowBookmarked: boolean) => void;
 }
 
-export function ProjectCard({ project }: ProjectCardProps) {
-  const [bookmarked, setBookmarked] = useState(false);
+export function ProjectCard({
+  project,
+  initialBookmarked,
+  onBookmarkToggle,
+}: ProjectCardProps) {
+  const isBookmarkedInitial =
+    initialBookmarked !== undefined
+      ? initialBookmarked
+      : Boolean(project.hasBookmarked);
+  const [bookmarked, setBookmarked] = useState(isBookmarkedInitial);
   const [bookmarkCount, setBookmarkCount] = useState(project.bookmarksCount ?? 0);
   const [copied, setCopied] = useState(false);
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
@@ -58,8 +70,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setBookmarked((prev) => !prev);
-    setBookmarkCount((prev) => (bookmarked ? prev - 1 : prev + 1));
+    const nextState = !bookmarked;
+    setBookmarked(nextState);
+    setBookmarkCount((prev) => (bookmarked ? Math.max(0, prev - 1) : prev + 1));
+    if (onBookmarkToggle) {
+      onBookmarkToggle(project.id, nextState);
+    } else {
+      fetch(`/api/projects/${project.id}/bookmark`, {
+        method: nextState ? "POST" : "DELETE",
+      }).catch(() => {});
+    }
   };
 
   const handleShare = async (e: React.MouseEvent) => {
@@ -214,6 +234,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <VoteControl
               projectId={project.id}
               initialVoteCount={project.upvotesCount ?? 0}
+              initialVoteState={project.hasGivenKudos ? "up" : null}
             />
 
             {/* Reactions Popover */}
