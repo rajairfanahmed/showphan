@@ -4,11 +4,17 @@ import { useEffect, useState } from "react";
 
 function applyTheme(t: "dark" | "light" | "system") {
   if (typeof window === "undefined") return;
+  let isDark = false;
   if (t === "system") {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    document.documentElement.setAttribute("data-theme", prefersDark ? "dark" : "light");
+    isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   } else {
-    document.documentElement.setAttribute("data-theme", t);
+    isDark = t === "dark";
+  }
+  document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+  if (isDark) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
   }
 }
 

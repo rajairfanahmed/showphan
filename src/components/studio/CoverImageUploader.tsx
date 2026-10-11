@@ -7,6 +7,7 @@ interface CoverImageUploaderProps {
   coverImageKey: string | null;
   onUploadSuccess: (key: string) => void;
   onRemoveCover: () => void;
+  onLocalPreviewChange?: (url: string | null) => void;
   disabled?: boolean;
 }
 
@@ -14,6 +15,7 @@ export function CoverImageUploader({
   coverImageKey,
   onUploadSuccess,
   onRemoveCover,
+  onLocalPreviewChange,
   disabled = false,
 }: CoverImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
@@ -21,11 +23,13 @@ export function CoverImageUploader({
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [localPreview, setLocalPreview] = useState<string | null>(null);
 
   const xhrRef = useRef<XMLHttpRequest | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const coverUrl = coverImageKey ? getCoverImageUrl(coverImageKey) : null;
+  const displayUrl = localPreview || coverUrl;
 
   // Cancel in-flight upload
   const handleCancelUpload = useCallback(() => {
@@ -35,11 +39,13 @@ export function CoverImageUploader({
     }
     setIsUploading(false);
     setUploadProgress(0);
+    setLocalPreview(null);
+    onLocalPreviewChange?.(null);
     setWarningMessage("Upload canceled.");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, []);
+  }, [onLocalPreviewChange]);
 
   // Process and upload file
   const processAndUploadFile = useCallback(
@@ -58,7 +64,10 @@ export function CoverImageUploader({
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        img.src = e.target?.result as string;
+        const previewSrc = e.target?.result as string;
+        img.src = previewSrc;
+        setLocalPreview(previewSrc);
+        onLocalPreviewChange?.(previewSrc);
       };
 
       img.onload = async () => {
@@ -156,7 +165,7 @@ export function CoverImageUploader({
 
       reader.readAsDataURL(file);
     },
-    [onUploadSuccess]
+    [onLocalPreviewChange, onUploadSuccess]
   );
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -207,7 +216,7 @@ export function CoverImageUploader({
             : "border-[var(--border)] hover:border-[#0052ff]/50"
         }`}
       >
-        {/* State A: Upload In-Flight with Clean Circular Progress & Cancel Button (matching Image 2) */}
+        {/* State A: Upload In-Flight with Clean Circular Progress & Cancel Button */}
         {isUploading ? (
           <div className="flex flex-col items-center justify-center p-6 space-y-3.5 animate-fade-in z-20">
             {/* Circular Progress Ring */}
@@ -236,32 +245,41 @@ export function CoverImageUploader({
                 />
               </svg>
 
-              {/* Numerical % Text Inside Circle */}
+              {/* Numerical % Text Inside Circle: High-Contrast Foreground */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                <span className="text-xl font-bold font-sans text-zinc-900 dark:text-zinc-100 tracking-tight">
+                <span className="text-xl font-black font-sans text-[var(--foreground)] tracking-tight">
                   {uploadProgress}%
                 </span>
               </div>
             </div>
 
-            {/* Clean Progress Subtitle matching Image 2 */}
-            <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
-              Uploading file...
+            {/* Clean Progress Subtitle with Clear Foreground Muted Contrast */}
+            <p className="text-sm font-semibold text-[var(--foreground-muted)]">
+              {uploadProgress >= 99 ? "Finalizing upload..." : "Uploading file..."}
             </p>
 
-            {/* Clean Cancel Button matching Image 2 */}
+            {/* Clean Cancel Button Styled with Design System Tokens */}
             <button
               type="button"
               onClick={handleCancelUpload}
-              className="px-5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-700 active:scale-95 text-sm font-medium shadow-sm transition-all cursor-pointer"
+              className="px-5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:bg-[var(--surface-glass)] text-[var(--foreground)] active:scale-95 text-xs font-semibold shadow-xs transition-all cursor-pointer"
             >
               Cancel
             </button>
           </div>
-        ) : coverUrl ? (
-          /* State B: Verified Cover Image Present */
+        ) : displayUrl ? (
+          /* State B: Verified Cover Image Present (Instant Local or Cloudflare) */
           <div className="relative w-full h-full group">
-            <img src={coverUrl} alt="Cover preview" className="w-full h-full object-cover" />
+            <img
+              src={displayUrl}
+              alt="Cover preview"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                if (localPreview && (e.currentTarget as HTMLImageElement).src !== localPreview) {
+                  (e.currentTarget as HTMLImageElement).src = localPreview;
+                }
+              }}
+            />
             
             {/* Floating Top-Right Overlay Bar */}
             <div className="absolute top-3 right-3 flex items-center gap-2 opacity-95 group-hover:opacity-100 transition-opacity">
@@ -282,7 +300,11 @@ export function CoverImageUploader({
 
               <button
                 type="button"
-                onClick={onRemoveCover}
+                onClick={() => {
+                  setLocalPreview(null);
+                  onLocalPreviewChange?.(null);
+                  onRemoveCover();
+                }}
                 disabled={disabled}
                 className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-black/75 backdrop-blur-md border border-white/20 text-white hover:text-red-400 hover:bg-black/90 active:scale-95 transition-all cursor-pointer shadow-lg"
                 title="Remove cover image"

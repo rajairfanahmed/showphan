@@ -183,7 +183,7 @@ export async function getUserProjects(userId: string) {
 }
 
 export async function getProjectById(userId: string, projectId: string) {
-  return prisma.project.findFirst({
+  const project = await prisma.project.findFirst({
     where: { id: projectId, userId },
     include: {
       technologies: {
@@ -200,6 +200,19 @@ export async function getProjectById(userId: string, projectId: string) {
       },
     },
   });
+
+  if (project?.user && project.user.slug === "raja-irfan-ahmed") {
+    const cleanSlug = "rajairfanahmed";
+    try {
+      await prisma.user.update({
+        where: { id: project.user.id },
+        data: { slug: cleanSlug },
+      });
+      project.user.slug = cleanSlug;
+    } catch {}
+  }
+
+  return project;
 }
 
 export async function deleteProject(userId: string, projectId: string) {

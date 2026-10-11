@@ -10,6 +10,7 @@ interface LiveCardPreviewDrawerProps {
   title: string;
   summary: string;
   coverImageKey: string | null;
+  localCoverPreviewUrl?: string | null;
   technologies: Array<{ name: string; slug: string; iconColor?: string | null }>;
   liveUrl?: string | null;
   repoUrl?: string | null;
@@ -27,6 +28,7 @@ export function LiveCardPreviewDrawer({
   title,
   summary,
   coverImageKey,
+  localCoverPreviewUrl,
   technologies,
   liveUrl,
   repoUrl,
@@ -46,7 +48,7 @@ export function LiveCardPreviewDrawer({
 
   if (!isOpen) return null;
 
-  const coverUrl = coverImageKey ? getCoverImageUrl(coverImageKey) : null;
+  const coverUrl = localCoverPreviewUrl || (coverImageKey ? getCoverImageUrl(coverImageKey) : null);
 
   const previewCardData: ProjectCardData = {
     id: "preview-card-temp",

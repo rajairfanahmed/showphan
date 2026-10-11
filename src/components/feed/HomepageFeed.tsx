@@ -4,6 +4,7 @@ import React, { useState, useMemo, Suspense } from "react";
 import Link from "next/link";
 import { ProjectCard, ProjectCardData } from "@/components/cards/ProjectCard";
 import { useCategoryFilter } from "@/components/providers/CategoryFilterProvider";
+import { getCoverImageUrl } from "@/lib/storage/urls";
 import { HomepageHero } from "./HomepageHero";
 
 interface HomepageFeedProps {
@@ -27,11 +28,7 @@ function HomepageFeedContent({
         if (data.projects && Array.isArray(data.projects) && isMounted) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mapped: ProjectCardData[] = data.projects.map((p: any) => {
-            const coverUrl = p.coverImageKey
-              ? (p.coverImageKey.startsWith("http")
-                  ? p.coverImageKey
-                  : `https://pub-7951652fb9484b909e8f3989e79f7111.r2.dev/${p.coverImageKey}`)
-              : null;
+            const coverUrl = getCoverImageUrl(p.coverImageKey);
 
             return {
               id: p.id,

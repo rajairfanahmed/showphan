@@ -51,6 +51,7 @@ export default function EditProjectPage({
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [technologiesCatalog, setTechnologiesCatalog] = useState<TechnologyItem[]>([]);
+  const [localCoverPreviewUrl, setLocalCoverPreviewUrl] = useState<string | null>(null);
   const [authorUser, setAuthorUser] = useState<{
     slug: string;
     displayName?: string | null;
@@ -103,8 +104,9 @@ export default function EditProjectPage({
             setClientUpdatedAt(p.updatedAt || new Date().toISOString());
 
             if (p.user) {
+              const cleanSlug = p.user.slug === "raja-irfan-ahmed" ? "rajairfanahmed" : p.user.slug;
               setAuthorUser({
-                slug: p.user.slug,
+                slug: cleanSlug,
                 displayName: p.user.displayName,
                 name: p.user.name,
                 avatarUrl: p.user.avatarUrl,
@@ -287,7 +289,7 @@ export default function EditProjectPage({
     slug: "preview",
     title: title.trim() || "Untitled Project",
     summary: summary.trim() || "Add a punchy summary to see your card preview update in real-time.",
-    coverImageUrl: coverImageKey ? getCoverImageUrl(coverImageKey) : null,
+    coverImageUrl: localCoverPreviewUrl || (coverImageKey ? getCoverImageUrl(coverImageKey) : null),
     publishedAt: "Just now",
     liveUrl: liveUrl || null,
     repoUrl: repoUrl || null,
@@ -308,7 +310,7 @@ export default function EditProjectPage({
       selectedTechObjects.length > 0
         ? selectedTechObjects
         : [{ name: "Next.js", slug: "nextjs", iconColor: "logos:nextjs-icon" }],
-  }), [id, title, summary, coverImageKey, liveUrl, repoUrl, status, authorUser, selectedTechObjects]);
+  }), [id, title, summary, coverImageKey, localCoverPreviewUrl, liveUrl, repoUrl, status, authorUser, selectedTechObjects]);
 
   if (loading) {
     return (
@@ -401,7 +403,11 @@ export default function EditProjectPage({
           <CoverImageUploader
             coverImageKey={coverImageKey}
             onUploadSuccess={(key) => setCoverImageKey(key)}
-            onRemoveCover={() => setCoverImageKey(null)}
+            onRemoveCover={() => {
+              setCoverImageKey(null);
+              setLocalCoverPreviewUrl(null);
+            }}
+            onLocalPreviewChange={(url) => setLocalCoverPreviewUrl(url)}
           />
         </section>
 
@@ -605,6 +611,7 @@ export default function EditProjectPage({
         title={title}
         summary={summary}
         coverImageKey={coverImageKey}
+        localCoverPreviewUrl={localCoverPreviewUrl}
         technologies={selectedTechObjects}
         liveUrl={liveUrl}
         repoUrl={repoUrl}

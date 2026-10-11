@@ -48,6 +48,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(project.bookmarksCount ?? 0);
   const [copied, setCopied] = useState(false);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+
+  const isImgBroken = Boolean(project.coverImageUrl && failedUrl === project.coverImageUrl);
 
   const user = project.user;
   const projectHref = `/${user.slug}/${project.slug}`;
@@ -101,12 +104,14 @@ export function ProjectCard({ project }: ProjectCardProps) {
         Awwwards Pristine Media: completely unobstructed, zero text or badge overlays on image.
       */}
       <Link href={projectHref} className="block relative aspect-video w-full overflow-hidden bg-slate-900 border-b border-[var(--border)]">
-        {project.coverImageUrl ? (
+        {project.coverImageUrl && !isImgBroken ? (
           <img
+            key={project.coverImageUrl}
             src={project.coverImageUrl}
             alt={project.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             loading="lazy"
+            onError={() => setFailedUrl(project.coverImageUrl || "")}
           />
         ) : (
           <div className="w-full h-full p-4 sm:p-6 flex flex-col justify-center items-center bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 bg-grid-pattern relative">
